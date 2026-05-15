@@ -1,0 +1,80 @@
+-----> Building on the Heroku-24 stack
+-----> Determining which buildpack to use for this app
+-----> Node.js app detected
+       
+-----> Creating runtime environment
+       
+       NPM_CONFIG_LOGLEVEL=error
+       NODE_VERBOSE=false
+       NODE_ENV=production
+       NODE_MODULES_CACHE=true
+-----> Installing binaries
+       engines.node (package.json):   unspecified
+       engines.npm (package.json):    unspecified (use default)
+       engines.pnpm (package.json):   unspecified (use default)
+       
+       No Node.js version specified, resolving current LTS version...
+       Downloading and installing node 24.15.0...
+       Validating checksum
+       Using default npm version: 11.12.1
+       Downloading and installing pnpm (latest)
+       Using pnpm 11.1.1
+ !     Default pnpm version used
+ !     
+ !     A pnpm lockfile (pnpm-lock.yaml) was detected but no specific version of pnpm was defined in package.json in either of the following fields:
+ !     - "packageManager"
+ !     - "engines.pnpm"
+ !     
+ !     Without a specific version defined, this build will use "pnpm@latest" by default. We highly recommend setting an explicit version
+ !     of pnpm to improve the reliability of your builds.
+       
+-----> Installing dependencies
+       Running 'pnpm install' with pnpm-lock.yaml
+       Scope: all 9 workspace projects
+       Lockfile is up to date, resolution step is skipped
+       Progress: resolved 1, reused 0, downloaded 0, added 0
+       Packages: +486
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       Progress: resolved 486, reused 0, downloaded 117, added 32
+       Progress: resolved 486, reused 0, downloaded 276, added 75
+       Progress: resolved 486, reused 0, downloaded 306, added 83
+       Progress: resolved 486, reused 0, downloaded 424, added 117
+       Progress: resolved 486, reused 0, downloaded 486, added 203
+       Progress: resolved 486, reused 0, downloaded 486, added 275
+       Progress: resolved 486, reused 0, downloaded 486, added 296
+       Progress: resolved 486, reused 0, downloaded 486, added 301
+       Progress: resolved 486, reused 0, downloaded 486, added 302
+       Progress: resolved 486, reused 0, downloaded 486, added 303
+       Progress: resolved 486, reused 0, downloaded 486, added 305
+       Progress: resolved 486, reused 0, downloaded 486, added 308
+       Progress: resolved 486, reused 0, downloaded 486, added 320
+       Progress: resolved 486, reused 0, downloaded 486, added 346
+       Progress: resolved 486, reused 0, downloaded 486, added 381
+       Progress: resolved 486, reused 0, downloaded 486, added 410
+       Progress: resolved 486, reused 0, downloaded 486, added 485
+       Progress: resolved 486, reused 0, downloaded 486, added 486, done
+       
+       devDependencies:
+       + prettier 3.8.1
+       + typescript 5.9.3
+       
+       . preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "${npm_config_user_agent:-pnpm/ci}" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+       . preinstall: Done
+       [ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+       
+       Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+-----> Build failed
+       
+       We're sorry this build is failing! You can troubleshoot common issues here:
+       https://devcenter.heroku.com/articles/troubleshooting-node-deploys
+       
+       Some possible problems:
+       
+       - Node version not specified in package.json
+         https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version
+       
+       Love,
+       Heroku
+       
+ !     Push rejected, failed to compile Node.js app.
+ !     Push failed

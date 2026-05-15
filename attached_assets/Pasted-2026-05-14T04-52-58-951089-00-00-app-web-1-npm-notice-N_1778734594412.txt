@@ -1,0 +1,11 @@
+2026-05-14T04:52:58.951089+00:00 app[web.1]: npm notice New minor version of npm available! 11.12.1 -> 11.14.1
+2026-05-14T04:52:58.951089+00:00 app[web.1]: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.14.1
+2026-05-14T04:52:58.951090+00:00 app[web.1]: npm notice To update run: npm install -g npm@11.14.1
+2026-05-14T04:52:58.951090+00:00 app[web.1]: npm notice
+2026-05-14T04:52:59.033486+00:00 heroku[web.1]: Process exited with status 1
+2026-05-14T04:52:59.096841+00:00 heroku[web.1]: State changed from starting to crashed
+2026-05-14T04:53:53.692649+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=paniniofc-pt.com request_id=c97288fc-ca02-769b-9650-be5236708ac3 fwd="" dyno= connect=0ms service=0ms status=503 bytes=567 protocol=http1.1 tls=true tls_version=tls1.3
+2026-05-14T04:54:46.595950+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxCY30FdZzcnRjBmFwcF9pZAo2NjI4NTY4Mzc5AAEeN6K5cNLox00LzxNfDZqQ1a4AQkPaiNPdIsKkoHAIi7cxPQ_sWtlyqEVs2n0_aem_BNKHUXgvRLnOc7WumdRQVw&utm_medium=paid&utm_source=fb&utm_id=120243732087510630&utm_content=120243732087500630&utm_term=120243732087600630&utm_campaign=120243732087510630" host=paniniofc-pt.com request_id=5324850f-f6b0-de5c-f842-e576d8219fda fwd="" dyno= connect=0ms service=0ms status=503 bytes=567 protocol=http2.0 tls=true tls_version=tls1.3
+2026-05-14T04:55:59.823977+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=panini-1fcf11683aa4.herokuapp.com request_id=19a40df0-da7f-a84a-8efe-73ecc3a5e921 fwd="" dyno= connect=0ms service=0ms status=503 bytes=567 protocol=http1.1 tls=false
+2026-05-14T04:56:04.621721+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/favicon.ico" host=panini-1fcf11683aa4.herokuapp.com request_id=d0f642b2-c9e4-29cc-d716-4790a2ae4e95 fwd="" dyno= connect=0ms service=0ms status=503 bytes=567 protocol=http1.1 tls=false
+2026-05-14T04:56:09.480413+00:00 app[api]: Log session created by user valarieramos1929@wiwsjambok.com

@@ -1,0 +1,74 @@
+-----> Building on the Heroku-24 stack
+-----> Determining which buildpack to use for this app
+-----> Node.js app detected
+       
+-----> Creating runtime environment
+       
+       NPM_CONFIG_LOGLEVEL=error
+       NODE_VERBOSE=false
+       NODE_ENV=production
+       NODE_MODULES_CACHE=true
+-----> Installing binaries
+       engines.node (package.json):   >=24
+       engines.npm (package.json):    unspecified (use default)
+       engines.pnpm (package.json):   >=10.26.1 <11
+       packageManager (package.json): pnpm@10.26.1
+ !     Multiple pnpm versions declared
+ !     
+ !     The package.json file indicates the target version of pnpm to install in two fields:
+ !     - "packageManager": "pnpm@10.26.1"
+ !     - "engines.pnpm": ">=10.26.1 <11"
+ !     
+ !     If both fields are present, then "packageManager" will take precedence and "pnpm@10.26.1" will be installed.
+ !     
+ !     To ensure we install the version of pnpm you want, remove one of these fields.
+       Resolving node version >=24...
+ !     The requested Node.js version is using a wide range (>=24) that can resolve to a Node.js major version
+ !     higher than you intended. Limiting the requested range to a major LTS range like `24.x` is recommended.
+ !     https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version
+ !     The resolved Node.js version has been limited to the Active LTS (24.15.0) for the requested range of `>=24`.
+ !     To opt-out of this behavior, set the following config var: `NODEJS_ALLOW_WIDE_RANGE=true`
+ !     https://devcenter.heroku.com/articles/nodejs-support#supported-node-js-versions
+       Downloading and installing node 24.15.0...
+       Validating checksum
+       Using default npm version: 11.12.1
+       Downloading and installing pnpm (10.26.1)
+       Using pnpm 10.26.1
+       
+-----> Installing dependencies
+       Running 'pnpm install' with pnpm-lock.yaml
+       
+-----> Build
+       Running build
+       
+       > workspace@0.0.0 build /tmp/build_1975528a
+       > pnpm run typecheck && pnpm -r --if-present run build
+       
+       
+       > workspace@0.0.0 typecheck /tmp/build_1975528a
+       > pnpm run typecheck:libs && pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+       
+       
+       > workspace@0.0.0 typecheck:libs /tmp/build_1975528a
+       > tsc --build
+       
+       /tmp/build_1975528a/artifacts/panini-mundial:
+        ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/panini-mundial@0.0.0 typecheck: `tsc -p tsconfig.json --noEmit`
+       Exit status 2
+        ELIFECYCLE  Command failed with exit code 2.
+        ELIFECYCLE  Command failed with exit code 2.
+-----> Build failed
+       
+       We're sorry this build is failing! You can troubleshoot common issues here:
+       https://devcenter.heroku.com/articles/troubleshooting-node-deploys
+       
+       Some possible problems:
+       
+       - Dangerous semver range (>) in engines.node
+         https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version
+       
+       Love,
+       Heroku
+       
+ !     Push rejected, failed to compile Node.js app.
+ !     Push failed
