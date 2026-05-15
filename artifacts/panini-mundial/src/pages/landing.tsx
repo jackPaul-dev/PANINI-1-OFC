@@ -645,12 +645,14 @@ export default function Landing() {
             </div>
             <div>
               <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Pagamento Sicuro</p>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="bg-[#003087] text-white text-xs font-black px-2.5 py-1 rounded">PAYPAL</span>
-                <span className="bg-gray-700 text-white text-xs font-black px-2.5 py-1 rounded">BONIFICO</span>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className="bg-white text-gray-900 text-xs font-black px-2.5 py-1 rounded">VISA</span>
+                <span className="bg-white text-gray-900 text-xs font-black px-2.5 py-1 rounded">MASTERCARD</span>
+                <span className="bg-black text-white text-xs font-black px-2.5 py-1 rounded"> Apple Pay</span>
+                <span className="bg-white text-gray-800 text-xs font-black px-2.5 py-1 rounded">G Pay</span>
               </div>
               <p className="text-white/60 text-xs flex items-center gap-1.5">
-                <Lock className="w-3 h-3" /> Sito 100% sicuro · SSL attivo
+                <Lock className="w-3 h-3" /> Sito 100% sicuro · SSL attivo · Stripe
               </p>
             </div>
           </div>

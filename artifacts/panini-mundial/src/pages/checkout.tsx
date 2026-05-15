@@ -154,7 +154,7 @@ function StripePaymentForm({
       {!ready && (
         <div className="flex items-center justify-center py-10">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          <span className="ml-2 text-sm text-gray-400">A carregar métodos de pagamento…</span>
+          <span className="ml-2 text-sm text-gray-400">Caricamento metodi di pagamento…</span>
         </div>
       )}
 
@@ -684,7 +684,7 @@ export default function Checkout() {
                 ) : !clientSecret ? (
                   <div className="flex items-center justify-center py-12 gap-3 text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span className="text-sm">Inizializzazione pagamento sicuro…</span>
+                    <span className="text-sm">Inizializzazione pagamento sicuro in corso…</span>
                   </div>
                 ) : (
                   <Elements
