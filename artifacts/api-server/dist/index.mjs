@@ -74730,15 +74730,17 @@ var ordersTable = pgTable("orders", {
 
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?"
-  );
+var db = null;
+var pool = null;
+if (process.env.DATABASE_URL) {
+  pool = new Pool3({ connectionString: process.env.DATABASE_URL });
+  db = drizzle(pool, { schema: schema_exports });
 }
-var pool = new Pool3({ connectionString: process.env.DATABASE_URL });
-var db = drizzle(pool, { schema: schema_exports });
 
 // src/lib/orderStore.ts
+var memOrders = /* @__PURE__ */ new Map();
+var memByPaymentIntent = /* @__PURE__ */ new Map();
+var useDb = db !== null;
 function generateOrderId() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let id = "PAN-";
@@ -74764,59 +74766,94 @@ function rowToOrder(row) {
 }
 async function createOrder(data) {
   const orderId = generateOrderId();
-  const [row] = await db.insert(ordersTable).values({
+  if (useDb && db) {
+    const [row] = await db.insert(ordersTable).values({
+      orderId,
+      paymentIntentId: data.paymentIntentId,
+      customerEmail: data.customerEmail,
+      customerName: data.customerName,
+      address: data.address ?? "",
+      city: data.city ?? "",
+      postalCode: data.postalCode ?? "",
+      province: data.province ?? "",
+      country: data.country ?? "IT",
+      amount: data.amount,
+      items: data.items ?? [],
+      emails: []
+    }).returning();
+    return rowToOrder(row);
+  }
+  const order = {
+    ...data,
     orderId,
-    paymentIntentId: data.paymentIntentId,
-    customerEmail: data.customerEmail,
-    customerName: data.customerName,
-    address: data.address ?? "",
-    city: data.city ?? "",
-    postalCode: data.postalCode ?? "",
-    province: data.province ?? "",
-    country: data.country ?? "IT",
-    amount: data.amount,
-    items: data.items ?? [],
+    createdAt: (/* @__PURE__ */ new Date()).toISOString(),
     emails: []
-  }).returning();
-  return rowToOrder(row);
-}
-async function getOrder(orderId) {
-  const [row] = await db.select().from(ordersTable).where(eq(ordersTable.orderId, orderId)).limit(1);
-  return row ? rowToOrder(row) : void 0;
-}
-async function getOrderByPaymentIntent(piId) {
-  const [row] = await db.select().from(ordersTable).where(eq(ordersTable.paymentIntentId, piId)).limit(1);
-  return row ? rowToOrder(row) : void 0;
-}
-async function listOrders() {
-  const rows = await db.select().from(ordersTable).orderBy(ordersTable.createdAt);
-  return rows.map(rowToOrder).reverse();
+  };
+  memOrders.set(orderId, order);
+  memByPaymentIntent.set(data.paymentIntentId, orderId);
+  return order;
 }
 async function upsertOrderById(data) {
   const existing = await getOrder(data.orderId);
   if (existing) return existing;
-  const [row] = await db.insert(ordersTable).values({
-    orderId: data.orderId,
-    paymentIntentId: data.paymentIntentId,
-    customerEmail: data.customerEmail,
-    customerName: data.customerName,
-    address: data.address ?? "",
-    city: data.city ?? "",
-    postalCode: data.postalCode ?? "",
-    province: data.province ?? "",
-    country: data.country ?? "IT",
-    amount: data.amount,
-    items: data.items ?? [],
-    emails: [],
-    createdAt: data.createdAt ? new Date(data.createdAt) : /* @__PURE__ */ new Date()
-  }).returning();
-  return rowToOrder(row);
+  if (useDb && db) {
+    const [row] = await db.insert(ordersTable).values({
+      orderId: data.orderId,
+      paymentIntentId: data.paymentIntentId,
+      customerEmail: data.customerEmail,
+      customerName: data.customerName,
+      address: data.address ?? "",
+      city: data.city ?? "",
+      postalCode: data.postalCode ?? "",
+      province: data.province ?? "",
+      country: data.country ?? "IT",
+      amount: data.amount,
+      items: data.items ?? [],
+      emails: [],
+      createdAt: data.createdAt ? new Date(data.createdAt) : /* @__PURE__ */ new Date()
+    }).returning();
+    return rowToOrder(row);
+  }
+  const order = {
+    ...data,
+    createdAt: data.createdAt ?? (/* @__PURE__ */ new Date()).toISOString(),
+    emails: []
+  };
+  memOrders.set(data.orderId, order);
+  memByPaymentIntent.set(data.paymentIntentId, data.orderId);
+  return order;
+}
+async function getOrder(orderId) {
+  if (useDb && db) {
+    const [row] = await db.select().from(ordersTable).where(eq(ordersTable.orderId, orderId)).limit(1);
+    return row ? rowToOrder(row) : void 0;
+  }
+  return memOrders.get(orderId);
+}
+async function getOrderByPaymentIntent(piId) {
+  if (useDb && db) {
+    const [row] = await db.select().from(ordersTable).where(eq(ordersTable.paymentIntentId, piId)).limit(1);
+    return row ? rowToOrder(row) : void 0;
+  }
+  const id = memByPaymentIntent.get(piId);
+  return id ? memOrders.get(id) : void 0;
+}
+async function listOrders() {
+  if (useDb && db) {
+    const rows = await db.select().from(ordersTable).orderBy(ordersTable.createdAt);
+    return rows.map(rowToOrder).reverse();
+  }
+  return Array.from(memOrders.values()).reverse();
 }
 async function addEmailRecord(orderId, record) {
-  const existing = await getOrder(orderId);
-  if (!existing) return;
-  const updated = [...existing.emails, record];
-  await db.update(ordersTable).set({ emails: updated }).where(eq(ordersTable.orderId, orderId));
+  if (useDb && db) {
+    const existing = await getOrder(orderId);
+    if (!existing) return;
+    await db.update(ordersTable).set({ emails: [...existing.emails, record] }).where(eq(ordersTable.orderId, orderId));
+    return;
+  }
+  const order = memOrders.get(orderId);
+  if (order) order.emails.push(record);
 }
 
 // src/lib/emailTemplates.ts
