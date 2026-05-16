@@ -14,6 +14,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { Header } from "@/components/Header";
 import { kits } from "@/lib/kits";
+import { pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
 const stripePromise = loadStripe(STRIPE_PK);
@@ -299,11 +300,10 @@ export default function Checkout() {
           setIntentError(data.error);
         } else {
           setClientSecret(data.clientSecret);
-          (window as any).fbq?.("track", "InitiateCheckout", {
+          pixelInitiateCheckout({
+            content_ids: [kit.id],
             value: orderTotal,
             currency: "EUR",
-            content_ids: [kit.id],
-            content_type: "product",
             num_items: 1 + selectedBumps.size,
           });
         }
@@ -320,13 +320,15 @@ export default function Checkout() {
   const handlePaymentSuccess = (txId: string) => {
     setTransactionID(txId);
     setPaymentDone(true);
-    (window as any).fbq?.("track", "Purchase", {
-      value: orderTotal,
-      currency: "EUR",
-      content_ids: [kit.id, ...Array.from(selectedBumps)],
-      content_type: "product",
-      num_items: 1 + selectedBumps.size,
-    }, { eventID: txId });
+    pixelPurchase(
+      {
+        content_ids: [kit.id, ...Array.from(selectedBumps)],
+        value: orderTotal,
+        currency: "EUR",
+        num_items: 1 + selectedBumps.size,
+      },
+      txId
+    );
   };
 
   // ── Success screen ────────────────────────────────────────────────────────

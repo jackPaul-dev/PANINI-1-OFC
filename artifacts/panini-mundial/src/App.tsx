@@ -1,5 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Checkout from "@/pages/checkout";
 import Pressel from "@/pages/pressel";
+import { pixelPageView } from "@/lib/pixel";
 
 const queryClient = new QueryClient();
 
@@ -18,10 +19,24 @@ function ScrollToTop() {
   return null;
 }
 
+function PixelPageTracker() {
+  const [location] = useLocation();
+  const isFirst = useRef(true);
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    pixelPageView();
+  }, [location]);
+  return null;
+}
+
 function Router() {
   return (
     <>
       <ScrollToTop />
+      <PixelPageTracker />
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/checkout" component={Checkout} />

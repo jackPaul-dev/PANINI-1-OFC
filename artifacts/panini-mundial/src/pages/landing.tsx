@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ChevronRight, Star, CheckCircle, Truck, ShieldCheck, Lock, Award, Package, ShoppingBag } from "lucide-react";
 import { Header } from "@/components/Header";
 import { kits } from "@/lib/kits";
+import { pixelViewContent, pixelAddToCart } from "@/lib/pixel";
 
 const reviews = [
   {
@@ -74,7 +76,23 @@ const reviews = [
 export default function Landing() {
   const [, setLocation] = useLocation();
 
+  useEffect(() => {
+    pixelViewContent({
+      content_ids: ["panini-mundial-2026"],
+      content_name: "Panini Mondiale 2026 — Figurine",
+      value: kits[0]?.price ?? 29.9,
+      currency: "EUR",
+    });
+  }, []);
+
   const handleBuy = (kitId: string) => {
+    const kit = kits.find((k) => k.id === kitId);
+    pixelAddToCart({
+      content_ids: [kitId],
+      content_name: kit?.name ?? "Kit Panini",
+      value: kit?.price ?? 0,
+      currency: "EUR",
+    });
     setLocation(`/checkout?kit=${kitId}`);
   };
 

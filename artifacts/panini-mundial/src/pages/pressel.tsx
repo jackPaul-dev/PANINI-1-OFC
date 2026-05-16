@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ShieldCheck, Package, Truck, CheckCircle2 } from "lucide-react";
+import { pixelViewContent } from "@/lib/pixel";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -19,6 +20,13 @@ export default function Pressel() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    pixelViewContent({
+      content_ids: ["panini-mundial-2026-pressel"],
+      content_name: "Panini Mondiale 2026 — Pressel",
+      value: 29.9,
+      currency: "EUR",
+    });
+
     if (typeof window !== "undefined" && (window as any).ttq) {
       (window as any).ttq.track("ViewContent", {
         content_name: "Verifica Panini Mondiale 2026",
