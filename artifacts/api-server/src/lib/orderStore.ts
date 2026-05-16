@@ -1,31 +1,23 @@
-export interface EmailRecord {
-  day: number;
-  subject: string;
-  resendId: string | null;
-  status: "sent" | "scheduled" | "failed";
-  scheduledAt: string | null;
-  sentAt: string;
-}
+import { db, ordersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
+
+export type { EmailRecord } from "@workspace/db";
 
 export interface Order {
-  orderId: string;
-  paymentIntentId: string;
-  customerEmail: string;
-  customerName: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  province: string;
-  country: string;
-  amount: number;
-  items: string[];
-  createdAt: string;
-  emails: EmailRecord[];
+  orderId         : string;
+  paymentIntentId : string;
+  customerEmail   : string;
+  customerName    : string;
+  address         : string;
+  city            : string;
+  postalCode      : string;
+  province        : string;
+  country         : string;
+  amount          : number;
+  items           : string[];
+  createdAt       : string;
+  emails          : import("@workspace/db").EmailRecord[];
 }
-
-const orders = new Map<string, Order>();
-const byPaymentIntent = new Map<string, string>();
-const byEmail = new Map<string, string>();
 
 function generateOrderId(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -34,57 +26,113 @@ function generateOrderId(): string {
   return id;
 }
 
-export function createOrder(data: Omit<Order, "orderId" | "createdAt" | "emails">): Order {
-  const orderId = generateOrderId();
-  const order: Order = {
-    ...data,
-    orderId,
-    createdAt: new Date().toISOString(),
-    emails: [],
+function rowToOrder(row: typeof ordersTable.$inferSelect): Order {
+  return {
+    orderId         : row.orderId,
+    paymentIntentId : row.paymentIntentId,
+    customerEmail   : row.customerEmail,
+    customerName    : row.customerName,
+    address         : row.address,
+    city            : row.city,
+    postalCode      : row.postalCode,
+    province        : row.province,
+    country         : row.country,
+    amount          : row.amount,
+    items           : row.items as string[],
+    createdAt       : row.createdAt.toISOString(),
+    emails          : (row.emails ?? []) as import("@workspace/db").EmailRecord[],
   };
-  orders.set(orderId, order);
-  if (data.paymentIntentId) byPaymentIntent.set(data.paymentIntentId, orderId);
-  byEmail.set(data.customerEmail.toLowerCase(), orderId);
-  return order;
 }
 
-export function upsertOrder(data: Omit<Order, "emails"> & { emails?: EmailRecord[] }): Order {
-  const existing = orders.get(data.orderId);
-  if (existing) {
-    const updated = { ...existing, ...data, emails: data.emails ?? existing.emails };
-    orders.set(data.orderId, updated);
-    return updated;
-  }
-  const order: Order = { ...data, emails: data.emails ?? [] };
-  orders.set(data.orderId, order);
-  if (data.paymentIntentId) byPaymentIntent.set(data.paymentIntentId, data.orderId);
-  byEmail.set(data.customerEmail.toLowerCase(), data.orderId);
-  return order;
+export async function createOrder(
+  data: Omit<Order, "orderId" | "createdAt" | "emails">
+): Promise<Order> {
+  const orderId = generateOrderId();
+  const [row] = await db.insert(ordersTable).values({
+    orderId,
+    paymentIntentId : data.paymentIntentId,
+    customerEmail   : data.customerEmail,
+    customerName    : data.customerName,
+    address         : data.address ?? "",
+    city            : data.city ?? "",
+    postalCode      : data.postalCode ?? "",
+    province        : data.province ?? "",
+    country         : data.country ?? "IT",
+    amount          : data.amount,
+    items           : data.items ?? [],
+    emails          : [],
+  }).returning();
+  return rowToOrder(row);
 }
 
-export function getOrder(orderId: string): Order | undefined {
-  return orders.get(orderId);
+export async function getOrder(orderId: string): Promise<Order | undefined> {
+  const [row] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.orderId, orderId))
+    .limit(1);
+  return row ? rowToOrder(row) : undefined;
 }
 
-export function getOrderByPaymentIntent(piId: string): Order | undefined {
-  const id = byPaymentIntent.get(piId);
-  return id ? orders.get(id) : undefined;
+export async function getOrderByPaymentIntent(piId: string): Promise<Order | undefined> {
+  const [row] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.paymentIntentId, piId))
+    .limit(1);
+  return row ? rowToOrder(row) : undefined;
 }
 
-export function getOrderByEmail(email: string): Order | undefined {
-  const id = byEmail.get(email.toLowerCase());
-  return id ? orders.get(id) : undefined;
+export async function getOrderByEmail(email: string): Promise<Order | undefined> {
+  const [row] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.customerEmail, email.toLowerCase()))
+    .limit(1);
+  return row ? rowToOrder(row) : undefined;
 }
 
-export function listOrders(): Order[] {
-  return Array.from(orders.values()).sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+export async function listOrders(): Promise<Order[]> {
+  const rows = await db
+    .select()
+    .from(ordersTable)
+    .orderBy(ordersTable.createdAt);
+  return rows.map(rowToOrder).reverse();
 }
 
-export function addEmailRecord(orderId: string, record: EmailRecord): void {
-  const order = orders.get(orderId);
-  if (order) {
-    order.emails.push(record);
-  }
+/* Upsert: insert order with a specific ID (used for test / demo orders) */
+export async function upsertOrderById(
+  data: Omit<Order, "createdAt" | "emails"> & { createdAt?: string }
+): Promise<Order> {
+  const existing = await getOrder(data.orderId);
+  if (existing) return existing;
+  const [row] = await db.insert(ordersTable).values({
+    orderId         : data.orderId,
+    paymentIntentId : data.paymentIntentId,
+    customerEmail   : data.customerEmail,
+    customerName    : data.customerName,
+    address         : data.address ?? "",
+    city            : data.city ?? "",
+    postalCode      : data.postalCode ?? "",
+    province        : data.province ?? "",
+    country         : data.country ?? "IT",
+    amount          : data.amount,
+    items           : data.items ?? [],
+    emails          : [],
+    createdAt       : data.createdAt ? new Date(data.createdAt) : new Date(),
+  }).returning();
+  return rowToOrder(row);
+}
+
+export async function addEmailRecord(
+  orderId: string,
+  record: import("@workspace/db").EmailRecord
+): Promise<void> {
+  const existing = await getOrder(orderId);
+  if (!existing) return;
+  const updated = [...existing.emails, record];
+  await db
+    .update(ordersTable)
+    .set({ emails: updated })
+    .where(eq(ordersTable.orderId, orderId));
 }

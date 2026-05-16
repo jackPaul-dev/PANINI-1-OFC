@@ -4,9 +4,9 @@ import {
   createOrder,
   getOrder,
   getOrderByPaymentIntent,
+  upsertOrderById,
   listOrders,
   addEmailRecord,
-  upsertOrder,
   type Order,
 } from "../lib/orderStore.js";
 import {
@@ -24,14 +24,14 @@ function getResend(): Resend {
   return new Resend(key);
 }
 
-const FROM = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
-const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.herokuapp.com").replace(/\/$/, "");
+const FROM         = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
+const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
 
 const EMAIL_DAYS = [
-  { day: 0,  offsetHours: 0 },
-  { day: 1,  offsetHours: 24 },
-  { day: 2,  offsetHours: 48 },
-  { day: 3,  offsetHours: 72 },
+  { day: 0,  offsetHours: 0   },
+  { day: 1,  offsetHours: 24  },
+  { day: 2,  offsetHours: 48  },
+  { day: 3,  offsetHours: 72  },
   { day: 5,  offsetHours: 120 },
   { day: 6,  offsetHours: 144 },
   { day: 7,  offsetHours: 168 },
@@ -60,24 +60,24 @@ const BUILDERS = [
   emailDayNonConsegnato, emailDayDiNuovoInRotta,
 ];
 
-/* Step index matching each EMAIL_DAYS entry — used in tracking URL */
+/* Step index matching each EMAIL_DAYS entry — controls timeline position in tracking URL */
 const EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
 
 async function sendEmailSequence(order: Order) {
   const resend = getResend();
   const baseData = {
-    customerName: order.customerName,
+    customerName : order.customerName,
     customerEmail: order.customerEmail,
-    orderId: order.orderId,
-    amount: order.amount.toFixed(2).replace(".", ","),
-    items: order.items,
-    city: order.city,
-    createdAt: order.createdAt,
+    orderId      : order.orderId,
+    amount       : order.amount.toFixed(2).replace(".", ","),
+    items        : order.items,
+    city         : order.city,
+    createdAt    : order.createdAt,
   };
 
   for (let i = 0; i < EMAIL_DAYS.length; i++) {
     const { day, offsetHours } = EMAIL_DAYS[i];
-    const step = EMAIL_STEPS[i] ?? 9;
+    const step        = EMAIL_STEPS[i] ?? 9;
     const trackingUrl = `${TRACKING_BASE}/seguimiento?orderId=${order.orderId}&step=${step}`;
     const data: EmailData = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS[i](data);
@@ -93,14 +93,14 @@ async function sendEmailSequence(order: Order) {
       if (scheduledAt) payload.scheduledAt = scheduledAt;
       const result = await resend.emails.send(payload as Parameters<Resend["emails"]["send"]>[0]);
       resendId = result.data?.id ?? null;
-      status = scheduledAt ? "scheduled" : "sent";
+      status   = scheduledAt ? "scheduled" : "sent";
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`Failed to send day ${day} email:`, msg);
       status = "failed";
     }
 
-    addEmailRecord(order.orderId, {
+    await addEmailRecord(order.orderId, {
       day,
       subject,
       resendId,
@@ -111,7 +111,7 @@ async function sendEmailSequence(order: Order) {
   }
 }
 
-/* POST /api/emails/trigger — called by frontend after successful payment */
+/* ── POST /api/emails/trigger — called by frontend after successful Stripe payment ── */
 router.post("/emails/trigger", async (req, res) => {
   try {
     const {
@@ -129,107 +129,127 @@ router.post("/emails/trigger", async (req, res) => {
       return;
     }
 
-    const existing = getOrderByPaymentIntent(paymentIntentId);
+    const existing = await getOrderByPaymentIntent(paymentIntentId);
     if (existing) {
       res.json({ orderId: existing.orderId, message: "Already triggered" });
       return;
     }
 
-    const order = createOrder({
+    const order = await createOrder({
       paymentIntentId, customerEmail, customerName,
-      address, city, postalCode, province,
-      country: country || "IT", amount, items,
+      address   : address    ?? "",
+      city      : city       ?? "",
+      postalCode: postalCode ?? "",
+      province  : province   ?? "",
+      country   : country    || "IT",
+      amount,
+      items     : items ?? [],
     });
 
     sendEmailSequence(order).catch(console.error);
 
-    res.json({ orderId: order.orderId, message: "Sequenza email avviata" });
+    res.json({ orderId: order.orderId, emailsScheduled: EMAIL_DAYS.length, message: "Sequenza email avviata" });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: msg });
   }
 });
 
-/* GET /api/emails/orders */
-router.get("/emails/orders", (_req, res) => {
-  res.json(listOrders());
+/* ── GET /api/emails/orders ── */
+router.get("/emails/orders", async (_req, res) => {
+  try {
+    const orders = await listOrders();
+    res.json(orders);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
-/* GET /api/orders/:orderId */
-router.get("/orders/:orderId", (req, res) => {
-  const order = getOrder(req.params.orderId);
-  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
-  res.json({
-    orderId: order.orderId,
-    customerName: order.customerName,
-    city: order.city,
-    createdAt: order.createdAt,
-    amount: order.amount,
-    items: order.items,
-    emails: order.emails,
-  });
+/* ── GET /api/orders/:orderId — used by the tracking page ── */
+router.get("/orders/:orderId", async (req, res) => {
+  try {
+    const order = await getOrder(req.params.orderId.toUpperCase());
+    if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+    res.json({
+      orderId     : order.orderId,
+      customerName: order.customerName,
+      city        : order.city,
+      createdAt   : order.createdAt,
+      amount      : order.amount,
+      items       : order.items,
+      emails      : order.emails,
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
-/* POST /api/emails/test — sends all emails immediately to a test address */
+/* ── POST /api/emails/test — sends all 12 template variants immediately ── */
 router.post("/emails/test", async (req, res) => {
   try {
     const { email } = req.body as { email: string };
     if (!email) { res.status(400).json({ error: "Missing email" }); return; }
 
-    const resend = getResend();
-    const now = new Date().toISOString();
+    const resend      = getResend();
+    const now         = new Date().toISOString();
     const testOrderId = "PAN-DEMO7X";
-    const testItems = [
+    const testItems   = [
       "1x Kit Campione — 1 Album + 2 Box (60 bustine)",
       "+100 bustine · ~500 figurine",
     ];
 
-    upsertOrder({
-      orderId: testOrderId,
-      paymentIntentId: "pi_test",
-      customerEmail: email,
-      customerName: "Marco Rossi",
-      address: "Via Roma 1",
-      city: "Milano",
-      postalCode: "20121",
-      province: "MI",
-      country: "IT",
-      amount: 94.99,
-      items: testItems,
-      createdAt: now,
-      emails: [],
+    /* Persist test order in DB with known ID so the tracking link always resolves */
+    await upsertOrderById({
+      orderId        : testOrderId,
+      paymentIntentId: "pi_test_demo",
+      customerEmail  : email,
+      customerName   : "Marco Rossi",
+      address        : "Via Roma 1",
+      city           : "Milano",
+      postalCode     : "20121",
+      province       : "MI",
+      country        : "IT",
+      amount         : 94.99,
+      items          : testItems,
+      createdAt      : now,
     });
 
+    /* For test emails, always link to this running server so the order is found */
+    const devDomain   = process.env.REPLIT_DEV_DOMAIN;
+    const testBase    = devDomain ? `https://${devDomain}` : TRACKING_BASE;
+
     const baseTestData = {
-      customerName: "Marco Rossi",
+      customerName : "Marco Rossi",
       customerEmail: email,
-      orderId: testOrderId,
-      amount: "94,99",
-      items: testItems,
-      city: "Milano",
-      createdAt: now,
+      orderId      : testOrderId,
+      amount       : "94,99",
+      items        : testItems,
+      city         : "Milano",
+      createdAt    : now,
     };
 
     const builders = [
-      { fn: emailDay0,              label: "Giorno 0 — Conferma",          step: 0 },
-      { fn: emailDay1,              label: "Giorno 1 — In viaggio",         step: 1 },
-      { fn: emailDay2,              label: "Giorno 2 — Centro distribuzione",step: 2 },
-      { fn: emailDay3,              label: "Giorno 3 — In consegna oggi",   step: 3 },
-      { fn: emailDay5,              label: "Giorno 5 — Ritardo",            step: 4 },
-      { fn: emailDay6,              label: "Giorno 6 — Localizzazione",     step: 5 },
-      { fn: emailDay7,              label: "Giorno 7 — Controllo doganale", step: 6 },
-      { fn: emailDay8,              label: "Giorno 8 — Verifica indirizzo", step: 7 },
-      { fn: emailDay9,              label: "Giorno 9 — Rilanciato",         step: 8 },
-      { fn: emailDay10,             label: "Giorno 10 — Imminente",         step: 9 },
-      { fn: emailDayNonConsegnato,  label: "Giorno 11 — Non consegnato",    step: 9 },
-      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta", step: 9 },
+      { fn: emailDay0,              label: "Giorno 0 — Conferma",           step: 0 },
+      { fn: emailDay1,              label: "Giorno 1 — In viaggio",          step: 1 },
+      { fn: emailDay2,              label: "Giorno 2 — Centro distribuzione", step: 2 },
+      { fn: emailDay3,              label: "Giorno 3 — In consegna oggi",    step: 3 },
+      { fn: emailDay5,              label: "Giorno 5 — Ritardo",             step: 4 },
+      { fn: emailDay6,              label: "Giorno 6 — Localizzazione",      step: 5 },
+      { fn: emailDay7,              label: "Giorno 7 — Controllo doganale",  step: 6 },
+      { fn: emailDay8,              label: "Giorno 8 — Verifica indirizzo",  step: 7 },
+      { fn: emailDay9,              label: "Giorno 9 — Rilanciato",          step: 8 },
+      { fn: emailDay10,             label: "Giorno 10 — Imminente",          step: 9 },
+      { fn: emailDayNonConsegnato,  label: "Giorno 11 — Non consegnato",     step: 9 },
+      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta",  step: 9 },
     ];
 
     const results: { day: string; id: string | null; status: string }[] = [];
     for (const { fn, label, step } of builders) {
       const testData: EmailData = {
         ...baseTestData,
-        trackingUrl: `${TRACKING_BASE}/seguimiento?orderId=${testOrderId}&step=${step}`,
+        trackingUrl: `${testBase}/seguimiento?orderId=${testOrderId}&step=${step}`,
       };
       const { subject, html } = fn(testData);
       try {
