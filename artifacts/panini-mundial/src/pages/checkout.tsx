@@ -264,6 +264,10 @@ export default function Checkout() {
             kitId: string;
             orderTotal: number;
             bumps: string[];
+            formData?: {
+              email: string; nome: string; morada: string; numero: string;
+              localidade: string; codigoPostal: string; distrito: string;
+            };
           };
           pixelPurchase(
             {
@@ -274,6 +278,35 @@ export default function Checkout() {
             },
             paymentIntentId
           );
+          // Trigger email sequence after 3DS redirect
+          if (order.formData?.email) {
+            const resolvedKit = kits.find(k => k.id === order.kitId) || kits[2];
+            const bumpsLabels = [
+              { id: "bump50", label: "+50 bustine · ~250 figurine" },
+              { id: "bump100", label: "+100 bustine · ~500 figurine" },
+              { id: "bump250", label: "+250 bustine · ~1250 figurine" },
+            ];
+            const items = [
+              resolvedKit.name,
+              ...order.bumps.map(bId => bumpsLabels.find(b => b.id === bId)?.label ?? bId),
+            ];
+            fetch("/api/emails/trigger", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                paymentIntentId,
+                customerEmail: order.formData.email,
+                customerName: order.formData.nome,
+                address: `${order.formData.morada} ${order.formData.numero}`.trim(),
+                city: order.formData.localidade,
+                postalCode: order.formData.codigoPostal,
+                province: order.formData.distrito,
+                country: "IT",
+                amount: order.orderTotal,
+                items,
+              }),
+            }).catch(() => {});
+          }
         } catch {
           // ignore parse error
         }
@@ -344,6 +377,7 @@ export default function Checkout() {
               kitId: kit.id,
               orderTotal,
               bumps: Array.from(selectedBumps),
+              formData,
             })
           );
           pixelInitiateCheckout({
@@ -375,6 +409,25 @@ export default function Checkout() {
       },
       txId
     );
+    // Trigger email sequence
+    const selectedBumpsList = orderBumps.filter(b => selectedBumps.has(b.id));
+    const emailItems = [kit.name, ...selectedBumpsList.map(b => b.label)];
+    fetch("/api/emails/trigger", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paymentIntentId: txId,
+        customerEmail: formData.email,
+        customerName: formData.nome,
+        address: `${formData.morada} ${formData.numero}`.trim(),
+        city: formData.localidade,
+        postalCode: formData.codigoPostal,
+        province: formData.distrito,
+        country: "IT",
+        amount: orderTotal,
+        items: emailItems,
+      }),
+    }).catch(() => {});
   };
 
   // ── Success screen ────────────────────────────────────────────────────────
