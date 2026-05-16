@@ -7,6 +7,8 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Checkout from "@/pages/checkout";
 import Pressel from "@/pages/pressel";
+import Seguimiento from "@/pages/seguimiento";
+import EmailPanel from "@/pages/emailpanel";
 import { pixelPageView } from "@/lib/pixel";
 
 const queryClient = new QueryClient();
@@ -41,6 +43,8 @@ function Router() {
         <Route path="/" component={Landing} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/pressel" component={Pressel} />
+        <Route path="/seguimiento" component={Seguimiento} />
+        <Route path="/email" component={EmailPanel} />
         <Route component={NotFound} />
       </Switch>
     </>
