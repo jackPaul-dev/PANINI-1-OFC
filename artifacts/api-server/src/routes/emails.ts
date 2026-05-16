@@ -216,9 +216,7 @@ router.post("/emails/test", async (req, res) => {
       createdAt      : now,
     });
 
-    /* For test emails, always link to this running server so the order is found */
-    const devDomain   = process.env.REPLIT_DEV_DOMAIN;
-    const testBase    = devDomain ? `https://${devDomain}` : TRACKING_BASE;
+    const testBase = TRACKING_BASE;
 
     const baseTestData = {
       customerName : "Marco Rossi",

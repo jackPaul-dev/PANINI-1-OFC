@@ -75638,8 +75638,7 @@ router3.post("/emails/test", async (req, res) => {
       items: testItems,
       createdAt: now
     });
-    const devDomain = process.env.REPLIT_DEV_DOMAIN;
-    const testBase = devDomain ? `https://${devDomain}` : TRACKING_BASE;
+    const testBase = TRACKING_BASE;
     const baseTestData = {
       customerName: "Marco Rossi",
       customerEmail: email,
