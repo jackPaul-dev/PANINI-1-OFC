@@ -248,6 +248,43 @@ export default function Checkout() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [step]);
 
+  // Detect Stripe 3D Secure redirect return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectStatus = params.get("redirect_status");
+    const paymentIntentId = params.get("payment_intent");
+
+    if (redirectStatus === "succeeded" && paymentIntentId) {
+      const raw = sessionStorage.getItem("panini_pending_order");
+      sessionStorage.removeItem("panini_pending_order");
+
+      if (raw) {
+        try {
+          const order = JSON.parse(raw) as {
+            kitId: string;
+            orderTotal: number;
+            bumps: string[];
+          };
+          pixelPurchase(
+            {
+              content_ids: [order.kitId, ...order.bumps],
+              value: order.orderTotal,
+              currency: "EUR",
+              num_items: 1 + order.bumps.length,
+            },
+            paymentIntentId
+          );
+        } catch {
+          // ignore parse error
+        }
+      }
+
+      setTransactionID(paymentIntentId);
+      setPaymentDone(true);
+      window.history.replaceState({}, "", `/checkout?kit=${kitId}`);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const orderBumps = [
     { id: "bump50", label: "+50 bustine · ~250 figurine", desc: "Sconto pre-vendita con spedizione gratuita in Italia.", price: 30, oldPrice: 40, img: "/assets/caixa1.jpg", badge: null },
     { id: "bump100", label: "+100 bustine · ~500 figurine", desc: "L'equilibrio preferito dai collezionisti — pre-vendita esclusiva.", price: 55, oldPrice: 125, img: "/assets/caixa2.png", badge: { text: "PIÙ VENDUTO", cls: "bg-red-600 text-white" } },
@@ -300,6 +337,15 @@ export default function Checkout() {
           setIntentError(data.error);
         } else {
           setClientSecret(data.clientSecret);
+          // Save order data in case Stripe 3DS redirects the page
+          sessionStorage.setItem(
+            "panini_pending_order",
+            JSON.stringify({
+              kitId: kit.id,
+              orderTotal,
+              bumps: Array.from(selectedBumps),
+            })
+          );
           pixelInitiateCheckout({
             content_ids: [kit.id],
             value: orderTotal,
