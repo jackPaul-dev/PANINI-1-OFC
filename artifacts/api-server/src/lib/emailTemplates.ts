@@ -9,6 +9,25 @@ export interface EmailData {
   createdAt: string;
 }
 
+const ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.herokuapp.com").replace(/\/$/, "");
+const LOGO_URL   = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
+
+/* Brand palette — matches the funnel */
+const C = {
+  burgundy : "#6b0f1a",
+  burgundyD: "#520c14",
+  green    : "#16a34a",
+  greenD   : "#15803d",
+  amber    : "#f5a623",
+  white    : "#ffffff",
+  offWhite : "#f9f6f4",
+  gray50   : "#f7f7f7",
+  gray200  : "#e8e8e8",
+  gray400  : "#999999",
+  gray600  : "#555555",
+  gray800  : "#222222",
+} as const;
+
 const STEPS = [
   { day: 0,  label: "Conferma dell'ordine",         sublabel: "Ordine elaborato" },
   { day: 1,  label: "Ordine in viaggio",             sublabel: "In transito" },
@@ -31,6 +50,7 @@ function buildEmailTimeline(activeStepIndex: number, createdAt: string): string 
   const base = new Date(createdAt).getTime();
   const visibleCount = Math.max(5, activeStepIndex + 1);
   let rows = "";
+
   STEPS.slice(0, visibleCount).forEach((step, i) => {
     const done   = i < activeStepIndex;
     const active = i === activeStepIndex;
@@ -38,46 +58,49 @@ function buildEmailTimeline(activeStepIndex: number, createdAt: string): string 
     const isLast = i === visibleCount - 1;
 
     const dotStyle = done
-      ? `width:24px;height:24px;border-radius:50%;background:#111111;color:#ffffff;font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:24px;`
+      ? `width:22px;height:22px;border-radius:50%;background:${C.green};color:#fff;font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:22px;`
       : active
-      ? `width:20px;height:20px;border-radius:50%;background:#ffffff;color:#111111;font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:20px;border:2px solid #111111;`
-      : `width:24px;height:24px;border-radius:50%;background:#e0e0e0;color:#aaaaaa;font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:24px;`;
-    const dotText  = done ? "&#10003;" : String(i + 1);
-    const lineBg   = done ? "#111111" : "#e5e5e5";
-    const labelW   = done || active ? "600" : "400";
-    const labelColor = done || active ? "#111111" : "#bbbbbb";
-    const dateColor  = done ? "#555555" : active ? "#111111" : "#cccccc";
-    const statusText = done ? `Completato`
-                     : active ? `<strong style="color:#111111;">&#9654; In corso</strong>`
-                     : `Previsto: ${fmtDate(stepDate)}`;
+      ? `width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid ${C.burgundy};color:${C.burgundy};font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:20px;`
+      : `width:22px;height:22px;border-radius:50%;background:#e8e8e8;color:#aaa;font-family:Arial,sans-serif;font-size:9px;font-weight:700;text-align:center;line-height:22px;`;
+    const dotText   = done ? "&#10003;" : String(i + 1);
+    const lineBg    = done ? C.green : "#e5e5e5";
+    const labelW    = done || active ? "700" : "400";
+    const labelColor = done ? C.green : active ? C.burgundy : "#c0c0c0";
+    const dateColor  = done ? C.gray600 : active ? C.burgundy : "#cccccc";
+    const statusText = done
+      ? `<span style="color:${C.green};font-weight:600;">&#10003; Completato</span>`
+      : active
+      ? `<strong style="color:${C.burgundy};">&#9654; In corso — ${step.sublabel}</strong>`
+      : `Previsto: ${fmtDate(stepDate)}`;
 
     rows += `
     <tr>
-      <td width="28" valign="top">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="width:28px;">
+      <td width="30" valign="top">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="width:30px;">
           <tr><td align="center"><div style="${dotStyle}">${dotText}</div></td></tr>
-          ${!isLast ? `<tr><td align="center" style="padding:1px 0;"><div style="width:1px;height:26px;background:${lineBg};margin:0 auto;"></div></td></tr>` : ""}
+          ${!isLast ? `<tr><td align="center" style="padding:1px 0;"><div style="width:2px;height:26px;background:${lineBg};margin:0 auto;border-radius:1px;"></div></td></tr>` : ""}
         </table>
       </td>
-      <td style="padding:3px 0 ${isLast ? "0" : "24px"} 14px;">
-        <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;font-weight:${labelW};color:${labelColor};text-transform:uppercase;letter-spacing:0.1em;">${step.label}</p>
-        <p style="margin:3px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:${dateColor};">${statusText}</p>
+      <td style="padding:2px 0 ${isLast ? "0" : "22px"} 14px;">
+        <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;font-weight:${labelW};color:${labelColor};text-transform:uppercase;letter-spacing:0.08em;">${step.label}</p>
+        <p style="margin:4px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:${dateColor};line-height:1.4;">${statusText}</p>
       </td>
     </tr>`;
   });
+
   return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${rows}</table>`;
 }
 
 function buildProductRows(items: string[]): string {
   return items.map(item => `
     <tr>
-      <td style="padding:11px 0;border-bottom:1px solid #f0f0f0;">
+      <td style="padding:10px 0;border-bottom:1px solid #f0ebe8;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
           <tr>
-            <td width="6" valign="top" style="padding-top:4px;">
-              <div style="width:4px;height:4px;background:#111;border-radius:50%;"></div>
+            <td width="8" valign="top" style="padding-top:5px;">
+              <div style="width:5px;height:5px;background:${C.amber};border-radius:50%;"></div>
             </td>
-            <td style="padding-left:10px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:12px;color:#222222;line-height:1.4;">${item}</td>
+            <td style="padding-left:10px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:12px;color:${C.gray800};line-height:1.5;">${item}</td>
           </tr>
         </table>
       </td>
@@ -111,60 +134,37 @@ function shell(opts: {
 <meta name="color-scheme" content="light">
 <title>${opts.preheader}</title>
 </head>
-<body style="margin:0;padding:0;background:#efefef;-webkit-text-size-adjust:100%;">
-<div style="display:none;font-size:1px;max-height:0;overflow:hidden;color:#efefef;">${opts.preheader}</div>
+<body style="margin:0;padding:0;background:#f0ece8;-webkit-text-size-adjust:100%;">
+<div style="display:none;font-size:1px;max-height:0;overflow:hidden;color:#f0ece8;">${opts.preheader}</div>
 
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#efefef">
-<tr><td align="center" style="padding:36px 12px 48px;">
-  <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #e0e0e0;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#f0ece8">
+<tr><td align="center" style="padding:32px 12px 48px;">
+  <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:2px;overflow:hidden;box-shadow:0 2px 12px rgba(107,15,26,0.10);">
 
-    <!-- HEADER -->
+    <!-- ━━━ BURGUNDY HEADER ━━━ -->
     <tr>
-      <td style="background:#000000;padding:0;">
+      <td style="background:${C.burgundy};padding:0;">
+        <!-- Top gold accent line -->
+        <div style="height:4px;background:linear-gradient(90deg,${C.amber},#d4880a,${C.amber});"></div>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+          <!-- Logo -->
           <tr>
-            <td style="padding:22px 40px 16px;text-align:center;">
-              <span style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:21px;font-weight:800;color:#ffffff;letter-spacing:0.3em;">PANINI</span>
+            <td align="center" style="padding:24px 40px 18px;">
+              <img src="${LOGO_URL}"
+                   alt="Panini"
+                   width="140"
+                   style="max-width:140px;height:auto;display:block;border:0;"
+              />
             </td>
           </tr>
+          <!-- Badge -->
           <tr>
-            <td style="padding:0 40px 20px;text-align:center;border-bottom:1px solid #282828;">
-              <span style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;color:#999999;letter-spacing:0.25em;text-transform:uppercase;">${opts.badgeLabel}</span>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- ORDER CODE HERO -->
-    <tr>
-      <td style="background:#111111;padding:28px 40px;text-align:center;border-bottom:3px solid #000;">
-        <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#777777;text-transform:uppercase;letter-spacing:0.22em;">Codice ordine</p>
-        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:0.18em;">${opts.orderId}</p>
-        <p style="margin:8px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#555555;">${orderDate}</p>
-      </td>
-    </tr>
-
-    <!-- GREETING -->
-    <tr>
-      <td style="padding:32px 40px 24px;border-bottom:1px solid #ebebeb;">
-        <h1 style="margin:0 0 14px;font-family:'Times New Roman',Georgia,serif;font-size:26px;font-weight:400;color:#111111;line-height:1.2;">${opts.headline}</h1>
-        <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;color:#444444;line-height:1.7;">
-          Ciao <strong style="color:#111111;">${firstName}</strong>, ti confermiamo che il tuo ordine è stato ricevuto ed è in elaborazione.
-        </p>
-        ${opts.bodyExtra ? `<div style="margin-top:16px;">${opts.bodyExtra}</div>` : ""}
-        <!-- Customer info -->
-        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:20px;border:1px solid #e8e8e8;background:#fafafa;">
-          <tr>
-            <td style="padding:12px 20px;">
-              <table role="presentation" cellspacing="0" cellpadding="0">
+            <td align="center" style="padding:0 40px 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" style="display:inline-table;">
                 <tr>
-                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;padding-right:20px;">Cliente</td>
-                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:#111111;font-weight:600;">${opts.customerName}</td>
-                </tr>
-                <tr>
-                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;padding-right:20px;padding-top:4px;">Email</td>
-                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:#555555;padding-top:4px;">${opts.customerEmail}</td>
+                  <td style="background:rgba(255,255,255,0.12);border-radius:20px;padding:5px 18px;">
+                    <span style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:0.22em;text-transform:uppercase;">${opts.badgeLabel}</span>
+                  </td>
                 </tr>
               </table>
             </td>
@@ -173,19 +173,57 @@ function shell(opts: {
       </td>
     </tr>
 
-    <!-- PRODUCTS -->
+    <!-- ━━━ ORDER CODE HERO ━━━ -->
+    <tr>
+      <td style="background:#fff8f3;padding:28px 40px;text-align:center;border-bottom:2px solid ${C.amber};">
+        <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Codice ordine</p>
+        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:700;color:${C.burgundy};letter-spacing:0.18em;">${opts.orderId}</p>
+        <p style="margin:8px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:${C.gray400};">${orderDate}</p>
+      </td>
+    </tr>
+
+    <!-- ━━━ GREETING ━━━ -->
+    <tr>
+      <td style="padding:32px 40px 24px;border-bottom:1px solid #f0ebe8;">
+        <h1 style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;color:${C.green};text-transform:uppercase;letter-spacing:0.15em;">Panini Italia · FIFA World Cup 26™</h1>
+        <h2 style="margin:0 0 16px;font-family:'Times New Roman',Georgia,serif;font-size:26px;font-weight:400;color:${C.burgundy};line-height:1.2;">${opts.headline}</h2>
+        <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;color:#444;line-height:1.75;">
+          Ciao <strong style="color:${C.burgundy};">${firstName}</strong>, ti confermiamo che il tuo ordine è stato ricevuto ed è in elaborazione.
+        </p>
+        ${opts.bodyExtra ? `<div style="margin-top:18px;">${opts.bodyExtra}</div>` : ""}
+        <!-- Customer pill -->
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:20px;border:1px solid #ecddd8;background:#fdf8f6;border-radius:4px;">
+          <tr>
+            <td style="padding:12px 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;padding-right:20px;">Cliente</td>
+                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:${C.burgundy};font-weight:700;">${opts.customerName}</td>
+                </tr>
+                <tr>
+                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;padding-right:20px;padding-top:5px;">Email</td>
+                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:${C.gray600};padding-top:5px;">${opts.customerEmail}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- ━━━ PRODUCTS ━━━ -->
     ${opts.items.length > 0 ? `
     <tr>
-      <td style="padding:28px 40px;border-bottom:1px solid #ebebeb;">
-        <p style="margin:0 0 16px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#999999;text-transform:uppercase;letter-spacing:0.2em;">Articoli dell'ordine</p>
+      <td style="padding:26px 40px;border-bottom:1px solid #f0ebe8;">
+        <p style="margin:0 0 14px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Articoli dell'ordine</p>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
           ${buildProductRows(opts.items)}
           <tr>
-            <td style="padding:16px 0 0;border-top:1px solid #e5e5e5;">
+            <td style="padding:16px 0 0;border-top:2px solid ${C.amber};">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:#777777;">Totale pagato (IVA incl.)</td>
-                  <td align="right" style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:17px;font-weight:700;color:#111111;">€ ${opts.amount}</td>
+                  <td style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:${C.gray400};">Totale pagato (IVA incl.)</td>
+                  <td align="right" style="font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:20px;font-weight:800;color:${C.burgundy};">€ ${opts.amount}</td>
                 </tr>
               </table>
             </td>
@@ -194,30 +232,43 @@ function shell(opts: {
       </td>
     </tr>` : ""}
 
-    <!-- TIMELINE -->
+    <!-- ━━━ TIMELINE ━━━ -->
     <tr>
-      <td style="padding:28px 40px 32px;border-bottom:1px solid #ebebeb;">
-        <p style="margin:0 0 20px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#999999;text-transform:uppercase;letter-spacing:0.2em;">Stato della tua spedizione</p>
+      <td style="padding:26px 40px 32px;border-bottom:1px solid #f0ebe8;background:#fdfaf8;">
+        <p style="margin:0 0 20px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Stato della tua spedizione</p>
         ${buildEmailTimeline(opts.activeStep, opts.createdAt)}
       </td>
     </tr>
 
-    <!-- CTA -->
+    <!-- ━━━ CTA ━━━ -->
     <tr>
-      <td style="padding:36px 40px;text-align:center;border-bottom:1px solid #ebebeb;">
-        <a href="${opts.trackingUrl}" target="_blank" style="display:inline-block;background-color:#111111;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;padding:16px 40px;border:2px solid #111111;cursor:pointer;">${opts.ctaLabel}</a>
+      <td style="padding:36px 40px;text-align:center;border-bottom:1px solid #f0ebe8;">
+        <a href="${opts.trackingUrl}" target="_blank"
+           style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:16px 44px;border-radius:4px;letter-spacing:0.03em;"
+        >${opts.ctaLabel}</a>
         <br><br>
-        <span style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#aaaaaa;">O accedi direttamente:</span><br>
-        <a href="${opts.trackingUrl}" target="_blank" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#555555;text-decoration:underline;word-break:break-all;">${opts.trackingUrl}</a>
+        <span style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#bbb;">oppure accedi direttamente:</span><br>
+        <a href="${opts.trackingUrl}" target="_blank"
+           style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${C.green};text-decoration:underline;word-break:break-all;"
+        >${opts.trackingUrl}</a>
       </td>
     </tr>
 
-    <!-- FOOTER -->
+    <!-- ━━━ FOOTER ━━━ -->
     <tr>
-      <td style="padding:28px 40px;text-align:center;background:#f9f9f9;">
-        <p style="margin:0 0 8px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#aaaaaa;letter-spacing:0.2em;text-transform:uppercase;">Panini Italia Srl · Assistenza Clienti</p>
-        <p style="margin:0 0 8px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#bbbbbb;line-height:1.6;">Reso gratuito entro 30 giorni · Spedizione standard gratuita in tutta Italia</p>
-        <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#cccccc;">© ${year} Panini Italia Srl · Tutti i diritti riservati</p>
+      <td style="padding:0;">
+        <!-- Gold divider -->
+        <div style="height:3px;background:linear-gradient(90deg,${C.amber},#d4880a,${C.amber});"></div>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${C.burgundy};">
+          <tr>
+            <td align="center" style="padding:20px 40px 22px;">
+              <img src="${LOGO_URL}" alt="Panini" width="90" style="max-width:90px;height:auto;display:block;margin:0 auto 12px;opacity:0.75;border:0;" />
+              <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:0.2em;text-transform:uppercase;">Panini Italia Srl · Assistenza Clienti</p>
+              <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.4);line-height:1.6;">Reso gratuito entro 30 giorni · Spedizione gratuita in tutta Italia</p>
+              <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.3);">© ${year} Panini Italia Srl · Tutti i diritti riservati · Licenziatario ufficiale FIFA</p>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
 
@@ -227,6 +278,10 @@ function shell(opts: {
 </body>
 </html>`;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Individual email builders
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 export function emailDay0(data: EmailData): { subject: string; html: string } {
   return {
@@ -264,10 +319,10 @@ export function emailDay1(data: EmailData): { subject: string; html: string } {
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 1,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f5f5;border-left:3px solid #111;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#fdf8f6;border-left:3px solid ${C.amber};width:100%;border-radius:0 4px 4px 0;">
         <tr><td style="padding:14px 18px;">
-          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;">Consegna stimata</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#111111;">Nei prossimi 2–3 giorni lavorativi · ${data.city}</p>
+          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;">Consegna stimata</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;color:${C.burgundy};">Nei prossimi 2–3 giorni lavorativi · ${data.city}</p>
         </td></tr>
       </table>`,
     }),
@@ -290,10 +345,10 @@ export function emailDay2(data: EmailData): { subject: string; html: string } {
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 2,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f5f5;border-left:3px solid #111;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#fdf8f6;border-left:3px solid ${C.amber};width:100%;border-radius:0 4px 4px 0;">
         <tr><td style="padding:14px 18px;">
-          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;">Prossimo passo</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#111111;">Domani inizierà la consegna nella tua zona · ${data.city}</p>
+          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;">Prossimo passo</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;color:${C.burgundy};">Domani inizierà la consegna nella tua zona · ${data.city}</p>
         </td></tr>
       </table>`,
     }),
@@ -316,13 +371,13 @@ export function emailDay3(data: EmailData): { subject: string; html: string } {
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 3,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#111111;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:${C.burgundy};width:100%;border-radius:4px;">
         <tr><td style="padding:16px 24px;text-align:center;">
-          <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.2em;">Stato attuale</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:0.08em;">IN CONSEGNA · ${data.city.toUpperCase()}</p>
+          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.2em;">Stato attuale</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:16px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">IN CONSEGNA · ${data.city.toUpperCase()}</p>
         </td></tr>
       </table>
-      <p style="margin:14px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:#888888;line-height:1.6;text-align:center;">Se non sei disponibile a ricevere il pacco, il corriere lascerà un avviso per concordare una nuova consegna.</p>`,
+      <p style="margin:12px 0 0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:11px;color:#888;line-height:1.6;text-align:center;">Se non sei disponibile, il corriere lascerà un avviso per concordare una nuova consegna.</p>`,
     }),
   };
 }
@@ -344,16 +399,16 @@ export function emailDay5(data: EmailData): { subject: string; html: string } {
       createdAt: data.createdAt,
       activeStep: 4,
       bodyExtra: `
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f5;border:1px solid #f0d0c0;width:100%;margin-bottom:16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f3;border:1px solid #f5d5c0;width:100%;border-radius:4px;margin-bottom:14px;">
         <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:#c0533a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">⚠ Avviso ritardo · ${data.city}</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> sta subendo un piccolo ritardo. Prevediamo la consegna nelle prossime 24–48 ore. Ci scusiamo per gli inconvenienti.</p>
+          <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:10px;color:${C.burgundy};text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">⚠ Avviso ritardo · ${data.city}</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> sta subendo un piccolo ritardo. Prevediamo la consegna nelle prossime 24–48 ore. Ci scusiamo per gli inconvenienti.</p>
         </td></tr>
       </table>
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f5f5;border-left:3px solid #111;width:100%;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fdf8f6;border-left:3px solid ${C.green};width:100%;border-radius:0 4px 4px 0;">
         <tr><td style="padding:14px 18px;">
-          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;">Come scuse</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#111111;">10% di sconto sul prossimo acquisto — Codice: <span style="font-family:'Courier New',monospace;letter-spacing:0.1em;">PANINI10</span></p>
+          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;">Come scuse</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;color:${C.green};">10% di sconto sul prossimo acquisto — Codice: <span style="font-family:'Courier New',monospace;background:#edf7f0;padding:2px 6px;border-radius:3px;color:${C.burgundy};">PANINI10</span></p>
         </td></tr>
       </table>`,
     }),
@@ -377,16 +432,16 @@ export function emailDay6(data: EmailData): { subject: string; html: string } {
       createdAt: data.createdAt,
       activeStep: 5,
       bodyExtra: `
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f8ff;border:1px solid #c8d8f0;width:100%;margin-bottom:16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f8ff;border:1px solid #c8d8f0;width:100%;border-radius:4px;margin-bottom:14px;">
         <tr><td style="padding:16px 20px;">
           <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#3a5fa0;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">🔍 Segnale di tracciamento interrotto</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il nostro sistema di tracciamento ha perso temporaneamente il segnale del tuo pacco. Questo accade durante i trasferimenti tra hub logistici. Stiamo lavorando per recuperare la localizzazione nelle prossime <strong>2–4 ore</strong>.</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il nostro sistema ha perso temporaneamente il segnale del tuo pacco. Questo accade durante i trasferimenti tra hub logistici. Prevediamo il recupero nelle prossime <strong>2–4 ore</strong>.</p>
         </td></tr>
       </table>
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f5f5;border-left:3px solid #111;width:100%;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fdf8f6;border-left:3px solid ${C.amber};width:100%;border-radius:0 4px 4px 0;">
         <tr><td style="padding:14px 18px;">
-          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;">Non è necessaria alcuna azione</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#111111;">Il tuo pacco è in transito e sarà localizzato a breve. Ti avviseremo non appena avremo novità.</p>
+          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;">Non è necessaria alcuna azione</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:${C.burgundy};">Il tuo pacco è in transito e sarà localizzato a breve. Ti avviseremo con le prossime novità.</p>
         </td></tr>
       </table>`,
     }),
@@ -399,7 +454,7 @@ export function emailDay7(data: EmailData): { subject: string; html: string } {
     html: shell({
       badgeLabel: "Controllo doganale",
       headline: `Il tuo ordine è in revisione doganale`,
-      preheader: `Il tuo ordine ${data.orderId} è stato rilevato in controllo doganale. Prevediamo risoluzione in 24–48 ore.`,
+      preheader: `Il tuo ordine ${data.orderId} è in controllo doganale. Risoluzione prevista in 24–48 ore.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
       ctaLabel: "Consulta lo stato doganale",
@@ -410,16 +465,16 @@ export function emailDay7(data: EmailData): { subject: string; html: string } {
       createdAt: data.createdAt,
       activeStep: 6,
       bodyExtra: `
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#f5f5f5;border-left:3px solid #111;width:100%;margin-bottom:16px;">
-        <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.15em;">Riferimento doganale</p>
-          <p style="margin:0;font-family:'Courier New',monospace;font-size:14px;font-weight:700;color:#111111;letter-spacing:0.12em;">IT-DOG-${data.orderId}-7</p>
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fdf8f6;border-left:3px solid ${C.amber};width:100%;border-radius:0 4px 4px 0;margin-bottom:14px;">
+        <tr><td style="padding:14px 18px;">
+          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.15em;">Riferimento doganale</p>
+          <p style="margin:0;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:${C.burgundy};letter-spacing:0.1em;">IT-DOG-${data.orderId}-7</p>
         </td></tr>
       </table>
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fffbf0;border:1px solid #e8d88a;width:100%;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fffbf0;border:1px solid #e8d88a;width:100%;border-radius:4px;">
         <tr><td style="padding:16px 20px;">
           <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8a6d00;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">📋 Procedura standard — Nessun costo aggiuntivo</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il controllo doganale è una procedura standard di verifica. Il tuo ordine <strong>non è bloccato</strong> e non richiede alcun pagamento aggiuntivo. Prevediamo risoluzione entro <strong>24–48 ore</strong>.</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il controllo doganale è una verifica standard. Il tuo ordine <strong>non è bloccato</strong> e non richiede pagamenti aggiuntivi. Risoluzione entro <strong>24–48 ore</strong>.</p>
         </td></tr>
       </table>`,
     }),
@@ -443,10 +498,10 @@ export function emailDay8(data: EmailData): { subject: string; html: string } {
       createdAt: data.createdAt,
       activeStep: 7,
       bodyExtra: `
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f5;border:1px solid #f0d0c0;width:100%;margin-bottom:16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f3;border:1px solid #f5d5c0;width:100%;border-radius:4px;">
         <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#c0533a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">⚠ Azione richiesta entro 24 ore</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il corriere non ha potuto verificare l'indirizzo di consegna per il tuo ordine <strong>${data.orderId}</strong>. Clicca sul pulsante qui sotto per confermare i tuoi dati e programmare la consegna.</p>
+          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:${C.burgundy};text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">⚠ Azione richiesta entro 24 ore</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il corriere non ha potuto verificare l'indirizzo di consegna per l'ordine <strong>${data.orderId}</strong>. Clicca il pulsante qui sotto per confermare i dati e programmare la consegna.</p>
         </td></tr>
       </table>`,
     }),
@@ -469,10 +524,10 @@ export function emailDay9(data: EmailData): { subject: string; html: string } {
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 8,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f0fff4;border:1px solid #a8d5b5;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f0fff4;border:1px solid #a8d5b5;width:100%;border-radius:4px;">
         <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#2d6a4f;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">✅ Ordine rilanciato con successo</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> ha superato tutti i controlli ed è tornato in transito verso <strong>${data.city}</strong>. Prevediamo la consegna nelle prossime 24–48 ore.</p>
+          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:${C.green};text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">✅ Ordine rilanciato con successo</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> ha superato tutti i controlli ed è tornato in transito verso <strong>${data.city}</strong>. Prevediamo la consegna nelle prossime 24–48 ore.</p>
         </td></tr>
       </table>`,
     }),
@@ -495,10 +550,10 @@ export function emailDay10(data: EmailData): { subject: string; html: string } {
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 9,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#111111;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:${C.burgundy};width:100%;border-radius:4px;">
         <tr><td style="padding:16px 24px;text-align:center;">
-          <p style="margin:0 0 6px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:0.2em;">Stato attuale</p>
-          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:0.08em;">CONSEGNA IMMINENTE · ${data.city.toUpperCase()}</p>
+          <p style="margin:0 0 4px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.2em;">Stato attuale</p>
+          <p style="margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:16px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">CONSEGNA IMMINENTE · ${data.city.toUpperCase()}</p>
         </td></tr>
       </table>`,
     }),
@@ -522,10 +577,10 @@ export function emailDayNonConsegnato(data: EmailData): { subject: string; html:
       createdAt: data.createdAt,
       activeStep: 9,
       bodyExtra: `
-      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f5;border:1px solid #f0d0c0;width:100%;margin-bottom:16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="background:#fff8f3;border:1px solid #f5d5c0;width:100%;border-radius:4px;">
         <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#c0533a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">Tentativo di consegna non riuscito</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il corriere ha tentato di consegnare il tuo ordine <strong>${data.orderId}</strong> ma non ha trovato nessuno all'indirizzo indicato. Clicca qui sotto per programmare un nuovo tentativo.</p>
+          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:${C.burgundy};text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">Tentativo di consegna non riuscito</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il corriere ha tentato di consegnare l'ordine <strong>${data.orderId}</strong> ma non ha trovato nessuno. Clicca qui sotto per programmare un nuovo tentativo di consegna.</p>
         </td></tr>
       </table>`,
     }),
@@ -538,7 +593,7 @@ export function emailDayDiNuovoInRotta(data: EmailData): { subject: string; html
     html: shell({
       badgeLabel: "Di nuovo in rotta",
       headline: `Nuovo tentativo di consegna programmato`,
-      preheader: `Il tuo ordine ${data.orderId} è stato rimesso in rotta. Un nuovo tentativo di consegna è previsto a breve.`,
+      preheader: `Il tuo ordine ${data.orderId} è stato rimesso in rotta. Nuovo tentativo a breve.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
       ctaLabel: "Vedi lo stato aggiornato",
@@ -548,10 +603,10 @@ export function emailDayDiNuovoInRotta(data: EmailData): { subject: string; html
       items: data.items,
       createdAt: data.createdAt,
       activeStep: 9,
-      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f0fff4;border:1px solid #a8d5b5;width:100%;">
+      bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0" style="background:#f0fff4;border:1px solid #a8d5b5;width:100%;border-radius:4px;">
         <tr><td style="padding:16px 20px;">
-          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#2d6a4f;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">🔄 Nuovo tentativo programmato</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> è stato rimesso in rotta. Un corriere si presenterà di nuovo all'indirizzo indicato nelle prossime 24 ore. Assicurati di essere disponibile.</p>
+          <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:${C.green};text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">🔄 Nuovo tentativo programmato</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#444;line-height:1.6;">Il tuo ordine <strong>${data.orderId}</strong> è stato rimesso in rotta. Un corriere si presenterà di nuovo nelle prossime <strong>24 ore</strong>. Assicurati di essere disponibile.</p>
         </td></tr>
       </table>`,
     }),
