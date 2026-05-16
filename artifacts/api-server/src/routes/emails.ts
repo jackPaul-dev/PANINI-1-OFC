@@ -60,14 +60,15 @@ const BUILDERS = [
   emailDayNonConsegnato, emailDayDiNuovoInRotta,
 ];
 
+/* Step index matching each EMAIL_DAYS entry — used in tracking URL */
+const EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+
 async function sendEmailSequence(order: Order) {
   const resend = getResend();
-  const trackingUrl = `${TRACKING_BASE}/?orderId=${order.orderId}`;
-  const data: EmailData = {
+  const baseData = {
     customerName: order.customerName,
     customerEmail: order.customerEmail,
     orderId: order.orderId,
-    trackingUrl,
     amount: order.amount.toFixed(2).replace(".", ","),
     items: order.items,
     city: order.city,
@@ -76,6 +77,9 @@ async function sendEmailSequence(order: Order) {
 
   for (let i = 0; i < EMAIL_DAYS.length; i++) {
     const { day, offsetHours } = EMAIL_DAYS[i];
+    const step = EMAIL_STEPS[i] ?? 9;
+    const trackingUrl = `${TRACKING_BASE}/seguimiento?orderId=${order.orderId}&step=${step}`;
+    const data: EmailData = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS[i](data);
     const scheduledAt = offsetHours > 0
       ? new Date(Date.now() + offsetHours * 3600 * 1000).toISOString()
@@ -196,11 +200,10 @@ router.post("/emails/test", async (req, res) => {
       emails: [],
     });
 
-    const testData: EmailData = {
+    const baseTestData = {
       customerName: "Marco Rossi",
       customerEmail: email,
       orderId: testOrderId,
-      trackingUrl: `${TRACKING_BASE}/?orderId=${testOrderId}`,
       amount: "94,99",
       items: testItems,
       city: "Milano",
@@ -208,22 +211,26 @@ router.post("/emails/test", async (req, res) => {
     };
 
     const builders = [
-      { fn: emailDay0,             label: "Giorno 0 — Conferma" },
-      { fn: emailDay1,             label: "Giorno 1 — In viaggio" },
-      { fn: emailDay2,             label: "Giorno 2 — Centro distribuzione" },
-      { fn: emailDay3,             label: "Giorno 3 — In consegna oggi" },
-      { fn: emailDay5,             label: "Giorno 5 — Ritardo" },
-      { fn: emailDay6,             label: "Giorno 6 — Localizzazione" },
-      { fn: emailDay7,             label: "Giorno 7 — Controllo doganale" },
-      { fn: emailDay8,             label: "Giorno 8 — Verifica indirizzo" },
-      { fn: emailDay9,             label: "Giorno 9 — Rilanciato" },
-      { fn: emailDay10,            label: "Giorno 10 — Imminente" },
-      { fn: emailDayNonConsegnato, label: "Giorno 11 — Non consegnato" },
-      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta" },
+      { fn: emailDay0,              label: "Giorno 0 — Conferma",          step: 0 },
+      { fn: emailDay1,              label: "Giorno 1 — In viaggio",         step: 1 },
+      { fn: emailDay2,              label: "Giorno 2 — Centro distribuzione",step: 2 },
+      { fn: emailDay3,              label: "Giorno 3 — In consegna oggi",   step: 3 },
+      { fn: emailDay5,              label: "Giorno 5 — Ritardo",            step: 4 },
+      { fn: emailDay6,              label: "Giorno 6 — Localizzazione",     step: 5 },
+      { fn: emailDay7,              label: "Giorno 7 — Controllo doganale", step: 6 },
+      { fn: emailDay8,              label: "Giorno 8 — Verifica indirizzo", step: 7 },
+      { fn: emailDay9,              label: "Giorno 9 — Rilanciato",         step: 8 },
+      { fn: emailDay10,             label: "Giorno 10 — Imminente",         step: 9 },
+      { fn: emailDayNonConsegnato,  label: "Giorno 11 — Non consegnato",    step: 9 },
+      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta", step: 9 },
     ];
 
     const results: { day: string; id: string | null; status: string }[] = [];
-    for (const { fn, label } of builders) {
+    for (const { fn, label, step } of builders) {
+      const testData: EmailData = {
+        ...baseTestData,
+        trackingUrl: `${TRACKING_BASE}/seguimiento?orderId=${testOrderId}&step=${step}`,
+      };
       const { subject, html } = fn(testData);
       try {
         const result = await resend.emails.send({ from: FROM, to: email, subject, html });
