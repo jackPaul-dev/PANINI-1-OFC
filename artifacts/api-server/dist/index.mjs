@@ -75379,7 +75379,7 @@ function getResend() {
   if (!key) throw new Error("RESEND_API_KEY not configured");
   return new Resend(key);
 }
-var FROM = process.env.EMAIL_FROM || "Panini Italia <noreply@zraoficial-ofc.site>";
+var FROM = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
 var TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
 function buildTrackingUrl(base, orderId, step, data) {
   const p = new URLSearchParams({
@@ -75643,7 +75643,7 @@ var emails_default = router3;
 // src/routes/webhook.ts
 var import_express4 = __toESM(require_express2(), 1);
 var router4 = (0, import_express4.Router)();
-var FROM2 = process.env.EMAIL_FROM || "Panini Italia <noreply@zraoficial-ofc.site>";
+var FROM2 = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
 var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
 var EMAIL_DAYS2 = [
   { day: 0, offsetHours: 0 },
