@@ -208,6 +208,17 @@ function shell(opts: {
 
         ${opts.bodyExtra ? `<div style="margin-top:20px;">${opts.bodyExtra}</div>` : ""}
 
+        <!-- CTA button — placed early so Gmail never clips it -->
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:24px;">
+          <tr>
+            <td style="background-color:${C.green};border-radius:4px;">
+              <a href="${opts.trackingUrl.replace(/&/g, '&amp;')}" target="_blank"
+                 style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:16px 44px;border-radius:4px;letter-spacing:0.03em;mso-padding-alt:0;border:0;"
+              >${opts.ctaLabel} →</a>
+            </td>
+          </tr>
+        </table>
+
         <!-- Customer info pill -->
         <table role="presentation" cellspacing="0" cellpadding="0"
                style="margin-top:22px;width:100%;background:${C.warm50};border:1px solid #ecddd4;border-radius:4px;">
@@ -259,20 +270,6 @@ function shell(opts: {
       </td>
     </tr>
 
-    <!-- ━━━ CTA ━━━ -->
-    <tr>
-      <td style="background:#ffffff;padding:36px 40px;text-align:center;border-bottom:1px solid #f0ebe6;">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
-          <tr>
-            <td style="background-color:${C.green};border-radius:4px;">
-              <a href="${opts.trackingUrl.replace(/&/g, '&amp;')}" target="_blank"
-                 style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:18px 52px;border-radius:4px;letter-spacing:0.04em;mso-padding-alt:0;border:0;"
-              >${opts.ctaLabel}</a>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
 
     <!-- ━━━ FOOTER ━━━ -->
     <tr>
