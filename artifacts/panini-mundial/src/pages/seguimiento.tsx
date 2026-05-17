@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, AlertCircle, Loader2, Package, MapPin,
-  CalendarDays, HelpCircle, X, ChevronDown, ChevronUp,
+  CalendarDays, X, ChevronDown, ChevronUp,
   MessageCircle, RefreshCw, Clock, FileText, CheckCircle2,
 } from "lucide-react";
 
@@ -552,20 +552,27 @@ export default function Seguimiento() {
       {/* ── FLOATING SUPPORT BUTTON ── */}
       <motion.button
         onClick={() => setSupport(true)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.96 }}
         style={{
-          position: "fixed", bottom: 24, right: 20, zIndex: 9997,
-          background: BURGUNDY,
+          position: "fixed", bottom: 28, right: 20, zIndex: 9997,
+          background: `linear-gradient(135deg, ${BURGUNDY} 0%, #8b1320 100%)`,
           border: `2px solid ${AMBER}`,
-          borderRadius: "50%",
-          width: 58, height: 58,
-          display: "flex", alignItems: "center", justifyContent: "center",
+          borderRadius: 36,
+          height: 56,
+          paddingLeft: 18, paddingRight: 22,
+          display: "flex", alignItems: "center", gap: 10,
           cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(107,15,26,0.35)",
+          boxShadow: "0 6px 24px rgba(107,15,26,0.45), 0 2px 8px rgba(0,0,0,0.2)",
         }}
       >
-        <HelpCircle size={26} color="#fff" />
+        <div style={{ width: 34, height: 34, background: "rgba(255,255,255,0.15)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <MessageCircle size={18} color="#fff" fill="rgba(255,255,255,0.2)" />
+        </div>
+        <div style={{ textAlign: "left" }}>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: "#fff", letterSpacing: "0.03em", lineHeight: 1.2 }}>Suporte</p>
+          <p style={{ margin: 0, fontSize: 9, color: AMBER, letterSpacing: "0.05em" }}>● Online agora</p>
+        </div>
       </motion.button>
 
       {/* ── SUPPORT PANEL ── */}

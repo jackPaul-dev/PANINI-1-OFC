@@ -262,14 +262,15 @@ function shell(opts: {
     <!-- ━━━ CTA ━━━ -->
     <tr>
       <td style="background:#ffffff;padding:36px 40px;text-align:center;border-bottom:1px solid #f0ebe6;">
-        <a href="${opts.trackingUrl}" target="_blank"
-           style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:16px 48px;border-radius:4px;letter-spacing:0.04em;"
-        >${opts.ctaLabel}</a>
-        <br><br>
-        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#c0c0c0;">oppure copia questo link:</p>
-        <a href="${opts.trackingUrl}" target="_blank"
-           style="font-family:'Courier New',monospace;font-size:9px;color:${C.green};text-decoration:none;word-break:break-all;"
-        >${opts.trackingUrl}</a>
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+          <tr>
+            <td style="background-color:${C.green};border-radius:4px;">
+              <a href="${opts.trackingUrl.replace(/&/g, '&amp;')}" target="_blank"
+                 style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:18px 52px;border-radius:4px;letter-spacing:0.04em;mso-padding-alt:0;border:0;"
+              >${opts.ctaLabel}</a>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
 
