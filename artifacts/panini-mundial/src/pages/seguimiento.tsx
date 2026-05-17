@@ -334,14 +334,41 @@ export default function Seguimiento() {
   const [urlStep,   setUrlStep]   = useState<number | null>(null);
   const [support,   setSupport]   = useState(false);
 
+  /* Build an OrderData from URL params (embedded by the email server) */
+  function orderFromParams(params: URLSearchParams, orderId: string): OrderData | null {
+    const name  = params.get("name");
+    const city  = params.get("city");
+    const amt   = params.get("amount");
+    const date  = params.get("date");
+    const itemsB64 = params.get("items");
+    if (!name || !city || !amt || !date) return null;
+    let items: string[] = [];
+    try { items = JSON.parse(atob(itemsB64 ?? "")); } catch { items = []; }
+    return { orderId, customerName: name, city, createdAt: date, amount: parseFloat(amt), items, emails: [] };
+  }
+
   useEffect(() => {
     const params  = new URLSearchParams(window.location.search);
     const orderId = params.get("orderId");
     const step    = params.get("step");
-    if (step !== null) setUrlStep(parseInt(step, 10));
+    const parsedStep = step !== null ? parseInt(step, 10) : null;
+    if (parsedStep !== null) setUrlStep(parsedStep);
     if (orderId) {
       setInputId(orderId.toUpperCase());
-      fetchOrder(orderId, step !== null ? parseInt(step, 10) : null);
+      /* Try URL-embedded data first (always works, even after server restart) */
+      const fromUrl = orderFromParams(params, orderId.toUpperCase());
+      if (fromUrl) {
+        setOrder(fromUrl);
+        setUrlStep(parsedStep);
+        setSearched(true);
+        /* Still try API in background for richer data (email history etc.) */
+        fetch(`/api/orders/${orderId.toUpperCase()}`)
+          .then(r => r.ok ? r.json() : null)
+          .then((data: OrderData | null) => { if (data) { setOrder(data); } })
+          .catch(() => { /* silent – we already have URL data */ });
+      } else {
+        fetchOrder(orderId, parsedStep);
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

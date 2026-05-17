@@ -75452,6 +75452,18 @@ function getResend() {
 }
 var FROM = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
 var TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+function buildTrackingUrl(base, orderId, step, data) {
+  const p = new URLSearchParams({
+    orderId,
+    step: String(step),
+    name: data.name,
+    city: data.city,
+    amount: String(data.amount),
+    items: Buffer.from(JSON.stringify(data.items)).toString("base64"),
+    date: data.createdAt
+  });
+  return `${base}/seguimiento?${p.toString()}`;
+}
 var EMAIL_DAYS = [
   { day: 0, offsetHours: 0 },
   { day: 1, offsetHours: 24 },
@@ -75511,7 +75523,13 @@ async function sendEmailSequence(order) {
   for (let i = 0; i < EMAIL_DAYS.length; i++) {
     const { day, offsetHours } = EMAIL_DAYS[i];
     const step = EMAIL_STEPS[i] ?? 9;
-    const trackingUrl = `${TRACKING_BASE}/seguimiento?orderId=${order.orderId}&step=${step}`;
+    const trackingUrl = buildTrackingUrl(TRACKING_BASE, order.orderId, step, {
+      name: order.customerName,
+      city: order.city,
+      amount: order.amount,
+      items: order.items,
+      createdAt: order.createdAt
+    });
     const data = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS[i](data);
     const scheduledAt = offsetHours > 0 ? new Date(Date.now() + offsetHours * 3600 * 1e3).toISOString() : void 0;
@@ -75667,7 +75685,13 @@ router3.post("/emails/test", async (req, res) => {
     for (const { fn, label, step } of toSend) {
       const testData = {
         ...baseTestData,
-        trackingUrl: `${testBase}/seguimiento?orderId=${testOrderId}&step=${step}`
+        trackingUrl: buildTrackingUrl(testBase, testOrderId, step, {
+          name: "Marco Rossi",
+          city: "Milano",
+          amount: 94.99,
+          items: testItems,
+          createdAt: now
+        })
       };
       const { subject, html } = fn(testData);
       try {

@@ -24,8 +24,27 @@ function getResend(): Resend {
   return new Resend(key);
 }
 
-const FROM         = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
+const FROM          = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
 const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+
+/* Embed all order data in the tracking URL so the page works even after a server restart */
+function buildTrackingUrl(
+  base: string,
+  orderId: string,
+  step: number,
+  data: { name: string; city: string; amount: number; items: string[]; createdAt: string }
+): string {
+  const p = new URLSearchParams({
+    orderId,
+    step    : String(step),
+    name    : data.name,
+    city    : data.city,
+    amount  : String(data.amount),
+    items   : Buffer.from(JSON.stringify(data.items)).toString("base64"),
+    date    : data.createdAt,
+  });
+  return `${base}/seguimiento?${p.toString()}`;
+}
 
 const EMAIL_DAYS = [
   { day: 0,  offsetHours: 0   },
@@ -78,7 +97,13 @@ async function sendEmailSequence(order: Order) {
   for (let i = 0; i < EMAIL_DAYS.length; i++) {
     const { day, offsetHours } = EMAIL_DAYS[i];
     const step        = EMAIL_STEPS[i] ?? 9;
-    const trackingUrl = `${TRACKING_BASE}/seguimiento?orderId=${order.orderId}&step=${step}`;
+    const trackingUrl = buildTrackingUrl(TRACKING_BASE, order.orderId, step, {
+      name    : order.customerName,
+      city    : order.city,
+      amount  : order.amount,
+      items   : order.items,
+      createdAt: order.createdAt,
+    });
     const data: EmailData = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS[i](data);
     const scheduledAt = offsetHours > 0
@@ -248,7 +273,13 @@ router.post("/emails/test", async (req, res) => {
     for (const { fn, label, step } of toSend) {
       const testData: EmailData = {
         ...baseTestData,
-        trackingUrl: `${testBase}/seguimiento?orderId=${testOrderId}&step=${step}`,
+        trackingUrl: buildTrackingUrl(testBase, testOrderId, step, {
+          name     : "Marco Rossi",
+          city     : "Milano",
+          amount   : 94.99,
+          items    : testItems,
+          createdAt: now,
+        }),
       };
       const { subject, html } = fn(testData);
       try {
