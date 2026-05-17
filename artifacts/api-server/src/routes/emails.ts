@@ -186,10 +186,10 @@ router.get("/orders/:orderId", async (req, res) => {
   }
 });
 
-/* ── POST /api/emails/test — sends all 12 template variants immediately ── */
+/* ── POST /api/emails/test — sends template variants (optional: only=[0,1,...]) ── */
 router.post("/emails/test", async (req, res) => {
   try {
-    const { email } = req.body as { email: string };
+    const { email, only } = req.body as { email: string; only?: number[] };
     if (!email) { res.status(400).json({ error: "Missing email" }); return; }
 
     const resend      = getResend();
@@ -243,8 +243,9 @@ router.post("/emails/test", async (req, res) => {
       { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta",  step: 9 },
     ];
 
+    const toSend = only ? builders.filter((_, i) => only.includes(i)) : builders;
     const results: { day: string; id: string | null; status: string }[] = [];
-    for (const { fn, label, step } of builders) {
+    for (const { fn, label, step } of toSend) {
       const testData: EmailData = {
         ...baseTestData,
         trackingUrl: `${testBase}/seguimiento?orderId=${testOrderId}&step=${step}`,

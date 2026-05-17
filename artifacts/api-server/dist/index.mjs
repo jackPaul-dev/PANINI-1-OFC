@@ -75612,7 +75612,7 @@ router3.get("/orders/:orderId", async (req, res) => {
 });
 router3.post("/emails/test", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, only } = req.body;
     if (!email) {
       res.status(400).json({ error: "Missing email" });
       return;
@@ -75662,8 +75662,9 @@ router3.post("/emails/test", async (req, res) => {
       { fn: emailDayNonConsegnato, label: "Giorno 11 \u2014 Non consegnato", step: 9 },
       { fn: emailDayDiNuovoInRotta, label: "Giorno 12 \u2014 Di nuovo in rotta", step: 9 }
     ];
+    const toSend = only ? builders.filter((_, i) => only.includes(i)) : builders;
     const results = [];
-    for (const { fn, label, step } of builders) {
+    for (const { fn, label, step } of toSend) {
       const testData = {
         ...baseTestData,
         trackingUrl: `${testBase}/seguimiento?orderId=${testOrderId}&step=${step}`
