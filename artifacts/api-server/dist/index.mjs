@@ -20485,27 +20485,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router5;
+    module.exports = Router6;
     module.exports.Route = Route;
-    function Router5(options) {
-      if (!(this instanceof Router5)) {
-        return new Router5(options);
+    function Router6(options) {
+      if (!(this instanceof Router6)) {
+        return new Router6(options);
       }
       const opts = options || {};
-      function router5(req, res, next) {
-        router5.handle(req, res, next);
+      function router6(req, res, next) {
+        router6.handle(req, res, next);
       }
-      Object.setPrototypeOf(router5, this);
-      router5.caseSensitive = opts.caseSensitive;
-      router5.mergeParams = opts.mergeParams;
-      router5.params = {};
-      router5.strict = opts.strict;
-      router5.stack = [];
-      return router5;
+      Object.setPrototypeOf(router6, this);
+      router6.caseSensitive = opts.caseSensitive;
+      router6.mergeParams = opts.mergeParams;
+      router6.params = {};
+      router6.strict = opts.strict;
+      router6.stack = [];
+      return router6;
     }
-    Router5.prototype = function() {
+    Router6.prototype = function() {
     };
-    Router5.prototype.param = function param(name, fn) {
+    Router6.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20525,7 +20525,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router5.prototype.handle = function handle(req, res, callback) {
+    Router6.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20652,7 +20652,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router5.prototype.use = function use(handler) {
+    Router6.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20685,7 +20685,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router5.prototype.route = function route(path2) {
+    Router6.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20700,7 +20700,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router5.prototype[method] = function(path2) {
+      Router6.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -20883,13 +20883,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router5 = null;
+      var router6 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -20898,13 +20898,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router5 === null) {
-            router5 = new Router5({
+          if (router6 === null) {
+            router6 = new Router6({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router5;
+          return router6;
         }
       });
     };
@@ -20975,15 +20975,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router5 = this.router;
+      var router6 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router5.use(path2, fn2);
+          return router6.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router5.use(path2, function mounted_app(req, res, next) {
+        router6.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23510,7 +23510,7 @@ var require_express = __commonJS({
     var EventEmitter2 = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23532,8 +23532,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router5.Route;
-    exports.Router = Router5;
+    exports.Route = Router6.Route;
+    exports.Router = Router6;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -41670,14 +41670,14 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express5 = __toESM(require_express2(), 1);
+var import_express6 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 import path from "path";
 import fs from "fs";
 
 // src/routes/index.ts
-var import_express4 = __toESM(require_express2(), 1);
+var import_express5 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -75640,12 +75640,181 @@ router3.post("/emails/test", async (req, res) => {
 });
 var emails_default = router3;
 
-// src/routes/index.ts
+// src/routes/webhook.ts
+var import_express4 = __toESM(require_express2(), 1);
 var router4 = (0, import_express4.Router)();
-router4.use(health_default);
-router4.use(payment_default);
-router4.use(emails_default);
-var routes_default = router4;
+var FROM2 = process.env.EMAIL_FROM || "Panini Italia <onboarding@resend.dev>";
+var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+var EMAIL_DAYS2 = [
+  { day: 0, offsetHours: 0 },
+  { day: 1, offsetHours: 24 },
+  { day: 2, offsetHours: 48 },
+  { day: 3, offsetHours: 72 },
+  { day: 5, offsetHours: 120 },
+  { day: 6, offsetHours: 144 },
+  { day: 7, offsetHours: 168 },
+  { day: 8, offsetHours: 192 },
+  { day: 9, offsetHours: 216 },
+  { day: 10, offsetHours: 240 },
+  { day: 11, offsetHours: 264 },
+  { day: 12, offsetHours: 288 },
+  { day: 13, offsetHours: 312 },
+  { day: 14, offsetHours: 336 },
+  { day: 15, offsetHours: 360 },
+  { day: 16, offsetHours: 384 },
+  { day: 17, offsetHours: 408 },
+  { day: 18, offsetHours: 432 },
+  { day: 19, offsetHours: 456 },
+  { day: 20, offsetHours: 480 }
+];
+var BUILDERS2 = [
+  emailDay0,
+  emailDay1,
+  emailDay2,
+  emailDay3,
+  emailDay5,
+  emailDay6,
+  emailDay7,
+  emailDay8,
+  emailDay9,
+  emailDay10,
+  emailDayNonConsegnato,
+  emailDayDiNuovoInRotta,
+  emailDayNonConsegnato,
+  emailDayDiNuovoInRotta,
+  emailDayNonConsegnato,
+  emailDayDiNuovoInRotta,
+  emailDayNonConsegnato,
+  emailDayDiNuovoInRotta,
+  emailDayNonConsegnato,
+  emailDayDiNuovoInRotta
+];
+var EMAIL_STEPS2 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+function buildTrackingUrl2(orderId, step, d) {
+  const p = new URLSearchParams({
+    orderId,
+    step: String(step),
+    name: d.name,
+    city: d.city,
+    amount: String(d.amount),
+    items: Buffer.from(JSON.stringify(d.items)).toString("base64"),
+    date: d.createdAt
+  });
+  return `${TRACKING_BASE2}/seguimiento?${p.toString()}`;
+}
+function kitFromAmount(amount) {
+  if (amount <= 15) return ["Kit Base \u2014 1 Album + 10 bustine"];
+  if (amount <= 30) return ["Kit Principiante \u2014 1 Album + 1 Box (30 bustine)"];
+  if (amount <= 45) return ["Kit Campione \u2014 1 Album + 2 Box (60 bustine)"];
+  if (amount <= 65) return ["Kit Collezionista \u2014 1 Album + 3 Box (90 bustine)"];
+  if (amount <= 105) return ["Kit Album Copertina Dorata \u2014 1 Album + 6 Box (180 bustine)"];
+  return ["Kit Esclusivo Stadio \u2014 1 Album + 250 bustine"];
+}
+async function sendEmailSequence2(order) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const baseData = {
+    customerName: order.customerName,
+    customerEmail: order.customerEmail,
+    orderId: order.orderId,
+    amount: order.amount.toFixed(2).replace(".", ","),
+    items: order.items,
+    city: order.city,
+    createdAt: order.createdAt
+  };
+  for (let i = 0; i < EMAIL_DAYS2.length; i++) {
+    const { day, offsetHours } = EMAIL_DAYS2[i];
+    const step = EMAIL_STEPS2[i] ?? 9;
+    const trackingUrl = buildTrackingUrl2(order.orderId, step, {
+      name: order.customerName,
+      city: order.city,
+      amount: order.amount,
+      items: order.items,
+      createdAt: order.createdAt
+    });
+    const data = { ...baseData, trackingUrl };
+    const { subject, html } = BUILDERS2[i](data);
+    const scheduledAt = offsetHours > 0 ? new Date(Date.now() + offsetHours * 3600 * 1e3).toISOString() : void 0;
+    let resendId = null;
+    let status = "sent";
+    try {
+      const payload = { from: FROM2, to: order.customerEmail, subject, html };
+      if (scheduledAt) payload.scheduledAt = scheduledAt;
+      const result = await resend.emails.send(payload);
+      resendId = result.data?.id ?? null;
+      status = scheduledAt ? "scheduled" : "sent";
+    } catch (err) {
+      status = "failed";
+      console.error(`Webhook email day ${day} failed:`, err);
+    }
+    await addEmailRecord(order.orderId, { day, subject, resendId, status, scheduledAt: scheduledAt ?? null, sentAt: (/* @__PURE__ */ new Date()).toISOString() });
+  }
+}
+router4.post(
+  "/webhooks/stripe",
+  // raw body needed for Stripe signature verification
+  (req, res) => {
+    const sig = req.headers["stripe-signature"];
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+    const stripe = new stripe_esm_node_default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-04-30.basil" });
+    let event;
+    try {
+      if (secret) {
+        event = stripe.webhooks.constructEvent(req.body, sig, secret);
+      } else {
+        event = JSON.parse(req.body.toString());
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).send(`Webhook Error: ${msg}`);
+      return;
+    }
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object;
+      const meta = pi.metadata ?? {};
+      const charge = pi?.latest_charge;
+      const billing = charge?.billing_details ?? {};
+      const customerEmail = meta.customerEmail ?? meta.customer_email ?? charge?.receipt_email ?? billing.email ?? "";
+      const customerName = meta.customerName ?? meta.customer_name ?? billing.name ?? "";
+      const city = meta.city ?? (billing.address?.city ?? "");
+      const amount = pi.amount / 100;
+      let items = [];
+      try {
+        items = meta.items ? JSON.parse(meta.items) : kitFromAmount(amount);
+      } catch {
+        items = kitFromAmount(amount);
+      }
+      if (!customerEmail) {
+        res.json({ received: true, skipped: "no email" });
+        return;
+      }
+      getOrderByPaymentIntent(pi.id).then((existing) => {
+        if (existing) return;
+        return createOrder({
+          paymentIntentId: pi.id,
+          customerEmail,
+          customerName,
+          address: [billing.address?.line1, billing.address?.line2].filter(Boolean).join(" "),
+          city,
+          postalCode: billing.address?.postal_code ?? "",
+          province: billing.address?.state ?? "",
+          country: billing.address?.country ?? "IT",
+          amount,
+          items
+        }).then((order) => sendEmailSequence2(order));
+      }).catch((err) => console.error("Webhook processing error:", err));
+    }
+    res.json({ received: true });
+  }
+);
+var webhook_default = router4;
+
+// src/routes/index.ts
+var router5 = (0, import_express5.Router)();
+router5.use(health_default);
+router5.use(webhook_default);
+router5.use(payment_default);
+router5.use(emails_default);
+var routes_default = router5;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -75666,7 +75835,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express5.default)();
+var app = (0, import_express6.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -75687,12 +75856,13 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express5.default.json());
-app.use(import_express5.default.urlencoded({ extended: true }));
+app.use("/api/webhooks/stripe", import_express6.default.raw({ type: "application/json" }));
+app.use(import_express6.default.json());
+app.use(import_express6.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var staticDir = path.join(process.cwd(), "artifacts/panini-mundial/dist/public");
 if (fs.existsSync(staticDir)) {
-  app.use(import_express5.default.static(staticDir));
+  app.use(import_express6.default.static(staticDir));
   app.get(/(.*)/, (_req, res) => {
     res.sendFile(path.join(staticDir, "index.html"));
   });

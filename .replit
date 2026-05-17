@@ -51,3 +51,4 @@ VITE_STRIPE_PUBLISHABLE_KEY = "pk_live_51TNGsbHUINuRXA3gTk7jwWgjcDUbEvWPa0R19AKX
 RESEND_API_KEY = "re_HtK2QYF7_LRSHb6TrJYkZBxvLAwZNGXMv"
 EMAIL_FROM = "Panini Italia <onboarding@resend.dev>"
 TRACKING_BASE_URL = "https://panini-it.site"
+STRIPE_WEBHOOK_SECRET = "whsec_bAckRWAjEA8s1cHkGU8GGqNeldi2h1zK"
