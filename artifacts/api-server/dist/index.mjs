@@ -74935,179 +74935,110 @@ function buildEmailTimeline(activeStepIndex, createdAt) {
   });
   return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${rows}</table>`;
 }
-function buildProductRows(items) {
-  return items.map((item) => `
-    <tr>
-      <td style="padding:9px 0;border-bottom:1px solid #f3ede8;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-          <tr>
-            <td width="14" valign="middle">
-              <div style="width:7px;height:7px;border-radius:50%;background:${C.amber};margin-top:1px;"></div>
-            </td>
-            <td style="font-family:-apple-system,Arial,Helvetica,sans-serif;font-size:12px;color:${C.gray700};line-height:1.5;">${item}</td>
-          </tr>
-        </table>
-      </td>
-    </tr>`).join("");
-}
 function shell(opts) {
   const year = (/* @__PURE__ */ new Date()).getFullYear();
   const firstName = opts.customerName.split(" ")[0];
   const orderDate = fmtDate(new Date(opts.createdAt));
+  const safeUrl = opts.trackingUrl.replace(/&/g, "&amp;");
+  const F = "font-family:Arial,Helvetica,sans-serif;";
   return `<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light">
 <title>${opts.preheader}</title>
 </head>
-<body style="margin:0;padding:0;background:#f0ece8;-webkit-text-size-adjust:100%;">
-<div style="display:none;font-size:1px;max-height:0;overflow:hidden;color:#f0ece8;">${opts.preheader}</div>
+<body style="margin:0;padding:0;background:#f0ece8;">
+<div style="display:none;max-height:0;overflow:hidden;">${opts.preheader}</div>
 
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#f0ece8">
-<tr><td align="center" style="padding:28px 12px 48px;">
-  <table role="presentation" width="600" cellspacing="0" cellpadding="0"
-         style="max-width:600px;width:100%;border-radius:3px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+<tr><td align="center" style="padding:20px 12px 40px;">
+<table role="presentation" width="580" cellspacing="0" cellpadding="0"
+       style="max-width:580px;width:100%;border-radius:4px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.09);">
 
-    <!-- \u2501\u2501\u2501 TOP HEADER \u2014 WHITE + BIG YELLOW LOGO \u2501\u2501\u2501 -->
-    <tr>
-      <td style="background:#ffffff;padding:0;">
-        <!-- Amber top accent -->
-        <div style="height:5px;background:linear-gradient(90deg,${C.amber} 0%,${C.yellow} 50%,${C.amber} 100%);"></div>
+  <!-- HEADER -->
+  <tr>
+    <td style="background:#ffffff;padding:0;">
+      <div style="height:4px;background:linear-gradient(90deg,${C.amber},${C.yellow},${C.amber});"></div>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td align="center" style="padding:20px 32px 14px;">
+            <img src="${LOGO_URL}" alt="Panini" width="140" style="display:block;max-width:140px;height:auto;border:0;" />
+          </td>
+        </tr>
+        <tr>
+          <td style="background:${C.burgundy};padding:7px 0;text-align:center;">
+            <span style="${F}font-size:9px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:0.28em;text-transform:uppercase;">${opts.badgeLabel}</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 
-        <!-- Logo area -->
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-          <tr>
-            <td align="center" style="padding:28px 40px 20px;">
-              <!-- Logo on subtle warm pill -->
-              <table role="presentation" cellspacing="0" cellpadding="0" style="display:inline-table;">
-                <tr>
-                  <td style="background:#fdf6e3;border:2px solid ${C.amber};border-radius:6px;padding:10px 28px;">
-                    <img src="${LOGO_URL}"
-                         alt="Panini"
-                         width="160"
-                         height="auto"
-                         style="display:block;max-width:160px;height:auto;border:0;" />
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+  <!-- ORDER CODE -->
+  <tr>
+    <td style="background:${C.warm50};padding:16px 32px;text-align:center;border-bottom:3px solid ${C.amber};">
+      <p style="margin:0 0 2px;${F}font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Codice ordine</p>
+      <p style="margin:0;font-family:'Courier New',monospace;font-size:28px;font-weight:700;color:${C.burgundy};letter-spacing:0.14em;">${opts.orderId}</p>
+      <p style="margin:6px 0 0;${F}font-size:10px;color:${C.gray400};">${orderDate} &middot; ${opts.customerEmail}</p>
+    </td>
+  </tr>
 
-          <!-- Badge strip -->
-          <tr>
-            <td style="background:${C.burgundy};padding:8px 0;text-align:center;">
-              <span style="font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:700;color:rgba(255,255,255,0.90);letter-spacing:0.28em;text-transform:uppercase;">${opts.badgeLabel}</span>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+  <!-- GREETING -->
+  <tr>
+    <td style="background:#ffffff;padding:22px 32px 18px;border-bottom:1px solid #f0ebe6;">
+      <h2 style="margin:0 0 10px;font-family:Georgia,serif;font-size:22px;font-weight:400;color:${C.burgundy};line-height:1.3;">${opts.headline}</h2>
+      <p style="margin:0;${F}font-size:13px;color:#4b5563;line-height:1.7;">
+        Ciao <strong style="color:${C.burgundy};">${firstName}</strong>, il tuo ordine \xE8 confermato e in elaborazione.
+      </p>
+      ${opts.bodyExtra ? `<div style="margin-top:14px;">${opts.bodyExtra}</div>` : ""}
+    </td>
+  </tr>
 
-    <!-- \u2501\u2501\u2501 ORDER CODE HERO \u2501\u2501\u2501 -->
-    <tr>
-      <td style="background:${C.warm50};padding:24px 40px;text-align:center;border-top:0;border-bottom:3px solid ${C.amber};">
-        <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:600;color:${C.gray400};text-transform:uppercase;letter-spacing:0.25em;">Codice ordine</p>
-        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:30px;font-weight:700;color:${C.burgundy};letter-spacing:0.16em;">${opts.orderId}</p>
-        <p style="margin:8px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${C.gray400};">${orderDate}</p>
-      </td>
-    </tr>
+  <!-- PRODUCTS -->
+  ${opts.items.length > 0 ? `<tr>
+    <td style="background:#ffffff;padding:16px 32px 18px;border-bottom:1px solid #f0ebe6;">
+      <p style="margin:0 0 10px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Articoli dell'ordine</p>
+      ${opts.items.map((item) => `<p style="margin:0 0 6px;${F}font-size:12px;color:#374151;line-height:1.5;padding-left:12px;border-left:3px solid ${C.amber};">${item}</p>`).join("")}
+      <p style="margin:12px 0 0;padding-top:10px;border-top:1px solid #f0ebe6;${F}font-size:11px;color:${C.gray400};">Totale pagato (IVA inclusa) &nbsp;<strong style="font-size:20px;color:${C.burgundy};">&euro;&nbsp;${opts.amount}</strong></p>
+    </td>
+  </tr>` : ""}
 
-    <!-- \u2501\u2501\u2501 GREETING \u2501\u2501\u2501 -->
-    <tr>
-      <td style="background:#ffffff;padding:30px 40px 24px;border-bottom:1px solid #f0ebe6;">
-        <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:700;color:${C.green};text-transform:uppercase;letter-spacing:0.18em;">Panini Italia \xB7 Licenziatario Ufficiale FIFA World Cup 26\u2122</p>
-        <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:400;color:${C.burgundy};line-height:1.25;">${opts.headline}</h2>
-        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;line-height:1.75;">
-          Ciao <strong style="color:${C.burgundy};">${firstName}</strong>, ti confermiamo che il tuo ordine \xE8 stato ricevuto ed \xE8 in elaborazione.
-        </p>
+  <!-- TIMELINE -->
+  <tr>
+    <td style="background:${C.offWhite};padding:20px 32px 22px;border-bottom:1px solid #e8e2dc;">
+      <p style="margin:0 0 16px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Stato della spedizione</p>
+      ${buildEmailTimeline(opts.activeStep, opts.createdAt)}
+    </td>
+  </tr>
 
-        ${opts.bodyExtra ? `<div style="margin-top:20px;">${opts.bodyExtra}</div>` : ""}
+  <!-- CTA -->
+  <tr>
+    <td style="background:#ffffff;padding:24px 32px 28px;text-align:center;border-bottom:1px solid #f0ebe6;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+        <tr>
+          <td style="background:${C.green};border-radius:4px;">
+            <a href="${safeUrl}" target="_blank"
+               style="display:inline-block;background:${C.green};color:#ffffff;text-decoration:none;${F}font-size:15px;font-weight:700;padding:16px 48px;border-radius:4px;letter-spacing:0.03em;border:0;">
+              ${opts.ctaLabel} &#8594;
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 
-        <!-- CTA button \u2014 placed early so Gmail never clips it -->
-        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:24px;">
-          <tr>
-            <td style="background-color:${C.green};border-radius:4px;">
-              <a href="${opts.trackingUrl.replace(/&/g, "&amp;")}" target="_blank"
-                 style="display:inline-block;background-color:${C.green};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:16px 44px;border-radius:4px;letter-spacing:0.03em;mso-padding-alt:0;border:0;"
-              >${opts.ctaLabel} \u2192</a>
-            </td>
-          </tr>
-        </table>
+  <!-- FOOTER -->
+  <tr>
+    <td style="background:#fdf8f2;padding:16px 32px 20px;text-align:center;">
+      <div style="height:2px;background:linear-gradient(90deg,${C.amber},${C.yellow},${C.amber});margin-bottom:14px;"></div>
+      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">Panini Italia Srl &middot; Assistenza Clienti</p>
+      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">Reso gratuito entro 30 giorni &middot; Spedizione gratuita in tutta Italia</p>
+      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} Panini Italia Srl &middot; Licenziatario ufficiale FIFA</p>
+    </td>
+  </tr>
 
-        <!-- Customer info pill -->
-        <table role="presentation" cellspacing="0" cellpadding="0"
-               style="margin-top:22px;width:100%;background:${C.warm50};border:1px solid #ecddd4;border-radius:4px;">
-          <tr>
-            <td style="padding:14px 20px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.15em;width:80px;">Cliente</td>
-                  <td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${C.burgundy};font-weight:700;">${opts.customerName}</td>
-                </tr>
-                <tr>
-                  <td style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.15em;padding-top:6px;">Email</td>
-                  <td style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:${C.gray500};padding-top:6px;">${opts.customerEmail}</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- \u2501\u2501\u2501 PRODUCTS \u2501\u2501\u2501 -->
-    ${opts.items.length > 0 ? `
-    <tr>
-      <td style="background:#ffffff;padding:24px 40px;border-bottom:1px solid #f0ebe6;">
-        <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Articoli dell'ordine</p>
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-          ${buildProductRows(opts.items)}
-          <tr>
-            <td style="padding:16px 0 0;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
-                     style="border-top:2px solid ${C.amber};padding-top:14px;">
-                <tr>
-                  <td style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:${C.gray400};padding-top:14px;">Totale pagato \xB7 IVA inclusa</td>
-                  <td align="right" style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:800;color:${C.burgundy};padding-top:10px;">&euro;&nbsp;${opts.amount}</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>` : ""}
-
-    <!-- \u2501\u2501\u2501 TIMELINE \u2501\u2501\u2501 -->
-    <tr>
-      <td style="background:${C.offWhite};padding:26px 40px 30px;border-bottom:1px solid #eee8e0;">
-        <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Stato della tua spedizione</p>
-        ${buildEmailTimeline(opts.activeStep, opts.createdAt)}
-      </td>
-    </tr>
-
-
-    <!-- \u2501\u2501\u2501 FOOTER \u2501\u2501\u2501 -->
-    <tr>
-      <td style="background:#fdf8f2;padding:0;">
-        <!-- Amber top line -->
-        <div style="height:3px;background:linear-gradient(90deg,${C.amber} 0%,${C.yellow} 50%,${C.amber} 100%);"></div>
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-          <tr>
-            <td align="center" style="padding:20px 40px 24px;">
-              <img src="${LOGO_URL}" alt="Panini" width="80"
-                   style="max-width:80px;height:auto;display:block;margin:0 auto 12px;opacity:0.85;border:0;" />
-              <p style="margin:0 0 5px;font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#b0a898;letter-spacing:0.20em;text-transform:uppercase;">Panini Italia Srl &middot; Assistenza Clienti</p>
-              <p style="margin:0 0 5px;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#c0b8af;line-height:1.6;">Reso gratuito entro 30 giorni &middot; Spedizione gratuita in tutta Italia</p>
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#d0c8c0;">&copy; ${year} Panini Italia Srl &middot; Tutti i diritti riservati &middot; Licenziatario ufficiale FIFA</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-  </table>
+</table>
 </td></tr>
 </table>
 </body>
