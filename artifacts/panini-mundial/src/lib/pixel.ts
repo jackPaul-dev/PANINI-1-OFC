@@ -25,9 +25,12 @@ function fbq(
 }
 
 function ttq(event: string, params?: Record<string, unknown>) {
-  if (typeof window !== "undefined" && window.ttq && typeof window.ttq.track === "function") {
-    window.ttq.track(event, params);
-  }
+  try {
+    const t = (window as any).ttq;
+    if (t && typeof t.track === "function") {
+      t.track(event, params);
+    }
+  } catch (_) {}
 }
 
 export function pixelPageView() {
@@ -42,6 +45,7 @@ export function pixelViewContent(params: {
 }) {
   fbq("track", "ViewContent", { ...params, content_type: "product" });
   ttq("ViewContent", {
+    content_type: "product",
     content_id: params.content_ids[0],
     content_name: params.content_name,
     value: params.value,
@@ -57,6 +61,7 @@ export function pixelAddToCart(params: {
 }) {
   fbq("track", "AddToCart", { ...params, content_type: "product" });
   ttq("AddToCart", {
+    content_type: "product",
     content_id: params.content_ids[0],
     content_name: params.content_name,
     value: params.value,
@@ -72,6 +77,7 @@ export function pixelInitiateCheckout(params: {
 }) {
   fbq("track", "InitiateCheckout", { ...params, content_type: "product" });
   ttq("InitiateCheckout", {
+    content_type: "product",
     content_id: params.content_ids[0],
     value: params.value,
     currency: params.currency,
@@ -94,14 +100,8 @@ export function pixelPurchase(
     { ...params, content_type: "product" },
     eventID ? { eventID } : undefined
   );
-  ttq("PlaceAnOrder", {
-    content_id: params.content_ids[0],
-    value: params.value,
-    currency: params.currency,
-    quantity: params.num_items,
-    order_id: eventID,
-  });
   ttq("CompletePayment", {
+    content_type: "product",
     content_id: params.content_ids[0],
     value: params.value,
     currency: params.currency,
