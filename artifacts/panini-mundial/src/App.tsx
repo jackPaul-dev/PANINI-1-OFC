@@ -42,6 +42,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/checkout" component={Checkout} />
+        <Route path="/presell" component={Pressel} />
         <Route path="/pressel" component={Pressel} />
         <Route path="/seguimiento" component={Seguimiento} />
         <Route path="/email" component={EmailPanel} />
