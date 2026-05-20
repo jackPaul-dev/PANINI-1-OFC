@@ -6,6 +6,10 @@ declare global {
       params?: Record<string, unknown>,
       options?: Record<string, unknown>
     ) => void;
+    ttq?: {
+      track: (event: string, params?: Record<string, unknown>) => void;
+      page: () => void;
+    };
   }
 }
 
@@ -20,6 +24,12 @@ function fbq(
   }
 }
 
+function ttq(event: string, params?: Record<string, unknown>) {
+  if (typeof window !== "undefined" && window.ttq && typeof window.ttq.track === "function") {
+    window.ttq.track(event, params);
+  }
+}
+
 export function pixelPageView() {
   fbq("track", "PageView");
 }
@@ -31,6 +41,12 @@ export function pixelViewContent(params: {
   currency: string;
 }) {
   fbq("track", "ViewContent", { ...params, content_type: "product" });
+  ttq("ViewContent", {
+    content_id: params.content_ids[0],
+    content_name: params.content_name,
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
 export function pixelAddToCart(params: {
@@ -40,6 +56,12 @@ export function pixelAddToCart(params: {
   currency: string;
 }) {
   fbq("track", "AddToCart", { ...params, content_type: "product" });
+  ttq("AddToCart", {
+    content_id: params.content_ids[0],
+    content_name: params.content_name,
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
 export function pixelInitiateCheckout(params: {
@@ -49,6 +71,12 @@ export function pixelInitiateCheckout(params: {
   num_items: number;
 }) {
   fbq("track", "InitiateCheckout", { ...params, content_type: "product" });
+  ttq("InitiateCheckout", {
+    content_id: params.content_ids[0],
+    value: params.value,
+    currency: params.currency,
+    quantity: params.num_items,
+  });
 }
 
 export function pixelPurchase(
@@ -66,4 +94,11 @@ export function pixelPurchase(
     { ...params, content_type: "product" },
     eventID ? { eventID } : undefined
   );
+  ttq("PlaceAnOrder", {
+    content_id: params.content_ids[0],
+    value: params.value,
+    currency: params.currency,
+    quantity: params.num_items,
+    order_id: eventID,
+  });
 }
