@@ -62772,7 +62772,6 @@ router2.post("/payment/create-intent", async (req, res) => {
       amount: amountCents,
       currency: "eur",
       automatic_payment_methods: { enabled: true },
-      receipt_email: payer.email,
       description: kitName ? `Kit Panini FIFA WC26 \u2014 ${kitName}` : "Kit Panini FIFA World Cup 2026",
       metadata: {
         customer_email: payer.email,
