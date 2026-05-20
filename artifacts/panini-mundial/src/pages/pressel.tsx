@@ -51,19 +51,14 @@ export default function Pressel() {
 
       {/* Top bar */}
       <div className="bg-primary text-white text-center py-2 text-xs font-semibold tracking-wide">
-        🔥 Album Mondiale 2026 · Spedizione Gratuita in Italia
+        🔥 Edizione Ufficiale FIFA World Cup 2026™ · Spedizione Gratuita
       </div>
 
       {/* Header */}
       <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">⚽</span>
-          <div>
-            <p className="text-sm font-black text-gray-900 leading-none">Figurine Italia</p>
-            <p className="text-[11px] text-gray-400">Store Online · Italia</p>
-          </div>
-        </div>
+        <img src="/assets/logo-panini-oficial.png" alt="Panini" className="h-8 object-contain" />
         <div className="ml-auto text-right">
+          <p className="text-[11px] text-gray-400">Distribuzione Ufficiale</p>
           <p className="text-xs font-bold text-gray-700">panini-it.site</p>
         </div>
       </header>
@@ -73,32 +68,32 @@ export default function Pressel() {
         {/* Article tag */}
         <div className="w-full flex items-center gap-2">
           <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wide">Esclusiva</span>
-          <span className="text-xs text-gray-400">Sport · Collezionismo · Mondiale 2026</span>
+          <span className="text-xs text-gray-400">Sport · Collezionismo · FIFA 2026</span>
         </div>
 
         {/* Headline */}
         <div className="w-full">
           <h1 className="text-2xl font-black text-gray-900 leading-tight mb-2">
-            L'Album di Figurine del Mondiale 2026 È Già Esaurito Nei Negozi — Ecco Dove Trovarlo Online
+            L'Album Ufficiale Panini del Mondiale 2026 È Già Sold Out Nei Negozi — Ma Puoi Ancora Ordinarlo Online
           </h1>
           <p className="text-sm text-gray-500">
-            La domanda ha superato ogni previsione. I kit con bustine sigillate sono disponibili solo tramite store online selezionati.
+            La domanda ha superato ogni previsione. I kit esclusivi con bustine sigillate sono disponibili solo tramite distribuzione online ufficiale.
           </p>
         </div>
 
         {/* Hero image */}
         <div className="w-full rounded-2xl overflow-hidden shadow-md relative">
-          <img src="/assets/caixa2.png" alt="Kit Album Mondiale 2026"
+          <img src="/assets/caixa2.png" alt="Kit Panini FIFA WC 2026"
             className="w-full h-52 object-cover object-center" />
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-            <p className="text-white text-xs font-semibold">Album Figurine · Mondiale 2026 · Kit Esclusivi Online</p>
+            <p className="text-white text-xs font-semibold">Album Panini · FIFA World Cup 2026™ · Edizione Ufficiale</p>
           </div>
         </div>
 
         {/* Body copy */}
         <div className="w-full text-sm text-gray-700 space-y-3 leading-relaxed">
           <p>
-            Il Campionato del Mondo 2026 negli USA, Canada e Messico si avvicina — e con lui, l'album di figurine più atteso degli ultimi decenni.
+            Il Campionato del Mondo 2026 negli USA, Canada e Messico si avvicina — e con lui, l'album ufficiale Panini più atteso degli ultimi decenni.
             Con <strong>48 nazioni partecipanti</strong> e oltre <strong>700 figurine collezionabili</strong>, questa edizione è già storia del collezionismo sportivo.
           </p>
           <p>
