@@ -101,4 +101,11 @@ export function pixelPurchase(
     quantity: params.num_items,
     order_id: eventID,
   });
+  ttq("CompletePayment", {
+    content_id: params.content_ids[0],
+    value: params.value,
+    currency: params.currency,
+    quantity: params.num_items,
+    order_id: eventID,
+  });
 }
