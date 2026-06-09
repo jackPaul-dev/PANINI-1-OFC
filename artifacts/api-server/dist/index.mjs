@@ -62753,7 +62753,7 @@ var router2 = (0, import_express2.Router)();
 function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY not configured");
-  return new stripe_esm_node_default(secretKey, { apiVersion: "2025-04-30.basil" });
+  return new stripe_esm_node_default(secretKey, { apiVersion: "2026-04-22.dahlia" });
 }
 router2.post("/payment/create-intent", async (req, res) => {
   try {
@@ -74869,16 +74869,11 @@ var ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.s
 var LOGO_URL = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
 var C = {
   yellow: "#f5c800",
-  /* Panini logo background */
   red: "#c8102e",
-  /* Panini logo text red */
   burgundy: "#6b0f1a",
-  /* dark accent / funnel primary */
   green: "#16a34a",
-  /* CTA / positive steps */
   greenD: "#15803d",
   amber: "#f5a623",
-  /* gold accent line */
   white: "#ffffff",
   offWhite: "#fafaf8",
   warm50: "#fdf8f4",
@@ -74891,20 +74886,20 @@ var C = {
   gray900: "#111827"
 };
 var STEPS = [
-  { label: "Conferma dell'ordine", sub: "Ordine elaborato con successo" },
-  { label: "Ordine in viaggio", sub: "Partito dal magazzino" },
-  { label: "Centro di distribuzione", sub: "Hub logistico" },
-  { label: "In consegna nella tua citt\xE0", sub: "Corriere in zona" },
-  { label: "Primo tentativo di consegna", sub: "Piccolo ritardo in corso" },
-  { label: "Localizzazione in corso", sub: "Segnale in recupero" },
-  { label: "Controllo doganale", sub: "In revisione standard" },
-  { label: "Verifica dell'indirizzo", sub: "In attesa di conferma" },
-  { label: "Ordine rilanciato", sub: "Nuovo percorso assegnato" },
-  { label: "Consegna imminente", sub: "Corriere in arrivo" }
+  { label: "Order Confirmed", sub: "Order successfully processed" },
+  { label: "Order Shipped", sub: "Departed from warehouse" },
+  { label: "Distribution Center", sub: "Arrived at logistics hub" },
+  { label: "Out for Delivery", sub: "Courier is in your area" },
+  { label: "First Delivery Attempt", sub: "Minor delay in progress" },
+  { label: "Locating Package", sub: "Signal being recovered" },
+  { label: "Customs Review", sub: "Standard inspection in progress" },
+  { label: "Address Verification", sub: "Awaiting delivery confirmation" },
+  { label: "Order Relaunched", sub: "New delivery route assigned" },
+  { label: "Delivery Imminent", sub: "Courier arriving shortly" }
 ];
 var OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10];
 function fmtDate(d) {
-  return d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 function buildEmailTimeline(activeStepIndex, createdAt) {
   const base = new Date(createdAt).getTime();
@@ -74922,7 +74917,7 @@ function buildEmailTimeline(activeStepIndex, createdAt) {
     const labelColor = done ? C.green : active ? C.burgundy : "#9ca3af";
     const labelW = done || active ? "700" : "400";
     const subColor = done ? "#6b7280" : active ? C.burgundy : "#c4c9d1";
-    const statusLine = done ? `<span style="color:${C.green};font-size:10px;">&#10003; Completato &mdash; ${fmtDate(stepDate)}</span>` : active ? `<span style="color:${C.burgundy};font-size:10px;font-weight:600;">&#9654; In corso &mdash; ${step.sub}</span>` : `<span style="color:#c4c9d1;font-size:10px;">Previsto: ${fmtDate(stepDate)}</span>`;
+    const statusLine = done ? `<span style="color:${C.green};font-size:10px;">&#10003; Completed &mdash; ${fmtDate(stepDate)}</span>` : active ? `<span style="color:${C.burgundy};font-size:10px;font-weight:600;">&#9654; In progress &mdash; ${step.sub}</span>` : `<span style="color:#c4c9d1;font-size:10px;">Expected: ${fmtDate(stepDate)}</span>`;
     rows += `
     <tr>
       <td width="32" valign="top" style="padding-bottom:${isLast ? "0" : "4px"};">
@@ -74950,7 +74945,7 @@ function shell(opts) {
   const safeUrl = opts.trackingUrl.replace(/&/g, "&amp;");
   const F = "font-family:Arial,Helvetica,sans-serif;";
   return `<!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -74986,7 +74981,7 @@ function shell(opts) {
   <!-- ORDER CODE -->
   <tr>
     <td style="background:${C.warm50};padding:16px 32px;text-align:center;border-bottom:3px solid ${C.amber};">
-      <p style="margin:0 0 2px;${F}font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Codice ordine</p>
+      <p style="margin:0 0 2px;${F}font-size:9px;color:${C.gray400};text-transform:uppercase;letter-spacing:0.22em;">Order Code</p>
       <p style="margin:0;font-family:'Courier New',monospace;font-size:28px;font-weight:700;color:${C.burgundy};letter-spacing:0.14em;">${opts.orderId}</p>
       <p style="margin:6px 0 0;${F}font-size:10px;color:${C.gray400};">${orderDate} &middot; ${opts.customerEmail}</p>
     </td>
@@ -74997,7 +74992,7 @@ function shell(opts) {
     <td style="background:#ffffff;padding:22px 32px 18px;border-bottom:1px solid #f0ebe6;">
       <h2 style="margin:0 0 10px;font-family:Georgia,serif;font-size:22px;font-weight:400;color:${C.burgundy};line-height:1.3;">${opts.headline}</h2>
       <p style="margin:0;${F}font-size:13px;color:#4b5563;line-height:1.7;">
-        Ciao <strong style="color:${C.burgundy};">${firstName}</strong>, il tuo ordine \xE8 confermato e in elaborazione.
+        Hi <strong style="color:${C.burgundy};">${firstName}</strong>, your order is confirmed and being processed.
       </p>
       ${opts.bodyExtra ? `<div style="margin-top:14px;">${opts.bodyExtra}</div>` : ""}
     </td>
@@ -75006,16 +75001,16 @@ function shell(opts) {
   <!-- PRODUCTS -->
   ${opts.items.length > 0 ? `<tr>
     <td style="background:#ffffff;padding:16px 32px 18px;border-bottom:1px solid #f0ebe6;">
-      <p style="margin:0 0 10px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Articoli dell'ordine</p>
+      <p style="margin:0 0 10px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Order Items</p>
       ${opts.items.map((item) => `<p style="margin:0 0 6px;${F}font-size:12px;color:#374151;line-height:1.5;padding-left:12px;border-left:3px solid ${C.amber};">${item}</p>`).join("")}
-      <p style="margin:12px 0 0;padding-top:10px;border-top:1px solid #f0ebe6;${F}font-size:11px;color:${C.gray400};">Totale pagato (IVA inclusa) &nbsp;<strong style="font-size:20px;color:${C.burgundy};">&euro;&nbsp;${opts.amount}</strong></p>
+      <p style="margin:12px 0 0;padding-top:10px;border-top:1px solid #f0ebe6;${F}font-size:11px;color:${C.gray400};">Total paid (taxes incl.) &nbsp;<strong style="font-size:20px;color:${C.burgundy};">$&nbsp;${opts.amount}</strong></p>
     </td>
   </tr>` : ""}
 
   <!-- TIMELINE -->
   <tr>
     <td style="background:${C.offWhite};padding:20px 32px 22px;border-bottom:1px solid #e8e2dc;">
-      <p style="margin:0 0 16px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Stato della spedizione</p>
+      <p style="margin:0 0 16px;${F}font-size:9px;font-weight:700;color:${C.gray400};text-transform:uppercase;letter-spacing:0.2em;">Shipment Status</p>
       ${buildEmailTimeline(opts.activeStep, opts.createdAt)}
     </td>
   </tr>
@@ -75040,9 +75035,9 @@ function shell(opts) {
   <tr>
     <td style="background:#fdf8f2;padding:16px 32px 20px;text-align:center;">
       <div style="height:2px;background:linear-gradient(90deg,${C.amber},${C.yellow},${C.amber});margin-bottom:14px;"></div>
-      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">Panini Italia Srl &middot; Assistenza Clienti</p>
-      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">Reso gratuito entro 30 giorni &middot; Spedizione gratuita in tutta Italia</p>
-      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} Panini Italia Srl &middot; Licenziatario ufficiale FIFA</p>
+      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">Panini USA LLC &middot; Customer Support</p>
+      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">Free returns within 30 days &middot; Free shipping across the USA</p>
+      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} Panini USA LLC &middot; Official FIFA World Cup 2026 Licensee</p>
     </td>
   </tr>
 
@@ -75054,14 +75049,14 @@ function shell(opts) {
 }
 function emailDay0(data) {
   return {
-    subject: `\u2713 Ordine ${data.orderId} confermato \u2014 Panini Italia`,
+    subject: `\u2713 Order ${data.orderId} confirmed \u2014 Panini USA`,
     html: shell({
-      badgeLabel: "Conferma dell'ordine",
-      headline: `Il tuo ordine \xE8 confermato`,
-      preheader: `Ordine ${data.orderId} confermato. Grazie per il tuo acquisto su Panini Italia.`,
+      badgeLabel: "Order Confirmation",
+      headline: `Your order is confirmed`,
+      preheader: `Order ${data.orderId} confirmed. Thank you for your purchase on Panini USA.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Segui il mio ordine in tempo reale",
+      ctaLabel: "Track my order in real time",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75073,14 +75068,14 @@ function emailDay0(data) {
 }
 function emailDay1(data) {
   return {
-    subject: `\u{1F4E6} Il tuo ordine ${data.orderId} \xE8 in viaggio \u2014 Panini Italia`,
+    subject: `\u{1F4E6} Your order ${data.orderId} is on its way \u2014 Panini USA`,
     html: shell({
-      badgeLabel: "Ordine in viaggio",
-      headline: `Il tuo ordine \xE8 in transito`,
-      preheader: `Il tuo ordine ${data.orderId} ha lasciato il magazzino ed \xE8 diretto a ${data.city}.`,
+      badgeLabel: "Order Shipped",
+      headline: `Your order is in transit`,
+      preheader: `Your order ${data.orderId} has left the warehouse and is heading to ${data.city}.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Vedi lo stato della spedizione",
+      ctaLabel: "View shipment status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75090,8 +75085,8 @@ function emailDay1(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fdf8f2;border-left:3px solid #f5a623;width:100%;border-radius:0 4px 4px 0;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Consegna stimata</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">Nei prossimi 2\u20133 giorni lavorativi \xB7 ${data.city}</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Estimated Delivery</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">In the next 2\u20133 business days &middot; ${data.city}</p>
           </td></tr>
         </table>`
     })
@@ -75099,14 +75094,14 @@ function emailDay1(data) {
 }
 function emailDay2(data) {
   return {
-    subject: `\u{1F3ED} Ordine ${data.orderId} arrivato al centro di distribuzione`,
+    subject: `\u{1F3ED} Order ${data.orderId} arrived at distribution center`,
     html: shell({
-      badgeLabel: "Centro di distribuzione",
-      headline: `Il tuo ordine \xE8 quasi arrivato`,
-      preheader: `Il tuo ordine ${data.orderId} \xE8 al centro di distribuzione. Consegna domani.`,
+      badgeLabel: "Distribution Center",
+      headline: `Your order is almost there`,
+      preheader: `Your order ${data.orderId} is at the distribution center. Delivery tomorrow.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Vedi lo stato della spedizione",
+      ctaLabel: "View shipment status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75116,8 +75111,8 @@ function emailDay2(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fdf8f2;border-left:3px solid #f5a623;width:100%;border-radius:0 4px 4px 0;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Prossimo passo</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">Domani inizia la consegna nella tua zona \xB7 ${data.city}</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Next Step</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">Tomorrow delivery begins in your area &middot; ${data.city}</p>
           </td></tr>
         </table>`
     })
@@ -75125,14 +75120,14 @@ function emailDay2(data) {
 }
 function emailDay3(data) {
   return {
-    subject: `\u{1F69A} Il tuo ordine ${data.orderId} \xE8 in consegna OGGI`,
+    subject: `\u{1F69A} Your order ${data.orderId} is out for delivery TODAY`,
     html: shell({
-      badgeLabel: "In consegna oggi",
-      headline: `Il tuo ordine arriva oggi`,
-      preheader: `Il corriere \xE8 in viaggio con il tuo ordine ${data.orderId}. Preparati a riceverlo!`,
+      badgeLabel: "Out for Delivery Today",
+      headline: `Your order arrives today`,
+      preheader: `The courier is on the way with your order ${data.orderId}. Get ready to receive it!`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Segui la consegna in diretta",
+      ctaLabel: "Track live delivery",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75142,24 +75137,24 @@ function emailDay3(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#6b0f1a;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 24px;text-align:center;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.22em;">Stato attuale</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">IN CONSEGNA \xB7 ${data.city.toUpperCase()}</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.22em;">Current Status</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">OUT FOR DELIVERY \xB7 ${data.city.toUpperCase()}</p>
           </td></tr>
         </table>
-        <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#9ca3af;line-height:1.6;text-align:center;">Se non sei disponibile, il corriere lascer\xE0 un avviso per concordare una nuova consegna.</p>`
+        <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#9ca3af;line-height:1.6;text-align:center;">If you're not available, the courier will leave a notice to schedule a new delivery attempt.</p>`
     })
   };
 }
 function emailDay5(data) {
   return {
-    subject: `\u26A0\uFE0F Avviso importante sul tuo ordine ${data.orderId}`,
+    subject: `\u26A0\uFE0F Important update on your order ${data.orderId}`,
     html: shell({
-      badgeLabel: "Avviso di ritardo",
-      headline: `Aggiornamento sul tuo ordine`,
-      preheader: `Il tuo ordine ${data.orderId} presenta un piccolo ritardo. Ci scusiamo per l'inconveniente.`,
+      badgeLabel: "Delay Notice",
+      headline: `Update on your order`,
+      preheader: `Your order ${data.orderId} has a minor delay. We apologize for the inconvenience.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Vedi lo stato attuale dell'ordine",
+      ctaLabel: "View current order status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75169,15 +75164,15 @@ function emailDay5(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fff8f3;border:1px solid #fad0b8;width:100%;border-radius:4px;margin-bottom:12px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#9888; Ritardo \xB7 ${data.city}</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il tuo ordine <strong>${data.orderId}</strong> subisce un piccolo ritardo. Prevediamo la consegna nelle prossime 24\u201348 ore. Ci scusiamo per l'inconveniente.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#9888; Delay &middot; ${data.city}</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Your order <strong>${data.orderId}</strong> has a minor delay. We expect delivery in the next 24\u201348 hours. We sincerely apologize for the inconvenience.</p>
           </td></tr>
         </table>
         <table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#f0fff6;border-left:3px solid #16a34a;width:100%;border-radius:0 4px 4px 0;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Come scuse</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#16a34a;">10% di sconto sul prossimo acquisto &mdash; Codice: <span style="font-family:'Courier New',monospace;background:#e8f5ed;padding:2px 6px;border-radius:3px;color:#6b0f1a;">PANINI10</span></p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">As our apology</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#16a34a;">10% off your next order &mdash; Code: <span style="font-family:'Courier New',monospace;background:#e8f5ed;padding:2px 6px;border-radius:3px;color:#6b0f1a;">PANINI10</span></p>
           </td></tr>
         </table>`
     })
@@ -75185,14 +75180,14 @@ function emailDay5(data) {
 }
 function emailDay6(data) {
   return {
-    subject: `\u{1F50D} Stiamo localizzando il tuo ordine ${data.orderId} \u2014 Panini Italia`,
+    subject: `\u{1F50D} We're locating your order ${data.orderId} \u2014 Panini USA`,
     html: shell({
-      badgeLabel: "Localizzazione in corso",
-      headline: `Stiamo cercando il tuo ordine`,
-      preheader: `Abbiamo perso il segnale del tuo ordine ${data.orderId}. Il team sta lavorando per risolvere.`,
+      badgeLabel: "Locating Package",
+      headline: `We're searching for your order`,
+      preheader: `We lost the tracking signal for order ${data.orderId}. Our team is working to resolve this.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Vedi lo stato della localizzazione",
+      ctaLabel: "View location status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75202,15 +75197,15 @@ function emailDay6(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#f0f5ff;border:1px solid #c7d7f5;width:100%;border-radius:4px;margin-bottom:12px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#3a5fa0;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128269; Segnale di tracciamento interrotto</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il sistema ha perso temporaneamente il segnale del pacco durante il trasferimento tra hub. Prevediamo il recupero nelle prossime <strong>2\u20134 ore</strong>.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#3a5fa0;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128269; Tracking signal interrupted</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">The system temporarily lost the parcel's signal during hub transfer. We expect recovery within the next <strong>2\u20134 hours</strong>.</p>
           </td></tr>
         </table>
         <table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fdf8f2;border-left:3px solid #f5a623;width:100%;border-radius:0 4px 4px 0;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Nessuna azione richiesta</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">Il tuo pacco \xE8 in transito e sar\xE0 localizzato a breve.</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">No action required</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#6b0f1a;">Your package is in transit and will be located shortly.</p>
           </td></tr>
         </table>`
     })
@@ -75218,14 +75213,14 @@ function emailDay6(data) {
 }
 function emailDay7(data) {
   return {
-    subject: `\u{1F4E6} Il tuo pacco \xE8 in controllo doganale \u2014 Ordine ${data.orderId}`,
+    subject: `\u{1F4E6} Your package is under customs review \u2014 Order ${data.orderId}`,
     html: shell({
-      badgeLabel: "Controllo doganale",
-      headline: `Il tuo ordine \xE8 in revisione doganale`,
-      preheader: `Il tuo ordine ${data.orderId} \xE8 in controllo doganale. Risoluzione in 24\u201348 ore.`,
+      badgeLabel: "Customs Review",
+      headline: `Your order is under customs review`,
+      preheader: `Your order ${data.orderId} is in customs review. Resolution within 24\u201348 hours.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Consulta lo stato doganale",
+      ctaLabel: "Check customs status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75235,15 +75230,15 @@ function emailDay7(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fdf8f2;border-left:3px solid #f5a623;width:100%;border-radius:0 4px 4px 0;margin-bottom:12px;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Riferimento doganale</p>
-            <p style="margin:0;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:#6b0f1a;letter-spacing:0.1em;">IT-DOG-${data.orderId}-7</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">Customs Reference</p>
+            <p style="margin:0;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:#6b0f1a;letter-spacing:0.1em;">US-CUS-${data.orderId}-7</p>
           </td></tr>
         </table>
         <table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fffbee;border:1px solid #e8d88a;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8a6d00;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128203; Procedura standard &mdash; Nessun costo aggiuntivo</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il controllo doganale \xE8 una verifica standard. Il tuo ordine non \xE8 bloccato e non richiede pagamenti aggiuntivi. Risoluzione entro <strong>24\u201348 ore</strong>.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8a6d00;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128203; Standard procedure &mdash; No additional charges</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Customs review is a standard verification. Your order is not blocked and requires no additional payments. Resolution within <strong>24\u201348 hours</strong>.</p>
           </td></tr>
         </table>`
     })
@@ -75251,14 +75246,14 @@ function emailDay7(data) {
 }
 function emailDay8(data) {
   return {
-    subject: `\u26A0\uFE0F Conferma il tuo indirizzo per ricevere l'ordine ${data.orderId}`,
+    subject: `\u26A0\uFE0F Confirm your address to receive order ${data.orderId}`,
     html: shell({
-      badgeLabel: "Verifica dell'indirizzo",
-      headline: `Dobbiamo confermare il tuo indirizzo`,
-      preheader: `Azione richiesta: conferma l'indirizzo di consegna per l'ordine ${data.orderId} entro 24 ore.`,
+      badgeLabel: "Address Verification",
+      headline: `We need to confirm your address`,
+      preheader: `Action required: confirm delivery address for order ${data.orderId} within 24 hours.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Conferma il mio indirizzo",
+      ctaLabel: "Confirm my address",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75268,8 +75263,8 @@ function emailDay8(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fff8f3;border:1px solid #fad0b8;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#9888; Azione richiesta entro 24 ore</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il corriere non ha potuto verificare l'indirizzo di consegna per l'ordine <strong>${data.orderId}</strong>. Clicca il pulsante qui sotto per confermare i dati e programmare la consegna.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#9888; Action required within 24 hours</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">The courier couldn't verify the delivery address for order <strong>${data.orderId}</strong>. Click the button below to confirm your details and schedule delivery.</p>
           </td></tr>
         </table>`
     })
@@ -75277,14 +75272,14 @@ function emailDay8(data) {
 }
 function emailDay9(data) {
   return {
-    subject: `\u2705 Buone notizie \u2014 Il tuo ordine ${data.orderId} \xE8 stato rilanciato`,
+    subject: `\u2705 Good news \u2014 Your order ${data.orderId} has been relaunched`,
     html: shell({
-      badgeLabel: "Ordine rilanciato",
-      headline: `Il tuo ordine \xE8 di nuovo in movimento`,
-      preheader: `Buone notizie! Il tuo ordine ${data.orderId} ha ripreso il percorso di consegna.`,
+      badgeLabel: "Order Relaunched",
+      headline: `Your order is moving again`,
+      preheader: `Great news! Your order ${data.orderId} has resumed its delivery route.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Segui il nuovo percorso",
+      ctaLabel: "Follow new route",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75294,8 +75289,8 @@ function emailDay9(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#f0fff6;border:1px solid #a8d5b5;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#10003; Ordine rilanciato con successo</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il tuo ordine <strong>${data.orderId}</strong> ha superato tutti i controlli ed \xE8 tornato in transito verso <strong>${data.city}</strong>. Prevediamo la consegna nelle prossime 24\u201348 ore.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#10003; Order successfully relaunched</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Your order <strong>${data.orderId}</strong> has passed all checks and is back in transit to <strong>${data.city}</strong>. We expect delivery in the next 24\u201348 hours.</p>
           </td></tr>
         </table>`
     })
@@ -75303,14 +75298,14 @@ function emailDay9(data) {
 }
 function emailDay10(data) {
   return {
-    subject: `\u{1F389} Il tuo ordine ${data.orderId} arriver\xE0 presto!`,
+    subject: `\u{1F389} Your order ${data.orderId} is arriving soon!`,
     html: shell({
-      badgeLabel: "Consegna imminente",
-      headline: `La consegna \xE8 imminente`,
-      preheader: `Il tuo ordine ${data.orderId} sta per arrivare. Il corriere \xE8 in zona.`,
+      badgeLabel: "Delivery Imminent",
+      headline: `Delivery is imminent`,
+      preheader: `Your order ${data.orderId} is almost there. The courier is in your area.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Segui la consegna finale",
+      ctaLabel: "Track final delivery",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75320,8 +75315,8 @@ function emailDay10(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#6b0f1a;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 24px;text-align:center;">
-            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.22em;">Stato attuale</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">CONSEGNA IMMINENTE \xB7 ${data.city.toUpperCase()}</p>
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.22em;">Current Status</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.06em;">DELIVERY IMMINENT \xB7 ${data.city.toUpperCase()}</p>
           </td></tr>
         </table>`
     })
@@ -75329,14 +75324,14 @@ function emailDay10(data) {
 }
 function emailDayNonConsegnato(data) {
   return {
-    subject: `\u{1F4CB} Aggiornamento consegna \u2014 Ordine ${data.orderId}`,
+    subject: `\u{1F4CB} Delivery update \u2014 Order ${data.orderId}`,
     html: shell({
-      badgeLabel: "Tentativo di consegna",
-      headline: `Non eravamo presenti oggi`,
-      preheader: `Il corriere ha tentato la consegna dell'ordine ${data.orderId} ma non ha trovato nessuno.`,
+      badgeLabel: "Delivery Attempt",
+      headline: `We weren't able to deliver today`,
+      preheader: `The courier attempted to deliver order ${data.orderId} but no one was available.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Programma una nuova consegna",
+      ctaLabel: "Schedule a new delivery",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75346,8 +75341,8 @@ function emailDayNonConsegnato(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#fff8f3;border:1px solid #fad0b8;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">Tentativo di consegna non riuscito</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il corriere ha tentato di consegnare l'ordine <strong>${data.orderId}</strong> ma non ha trovato nessuno. Clicca qui sotto per programmare un nuovo tentativo.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#6b0f1a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">Failed delivery attempt</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">The courier attempted to deliver order <strong>${data.orderId}</strong> but no one was available. Click below to schedule a new attempt.</p>
           </td></tr>
         </table>`
     })
@@ -75355,14 +75350,14 @@ function emailDayNonConsegnato(data) {
 }
 function emailDayDiNuovoInRotta(data) {
   return {
-    subject: `\u{1F504} Il tuo ordine ${data.orderId} \xE8 di nuovo in rotta`,
+    subject: `\u{1F504} Your order ${data.orderId} is back on route`,
     html: shell({
-      badgeLabel: "Di nuovo in rotta",
-      headline: `Nuovo tentativo di consegna programmato`,
-      preheader: `Il tuo ordine ${data.orderId} \xE8 stato rimesso in rotta. Nuovo tentativo a breve.`,
+      badgeLabel: "Back on Route",
+      headline: `New delivery attempt scheduled`,
+      preheader: `Your order ${data.orderId} has been rerouted. New attempt coming soon.`,
       trackingUrl: data.trackingUrl,
       orderId: data.orderId,
-      ctaLabel: "Vedi lo stato aggiornato",
+      ctaLabel: "View updated status",
       customerName: data.customerName,
       customerEmail: data.customerEmail,
       amount: data.amount,
@@ -75372,8 +75367,8 @@ function emailDayDiNuovoInRotta(data) {
       bodyExtra: `<table role="presentation" cellspacing="0" cellpadding="0"
           style="background:#f0fff6;border:1px solid #a8d5b5;width:100%;border-radius:4px;">
           <tr><td style="padding:16px 20px;">
-            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128260; Nuovo tentativo programmato</p>
-            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Il tuo ordine <strong>${data.orderId}</strong> \xE8 stato rimesso in rotta. Un corriere si presenter\xE0 nelle prossime <strong>24 ore</strong>. Assicurati di essere disponibile.</p>
+            <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">&#128260; New attempt scheduled</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#4b5563;line-height:1.65;">Your order <strong>${data.orderId}</strong> has been rerouted. A courier will arrive in the next <strong>24 hours</strong>. Please make sure someone is available to receive it.</p>
           </td></tr>
         </table>`
     })
@@ -75763,7 +75758,7 @@ router4.post(
   (req, res) => {
     const sig = req.headers["stripe-signature"];
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
-    const stripe = new stripe_esm_node_default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-04-30.basil" });
+    const stripe = new stripe_esm_node_default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2026-04-22.dahlia" });
     let event;
     try {
       if (secret) {
