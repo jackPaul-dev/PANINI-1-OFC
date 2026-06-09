@@ -62760,19 +62760,19 @@ router2.post("/payment/create-intent", async (req, res) => {
     const stripe = getStripe();
     const { amount, payer, kitName } = req.body;
     if (!amount || !payer?.email) {
-      res.status(400).json({ error: "Campi obbligatori mancanti: amount, payer" });
+      res.status(400).json({ error: "Missing required fields: amount, payer" });
       return;
     }
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Importo minimo \u20AC0,50" });
+      res.status(400).json({ error: "Minimum amount is $0.50" });
       return;
     }
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: "eur",
+      currency: "usd",
       automatic_payment_methods: { enabled: true },
-      description: kitName ? `Kit Panini FIFA WC26 \u2014 ${kitName}` : "Kit Panini FIFA World Cup 2026",
+      description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
         customer_email: payer.email,
         customer_name: payer.name,
@@ -62787,7 +62787,7 @@ router2.post("/payment/create-intent", async (req, res) => {
     });
   } catch (err) {
     req.log.error({ err }, "payment/create-intent error");
-    const message = err instanceof stripe_esm_node_default.errors.StripeError ? err.message : "Errore interno del server";
+    const message = err instanceof stripe_esm_node_default.errors.StripeError ? err.message : "Internal server error";
     res.status(500).json({ error: message });
   }
 });
@@ -75403,7 +75403,7 @@ function getResend() {
   if (!key) throw new Error("RESEND_API_KEY not configured");
   return new Resend(key);
 }
-var FROM = process.env.EMAIL_FROM || "Panini Italia <noreply@panini-worldcup.online>";
+var FROM = process.env.EMAIL_FROM || "Panini USA <noreply@paniniworldcup2026.site>";
 var TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 function buildTrackingUrl(base, orderId, step, data) {
   const p = new URLSearchParams({
@@ -75592,46 +75592,46 @@ router3.post("/emails/test", async (req, res) => {
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const testOrderId = "PAN-DEMO7X";
     const testItems = [
-      "1x Kit Campione \u2014 1 Album + 2 Box (60 bustine)",
-      "+100 bustine \xB7 ~500 figurine"
+      "1x Champion Kit \u2014 1 Album + 2 Boxes (60 sticker packs)",
+      "+100 sticker packs \xB7 ~500 stickers"
     ];
     await upsertOrderById({
       orderId: testOrderId,
       paymentIntentId: "pi_test_demo",
       customerEmail: email,
-      customerName: "Marco Rossi",
-      address: "Via Roma 1",
-      city: "Milano",
-      postalCode: "20121",
-      province: "MI",
-      country: "IT",
+      customerName: "John Mitchell",
+      address: "123 Main Street",
+      city: "New York",
+      postalCode: "10001",
+      province: "NY",
+      country: "US",
       amount: 94.99,
       items: testItems,
       createdAt: now
     });
     const testBase = TRACKING_BASE;
     const baseTestData = {
-      customerName: "Marco Rossi",
+      customerName: "John Mitchell",
       customerEmail: email,
       orderId: testOrderId,
-      amount: "94,99",
+      amount: "94.99",
       items: testItems,
-      city: "Milano",
+      city: "New York",
       createdAt: now
     };
     const builders = [
-      { fn: emailDay0, label: "Giorno 0 \u2014 Conferma", step: 0 },
-      { fn: emailDay1, label: "Giorno 1 \u2014 In viaggio", step: 1 },
-      { fn: emailDay2, label: "Giorno 2 \u2014 Centro distribuzione", step: 2 },
-      { fn: emailDay3, label: "Giorno 3 \u2014 In consegna oggi", step: 3 },
-      { fn: emailDay5, label: "Giorno 5 \u2014 Ritardo", step: 4 },
-      { fn: emailDay6, label: "Giorno 6 \u2014 Localizzazione", step: 5 },
-      { fn: emailDay7, label: "Giorno 7 \u2014 Controllo doganale", step: 6 },
-      { fn: emailDay8, label: "Giorno 8 \u2014 Verifica indirizzo", step: 7 },
-      { fn: emailDay9, label: "Giorno 9 \u2014 Rilanciato", step: 8 },
-      { fn: emailDay10, label: "Giorno 10 \u2014 Imminente", step: 9 },
-      { fn: emailDayNonConsegnato, label: "Giorno 11 \u2014 Non consegnato", step: 9 },
-      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 \u2014 Di nuovo in rotta", step: 9 }
+      { fn: emailDay0, label: "Day 0 \u2014 Order Confirmed", step: 0 },
+      { fn: emailDay1, label: "Day 1 \u2014 Order Shipped", step: 1 },
+      { fn: emailDay2, label: "Day 2 \u2014 Distribution Center", step: 2 },
+      { fn: emailDay3, label: "Day 3 \u2014 Out for Delivery", step: 3 },
+      { fn: emailDay5, label: "Day 5 \u2014 First Delivery Attempt", step: 4 },
+      { fn: emailDay6, label: "Day 6 \u2014 Locating Package", step: 5 },
+      { fn: emailDay7, label: "Day 7 \u2014 Customs Review", step: 6 },
+      { fn: emailDay8, label: "Day 8 \u2014 Address Verification", step: 7 },
+      { fn: emailDay9, label: "Day 9 \u2014 Order Relaunched", step: 8 },
+      { fn: emailDay10, label: "Day 10 \u2014 Delivery Imminent", step: 9 },
+      { fn: emailDayNonConsegnato, label: "Day 11 \u2014 Failed Delivery", step: 9 },
+      { fn: emailDayDiNuovoInRotta, label: "Day 12 \u2014 Back on Route", step: 9 }
     ];
     const toSend = only ? builders.filter((_, i) => only.includes(i)) : builders;
     const results = [];
@@ -75639,8 +75639,8 @@ router3.post("/emails/test", async (req, res) => {
       const testData = {
         ...baseTestData,
         trackingUrl: buildTrackingUrl(testBase, testOrderId, step, {
-          name: "Marco Rossi",
-          city: "Milano",
+          name: "John Mitchell",
+          city: "New York",
           amount: 94.99,
           items: testItems,
           createdAt: now
@@ -75662,12 +75662,15 @@ router3.post("/emails/test", async (req, res) => {
     res.status(500).json({ error: msg });
   }
 });
+router3.get("/emails/trigger", async (_req, res) => {
+  res.json({ status: "ok", message: "Use POST /api/emails/trigger to start the sequence" });
+});
 var emails_default = router3;
 
 // src/routes/webhook.ts
 var import_express4 = __toESM(require_express2(), 1);
 var router4 = (0, import_express4.Router)();
-var FROM2 = process.env.EMAIL_FROM || "Panini Italia <noreply@panini-worldcup.online>";
+var FROM2 = process.env.EMAIL_FROM || "Panini USA <noreply@paniniworldcup2026.site>";
 var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 var EMAIL_DAYS2 = [
   { day: 0, offsetHours: 0 },
@@ -75727,12 +75730,12 @@ function buildTrackingUrl2(orderId, step, d) {
   return `${TRACKING_BASE2}/seguimiento?${p.toString()}`;
 }
 function kitFromAmount(amount) {
-  if (amount <= 15) return ["Kit Base \u2014 1 Album + 10 bustine"];
-  if (amount <= 30) return ["Kit Principiante \u2014 1 Album + 1 Box (30 bustine)"];
-  if (amount <= 45) return ["Kit Campione \u2014 1 Album + 2 Box (60 bustine)"];
-  if (amount <= 65) return ["Kit Collezionista \u2014 1 Album + 3 Box (90 bustine)"];
-  if (amount <= 105) return ["Kit Album Copertina Dorata \u2014 1 Album + 6 Box (180 bustine)"];
-  return ["Kit Esclusivo Stadio \u2014 1 Album + 250 bustine"];
+  if (amount <= 15) return ["Starter Kit \u2014 1 Album + 10 sticker packs"];
+  if (amount <= 30) return ["Fan Kit \u2014 1 Album + 1 Box (30 sticker packs)"];
+  if (amount <= 45) return ["Champion Kit \u2014 1 Album + 2 Boxes (60 sticker packs)"];
+  if (amount <= 65) return ["Collector Kit \u2014 1 Album + 3 Boxes (90 sticker packs)"];
+  if (amount <= 105) return ["Gold Cover Kit \u2014 1 Album + 6 Boxes (180 sticker packs)"];
+  return ["Stadium Exclusive Kit \u2014 1 Album + 250 sticker packs"];
 }
 async function sendEmailSequence2(order) {
   const resend = new Resend(process.env.RESEND_API_KEY);
@@ -75821,7 +75824,7 @@ router4.post(
           city,
           postalCode: billing.address?.postal_code ?? "",
           province: billing.address?.state ?? "",
-          country: billing.address?.country ?? "IT",
+          country: billing.address?.country ?? "US",
           amount,
           items
         }).then((order) => sendEmailSequence2(order));

@@ -24,7 +24,7 @@ function getResend(): Resend {
   return new Resend(key);
 }
 
-const FROM          = process.env.EMAIL_FROM || "Panini Italia <noreply@panini-worldcup.online>";
+const FROM          = process.env.EMAIL_FROM || "Panini USA <noreply@paniniworldcup2026.site>";
 const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 
 /* Embed all order data in the tracking URL so the page works even after a server restart */
@@ -221,8 +221,8 @@ router.post("/emails/test", async (req, res) => {
     const now         = new Date().toISOString();
     const testOrderId = "PAN-DEMO7X";
     const testItems   = [
-      "1x Kit Campione — 1 Album + 2 Box (60 bustine)",
-      "+100 bustine · ~500 figurine",
+      "1x Champion Kit — 1 Album + 2 Boxes (60 sticker packs)",
+      "+100 sticker packs · ~500 stickers",
     ];
 
     /* Persist test order in DB with known ID so the tracking link always resolves */
@@ -230,12 +230,12 @@ router.post("/emails/test", async (req, res) => {
       orderId        : testOrderId,
       paymentIntentId: "pi_test_demo",
       customerEmail  : email,
-      customerName   : "Marco Rossi",
-      address        : "Via Roma 1",
-      city           : "Milano",
-      postalCode     : "20121",
-      province       : "MI",
-      country        : "IT",
+      customerName   : "John Mitchell",
+      address        : "123 Main Street",
+      city           : "New York",
+      postalCode     : "10001",
+      province       : "NY",
+      country        : "US",
       amount         : 94.99,
       items          : testItems,
       createdAt      : now,
@@ -244,28 +244,28 @@ router.post("/emails/test", async (req, res) => {
     const testBase = TRACKING_BASE;
 
     const baseTestData = {
-      customerName : "Marco Rossi",
+      customerName : "John Mitchell",
       customerEmail: email,
       orderId      : testOrderId,
-      amount       : "94,99",
+      amount       : "94.99",
       items        : testItems,
-      city         : "Milano",
+      city         : "New York",
       createdAt    : now,
     };
 
     const builders = [
-      { fn: emailDay0,              label: "Giorno 0 — Conferma",           step: 0 },
-      { fn: emailDay1,              label: "Giorno 1 — In viaggio",          step: 1 },
-      { fn: emailDay2,              label: "Giorno 2 — Centro distribuzione", step: 2 },
-      { fn: emailDay3,              label: "Giorno 3 — In consegna oggi",    step: 3 },
-      { fn: emailDay5,              label: "Giorno 5 — Ritardo",             step: 4 },
-      { fn: emailDay6,              label: "Giorno 6 — Localizzazione",      step: 5 },
-      { fn: emailDay7,              label: "Giorno 7 — Controllo doganale",  step: 6 },
-      { fn: emailDay8,              label: "Giorno 8 — Verifica indirizzo",  step: 7 },
-      { fn: emailDay9,              label: "Giorno 9 — Rilanciato",          step: 8 },
-      { fn: emailDay10,             label: "Giorno 10 — Imminente",          step: 9 },
-      { fn: emailDayNonConsegnato,  label: "Giorno 11 — Non consegnato",     step: 9 },
-      { fn: emailDayDiNuovoInRotta, label: "Giorno 12 — Di nuovo in rotta",  step: 9 },
+      { fn: emailDay0,              label: "Day 0 — Order Confirmed",        step: 0 },
+      { fn: emailDay1,              label: "Day 1 — Order Shipped",          step: 1 },
+      { fn: emailDay2,              label: "Day 2 — Distribution Center",    step: 2 },
+      { fn: emailDay3,              label: "Day 3 — Out for Delivery",       step: 3 },
+      { fn: emailDay5,              label: "Day 5 — First Delivery Attempt", step: 4 },
+      { fn: emailDay6,              label: "Day 6 — Locating Package",       step: 5 },
+      { fn: emailDay7,              label: "Day 7 — Customs Review",         step: 6 },
+      { fn: emailDay8,              label: "Day 8 — Address Verification",   step: 7 },
+      { fn: emailDay9,              label: "Day 9 — Order Relaunched",       step: 8 },
+      { fn: emailDay10,             label: "Day 10 — Delivery Imminent",     step: 9 },
+      { fn: emailDayNonConsegnato,  label: "Day 11 — Failed Delivery",       step: 9 },
+      { fn: emailDayDiNuovoInRotta, label: "Day 12 — Back on Route",         step: 9 },
     ];
 
     const toSend = only ? builders.filter((_, i) => only.includes(i)) : builders;
@@ -274,8 +274,8 @@ router.post("/emails/test", async (req, res) => {
       const testData: EmailData = {
         ...baseTestData,
         trackingUrl: buildTrackingUrl(testBase, testOrderId, step, {
-          name     : "Marco Rossi",
-          city     : "Milano",
+          name     : "John Mitchell",
+          city     : "New York",
           amount   : 94.99,
           items    : testItems,
           createdAt: now,
@@ -297,6 +297,11 @@ router.post("/emails/test", async (req, res) => {
     const msg = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: msg });
   }
+});
+
+/* ── GET /api/emails/trigger (idempotency check) ── */
+router.get("/emails/trigger", async (_req, res) => {
+  res.json({ status: "ok", message: "Use POST /api/emails/trigger to start the sequence" });
 });
 
 export default router;

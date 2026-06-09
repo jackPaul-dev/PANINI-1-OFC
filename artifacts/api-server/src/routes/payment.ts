@@ -19,21 +19,21 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
     };
 
     if (!amount || !payer?.email) {
-      res.status(400).json({ error: "Campi obbligatori mancanti: amount, payer" });
+      res.status(400).json({ error: "Missing required fields: amount, payer" });
       return;
     }
 
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Importo minimo €0,50" });
+      res.status(400).json({ error: "Minimum amount is $0.50" });
       return;
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: "eur",
+      currency: "usd",
       automatic_payment_methods: { enabled: true },
-      description: kitName ? `Kit Panini FIFA WC26 — ${kitName}` : "Kit Panini FIFA World Cup 2026",
+      description: kitName ? `Panini FIFA WC26 Kit — ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
         customer_email: payer.email,
         customer_name: payer.name,
@@ -51,7 +51,7 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
     req.log.error({ err }, "payment/create-intent error");
     const message = err instanceof Stripe.errors.StripeError
       ? err.message
-      : "Errore interno del server";
+      : "Internal server error";
     res.status(500).json({ error: message });
   }
 });

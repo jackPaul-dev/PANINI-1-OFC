@@ -12,7 +12,7 @@ import { addEmailRecord } from "../lib/orderStore.js";
 
 const router = Router();
 
-const FROM          = process.env.EMAIL_FROM || "Panini Italia <noreply@panini-worldcup.online>";
+const FROM          = process.env.EMAIL_FROM || "Panini USA <noreply@paniniworldcup2026.site>";
 const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 
 const EMAIL_DAYS = [
@@ -64,12 +64,12 @@ function buildTrackingUrl(
 }
 
 function kitFromAmount(amount: number): string[] {
-  if (amount <= 15)  return ["Kit Base — 1 Album + 10 bustine"];
-  if (amount <= 30)  return ["Kit Principiante — 1 Album + 1 Box (30 bustine)"];
-  if (amount <= 45)  return ["Kit Campione — 1 Album + 2 Box (60 bustine)"];
-  if (amount <= 65)  return ["Kit Collezionista — 1 Album + 3 Box (90 bustine)"];
-  if (amount <= 105) return ["Kit Album Copertina Dorata — 1 Album + 6 Box (180 bustine)"];
-  return ["Kit Esclusivo Stadio — 1 Album + 250 bustine"];
+  if (amount <= 15)  return ["Starter Kit — 1 Album + 10 sticker packs"];
+  if (amount <= 30)  return ["Fan Kit — 1 Album + 1 Box (30 sticker packs)"];
+  if (amount <= 45)  return ["Champion Kit — 1 Album + 2 Boxes (60 sticker packs)"];
+  if (amount <= 65)  return ["Collector Kit — 1 Album + 3 Boxes (90 sticker packs)"];
+  if (amount <= 105) return ["Gold Cover Kit — 1 Album + 6 Boxes (180 sticker packs)"];
+  return ["Stadium Exclusive Kit — 1 Album + 250 sticker packs"];
 }
 
 async function sendEmailSequence(order: Awaited<ReturnType<typeof createOrder>>) {
@@ -164,7 +164,7 @@ router.post(
           address: [billing.address?.line1, billing.address?.line2].filter(Boolean).join(" "),
           city, postalCode: billing.address?.postal_code ?? "",
           province: billing.address?.state ?? "",
-          country: billing.address?.country ?? "IT",
+          country: billing.address?.country ?? "US",
           amount, items,
         }).then(order => sendEmailSequence(order));
       }).catch(err => console.error("Webhook processing error:", err));
