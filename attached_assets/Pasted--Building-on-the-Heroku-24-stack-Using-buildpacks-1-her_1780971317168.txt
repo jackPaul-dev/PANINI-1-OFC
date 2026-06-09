@@ -1,0 +1,110 @@
+-----> Building on the Heroku-24 stack
+-----> Using buildpacks:
+       1. heroku/nodejs
+       2. heroku/python
+       3. heroku/java
+-----> Node.js app detected
+       
+-----> Creating runtime environment
+       
+       NPM_CONFIG_LOGLEVEL=error
+       NODE_VERBOSE=false
+       NODE_ENV=production
+       NODE_MODULES_CACHE=true
+-----> Installing binaries
+       engines.node (package.json):   24.x
+       engines.npm (package.json):    unspecified (use default)
+       engines.pnpm (package.json):   unspecified (use default)
+       packageManager (package.json): pnpm@10.26.1
+       
+       Resolving node version 24.x...
+       Downloading and installing node 24.16.0...
+       Validating checksum
+       Using default npm version: 11.13.0
+       Downloading and installing pnpm (10.26.1)
+       Using pnpm 10.26.1
+       
+-----> Installing dependencies
+       Running 'pnpm install' with pnpm-lock.yaml
+       
+-----> Build
+       Detected both "build" and "heroku-postbuild" scripts
+       Running heroku-postbuild
+       
+       > workspace@0.0.0 heroku-postbuild /tmp/build_421963c0
+       > echo 'Pre-built dist files included in repo — skipping build step'
+       
+       Pre-built dist files included in repo — skipping build step
+       
+-----> Caching build
+       - pnpm cache
+       
+-----> Pruning devDependencies
+       
+       ! Pruning skipped due to presence of lifecycle scripts
+       
+       Lifecycle scripts were detected in the `package.json` file at `/tmp/build_421963c0`. Due to how
+       workspace pruning in pnpm operates, it will execute the following lifecycle scripts declared
+       in package.json during reinstallation of prod dependencies which can cause build failures:
+       - pnpm:devPreinstall
+       - preinstall
+       - install
+       - postinstall
+       - prepare
+       
+       Since pruning can't be done safely for your build, it will be skipped.
+       
+-----> Build succeeded!
+-----> App not compatible with buildpack: https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/python.tgz
+       
+ !     Error: Your app is configured to use the Python buildpack,
+ !     but we couldn't find any supported Python project files.
+ !     
+ !     A Python app on Heroku must have either a 'requirements.txt',
+ !     'Pipfile.lock', 'poetry.lock' or 'uv.lock' package manager file
+ !     in the root directory of its source code.
+ !     
+ !     Currently the root directory of your app contains:
+ !     
+ !     .agents/
+ !     artifacts/
+ !     attached_assets/
+ !     .gitignore
+ !     .heroku/
+ !     lib/
+ !     node_modules/
+ !     .npmrc
+ !     package.json
+ !     panini-mundial-base.zip
+ !     pnpm-lock.yaml
+ !     pnpm-workspace.yaml
+ !     Procfile
+ !     .profile.d/
+ !     .replit
+ !     .replitignore
+ !     replit.md
+ !     scripts/
+ !     tsconfig.base.json
+ !     tsconfig.json
+ !     
+ !     If your app already has a package manager file, check that it:
+ !     
+ !     1. Is in the top level directory (not a subdirectory).
+ !     2. Has the correct spelling (the filenames are case-sensitive).
+ !     3. Isn't listed in '.gitignore' or '.slugignore'.
+ !     4. Has been added to the Git repository using 'git add --all'
+ !        and then committed using 'git commit'.
+ !     
+ !     Otherwise, add a package manager file to your app. If your app has
+ !     no dependencies, then create an empty 'requirements.txt' file.
+ !     
+[1;31m !     If you aren't sure which package manager to use, we recommend
+ !     trying uv, since it supports lockfiles, is extremely fast, and
+ !     is actively maintained by a full-time team:
+ !     https://docs.astral.sh/uv/
+ !     
+ !     For help with using Python on Heroku, see:
+ !     https://devcenter.heroku.com/articles/getting-started-with-python
+ !     https://devcenter.heroku.com/articles/python-support
+       More info: https://devcenter.heroku.com/articles/buildpacks#buildpack-auto-detection
+ !     Push failed
