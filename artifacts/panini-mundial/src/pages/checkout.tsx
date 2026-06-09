@@ -75,6 +75,7 @@ interface StripeFormProps {
   orderTotal: number;
   kitName: string;
   formData: FormData;
+  countryCode: string;
   onSuccess: (transactionID: string) => void;
   onError: (msg: string) => void;
   onBack: () => void;
@@ -86,6 +87,7 @@ function StripePaymentForm({
   orderTotal,
   kitName,
   formData,
+  countryCode,
   onSuccess,
   onError,
   onBack,
@@ -114,7 +116,7 @@ function StripePaymentForm({
                 city: formData.localidade,
                 state: formData.distrito,
                 postal_code: formData.codigoPostal,
-                country: "IT",
+                country: countryCode,
               },
             },
           },
@@ -243,6 +245,14 @@ export default function Checkout() {
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentError, setIntentError] = useState<string | null>(null);
+  const [countryCode, setCountryCode] = useState<string>("IT");
+
+  useEffect(() => {
+    fetch("https://api.country.is/")
+      .then(r => r.json())
+      .then(data => { if (data?.country) setCountryCode(data.country); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -301,7 +311,7 @@ export default function Checkout() {
                 city: order.formData.localidade,
                 postalCode: order.formData.codigoPostal,
                 province: order.formData.distrito,
-                country: "IT",
+                country: countryCode,
                 amount: order.orderTotal,
                 items,
               }),
@@ -423,7 +433,7 @@ export default function Checkout() {
         city: formData.localidade,
         postalCode: formData.codigoPostal,
         province: formData.distrito,
-        country: "IT",
+        country: countryCode,
         amount: orderTotal,
         items: emailItems,
       }),
@@ -800,6 +810,7 @@ export default function Checkout() {
                       orderTotal={orderTotal}
                       kitName={kit.name}
                       formData={formData}
+                      countryCode={countryCode}
                       onSuccess={handlePaymentSuccess}
                       onError={(msg) => setError(msg)}
                       onBack={() => setStep(2)}
