@@ -74729,10 +74729,19 @@ var ordersTable = pgTable("orders", {
 
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
+function sanitizeDbUrl(url) {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("channel_binding");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
 var db = null;
 var pool = null;
 if (process.env.DATABASE_URL) {
-  pool = new Pool3({ connectionString: process.env.DATABASE_URL });
+  pool = new Pool3({ connectionString: sanitizeDbUrl(process.env.DATABASE_URL) });
   db = drizzle(pool, { schema: schema_exports });
 }
 
@@ -74856,7 +74865,7 @@ async function addEmailRecord(orderId, record) {
 }
 
 // src/lib/emailTemplates.ts
-var ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+var ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 var LOGO_URL = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
 var C = {
   yellow: "#f5c800",
@@ -75379,7 +75388,7 @@ function getResend() {
   return new Resend(key);
 }
 var FROM = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
-var TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+var TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 function buildTrackingUrl(base, orderId, step, data) {
   const p = new URLSearchParams({
     orderId,
@@ -75643,7 +75652,7 @@ var emails_default = router3;
 var import_express4 = __toESM(require_express2(), 1);
 var router4 = (0, import_express4.Router)();
 var FROM2 = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
-var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 var EMAIL_DAYS2 = [
   { day: 0, offsetHours: 0 },
   { day: 1, offsetHours: 24 },

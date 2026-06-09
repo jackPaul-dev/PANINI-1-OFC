@@ -25,7 +25,7 @@ function getResend(): Resend {
 }
 
 const FROM          = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
-const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 
 /* Embed all order data in the tracking URL so the page works even after a server restart */
 function buildTrackingUrl(

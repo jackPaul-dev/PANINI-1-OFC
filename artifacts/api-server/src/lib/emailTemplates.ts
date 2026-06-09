@@ -9,7 +9,7 @@ export interface EmailData {
   createdAt: string;
 }
 
-const ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://panini-it.site").replace(/\/$/, "");
+const ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 const LOGO_URL   = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
 
 /* ── Official Panini brand palette ── */
