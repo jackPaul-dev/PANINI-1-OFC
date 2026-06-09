@@ -50,7 +50,7 @@ Multi-country Panini World Cup 2026 sticker album sales funnel with email drip s
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Responder sempre em **português do Brasil (PT-BR)**.
 
 ## Gotchas
 
