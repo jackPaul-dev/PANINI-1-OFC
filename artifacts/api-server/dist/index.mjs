@@ -74864,6 +74864,38 @@ async function addEmailRecord(orderId, record) {
   if (order) order.emails.push(record);
 }
 
+// src/lib/countryConfig.ts
+var countryConfig = {
+  // ── Identidade ───────────────────────────────────────────────────────────────
+  country: "United States",
+  countryCode: "US",
+  locale: "en-US",
+  // usado em toLocaleDateString e formatações de data
+  currency: "USD",
+  currencySymbol: "$",
+  // ── Empresa / Rodapé dos e-mails ─────────────────────────────────────────────
+  // Ao clonar: ajuste para a entidade legal do país-alvo.
+  companyName: "Panini USA LLC",
+  emailSupportLabel: "Panini USA LLC \xB7 Customer Support",
+  emailShippingLine: "Free returns within 30 days \xB7 Free shipping across the USA",
+  emailCopyrightLine: "Official FIFA World Cup 2026 Licensee",
+  // prepended with © {year} {companyName}
+  // ── Steps do rastreamento de entrega ─────────────────────────────────────────
+  // Ao clonar: traduza os labels e subtítulos para o idioma do país-alvo.
+  trackingSteps: [
+    { label: "Order Confirmed", sub: "Order successfully processed" },
+    { label: "Order Shipped", sub: "Departed from warehouse" },
+    { label: "Distribution Center", sub: "Arrived at logistics hub" },
+    { label: "Out for Delivery", sub: "Courier is in your area" },
+    { label: "First Delivery Attempt", sub: "Minor delay in progress" },
+    { label: "Locating Package", sub: "Signal being recovered" },
+    { label: "Customs Review", sub: "Standard inspection in progress" },
+    { label: "Address Verification", sub: "Awaiting delivery confirmation" },
+    { label: "Order Relaunched", sub: "New delivery route assigned" },
+    { label: "Delivery Imminent", sub: "Courier arriving shortly" }
+  ]
+};
+
 // src/lib/emailTemplates.ts
 var ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 var LOGO_URL = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
@@ -74885,21 +74917,10 @@ var C = {
   gray700: "#374151",
   gray900: "#111827"
 };
-var STEPS = [
-  { label: "Order Confirmed", sub: "Order successfully processed" },
-  { label: "Order Shipped", sub: "Departed from warehouse" },
-  { label: "Distribution Center", sub: "Arrived at logistics hub" },
-  { label: "Out for Delivery", sub: "Courier is in your area" },
-  { label: "First Delivery Attempt", sub: "Minor delay in progress" },
-  { label: "Locating Package", sub: "Signal being recovered" },
-  { label: "Customs Review", sub: "Standard inspection in progress" },
-  { label: "Address Verification", sub: "Awaiting delivery confirmation" },
-  { label: "Order Relaunched", sub: "New delivery route assigned" },
-  { label: "Delivery Imminent", sub: "Courier arriving shortly" }
-];
+var STEPS = countryConfig.trackingSteps;
 var OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10];
 function fmtDate(d) {
-  return d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString(countryConfig.locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 function buildEmailTimeline(activeStepIndex, createdAt) {
   const base = new Date(createdAt).getTime();
@@ -75035,9 +75056,9 @@ function shell(opts) {
   <tr>
     <td style="background:#fdf8f2;padding:16px 32px 20px;text-align:center;">
       <div style="height:2px;background:linear-gradient(90deg,${C.amber},${C.yellow},${C.amber});margin-bottom:14px;"></div>
-      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">Panini USA LLC &middot; Customer Support</p>
-      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">Free returns within 30 days &middot; Free shipping across the USA</p>
-      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} Panini USA LLC &middot; Official FIFA World Cup 2026 Licensee</p>
+      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">${countryConfig.emailSupportLabel}</p>
+      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">${countryConfig.emailShippingLine}</p>
+      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} ${countryConfig.companyName} &middot; ${countryConfig.emailCopyrightLine}</p>
     </td>
   </tr>
 

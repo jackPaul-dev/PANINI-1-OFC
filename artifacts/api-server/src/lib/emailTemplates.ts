@@ -1,3 +1,5 @@
+import { countryConfig } from "./countryConfig";
+
 export interface EmailData {
   customerName: string;
   customerEmail: string;
@@ -32,22 +34,11 @@ const C = {
   gray900 : "#111827",
 } as const;
 
-const STEPS = [
-  { label: "Order Confirmed",         sub: "Order successfully processed"       },
-  { label: "Order Shipped",           sub: "Departed from warehouse"            },
-  { label: "Distribution Center",    sub: "Arrived at logistics hub"           },
-  { label: "Out for Delivery",        sub: "Courier is in your area"            },
-  { label: "First Delivery Attempt",  sub: "Minor delay in progress"           },
-  { label: "Locating Package",        sub: "Signal being recovered"             },
-  { label: "Customs Review",          sub: "Standard inspection in progress"    },
-  { label: "Address Verification",   sub: "Awaiting delivery confirmation"     },
-  { label: "Order Relaunched",        sub: "New delivery route assigned"        },
-  { label: "Delivery Imminent",       sub: "Courier arriving shortly"           },
-];
+const STEPS = countryConfig.trackingSteps;
 const OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10];
 
 function fmtDate(d: Date) {
-  return d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString(countryConfig.locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
 /* ── Timeline rendered as email-safe HTML table ── */
@@ -230,9 +221,9 @@ function shell(opts: {
   <tr>
     <td style="background:#fdf8f2;padding:16px 32px 20px;text-align:center;">
       <div style="height:2px;background:linear-gradient(90deg,${C.amber},${C.yellow},${C.amber});margin-bottom:14px;"></div>
-      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">Panini USA LLC &middot; Customer Support</p>
-      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">Free returns within 30 days &middot; Free shipping across the USA</p>
-      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} Panini USA LLC &middot; Official FIFA World Cup 2026 Licensee</p>
+      <p style="margin:0 0 4px;${F}font-size:9px;color:#b0a898;letter-spacing:0.18em;text-transform:uppercase;">${countryConfig.emailSupportLabel}</p>
+      <p style="margin:0 0 4px;${F}font-size:10px;color:#c0b8af;">${countryConfig.emailShippingLine}</p>
+      <p style="margin:0;${F}font-size:9px;color:#d0c8c0;">&copy; ${year} ${countryConfig.companyName} &middot; ${countryConfig.emailCopyrightLine}</p>
     </td>
   </tr>
 

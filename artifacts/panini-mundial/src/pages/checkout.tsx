@@ -15,6 +15,7 @@ import {
 import { Header } from "@/components/Header";
 import { kits } from "@/lib/kits";
 import { pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
+import countryConfig from "@/lib/countryConfig";
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
 const stripePromise = loadStripe(STRIPE_PK);
@@ -194,7 +195,7 @@ function StripePaymentForm({
       </div>
 
       <p className="text-center text-[11px] text-gray-400 mb-2">
-        SSL Secure · 7-day guarantee · Free Shipping USA
+        {countryConfig.footerNote}
       </p>
       <div className="flex items-center justify-center gap-2 mb-3 text-gray-400">
         <Apple className="w-4 h-4" />
@@ -205,7 +206,7 @@ function StripePaymentForm({
         <span className="text-[11px]">Credit Card</span>
       </div>
       <p className="text-center text-[10px] text-gray-400">
-        Panini USA LLC · 1 Panini Plaza, New York, NY<br />Official FIFA World Cup 2026 Licensee
+        {countryConfig.companyInfo}<br />Official FIFA World Cup 2026 Licensee
       </p>
     </div>
   );
@@ -239,7 +240,7 @@ export default function Checkout() {
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentError, setIntentError] = useState<string | null>(null);
-  const [countryCode, setCountryCode] = useState<string>("US");
+  const [countryCode, setCountryCode] = useState<string>(countryConfig.countryCode);
 
   useEffect(() => {
     fetch("https://api.country.is/")
@@ -277,7 +278,7 @@ export default function Checkout() {
             {
               content_ids: [order.kitId, ...order.bumps],
               value: order.orderTotal,
-              currency: "USD",
+              currency: countryConfig.currency,
               num_items: 1 + order.bumps.length,
             },
             paymentIntentId
@@ -321,11 +322,7 @@ export default function Checkout() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const orderBumps = [
-    { id: "bump50", label: "+50 sticker packs · ~250 stickers", desc: "Pre-sale discount with free shipping across the USA.", price: 30, oldPrice: 40, img: "/assets/caixa1.jpg", badge: null },
-    { id: "bump100", label: "+100 sticker packs · ~500 stickers", desc: "The collectors' favorite — exclusive pre-sale deal.", price: 55, oldPrice: 125, img: "/assets/caixa2.png", badge: { text: "BEST SELLER", cls: "bg-red-600 text-white" } },
-    { id: "bump250", label: "+250 sticker packs · ~1,250 stickers", desc: "Maximum discount on this promotional lot.", price: 100, oldPrice: 625, img: "/assets/caixa3.png", badge: { text: "LAST UNITS", cls: "bg-amber-400 text-gray-900" } },
-  ];
+  const orderBumps = countryConfig.orderBumps;
 
   const bumpsTotal = orderBumps.filter(b => selectedBumps.has(b.id)).reduce((s, b) => s + b.price, 0);
   const orderTotal = kit.price * quantity + bumpsTotal;
@@ -385,7 +382,7 @@ export default function Checkout() {
           pixelInitiateCheckout({
             content_ids: [kit.id],
             value: orderTotal,
-            currency: "USD",
+            currency: countryConfig.currency,
             num_items: 1 + selectedBumps.size,
           });
         }
@@ -406,7 +403,7 @@ export default function Checkout() {
       {
         content_ids: [kit.id, ...Array.from(selectedBumps)],
         value: orderTotal,
-        currency: "USD",
+        currency: countryConfig.currency,
         num_items: 1 + selectedBumps.size,
       },
       txId
@@ -488,7 +485,7 @@ export default function Checkout() {
           >
             <p className="text-xs font-bold text-blue-700 mb-1 uppercase tracking-wide">Next Steps</p>
             <p className="text-sm text-blue-800">
-              You'll receive a confirmation email at <strong>{formData.email}</strong>. Your kit will be delivered in <strong>2–4 business days</strong> across the USA.
+              You'll receive a confirmation email at <strong>{formData.email}</strong>. {countryConfig.confirmationNote}
             </p>
           </motion.div>
 
@@ -625,7 +622,7 @@ export default function Checkout() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                     <input required type="tel" name="phone" value={formData.phone} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="+1 (555) 000-0000" />
+                      placeholder={countryConfig.phonePlaceholder} />
                     <p className="text-xs text-gray-500 mt-1">For delivery SMS notifications.</p>
                   </div>
                 </div>
@@ -649,7 +646,7 @@ export default function Checkout() {
                   <button type="button" onClick={() => setStep(1)} className="text-sm text-primary font-medium hover:underline">Edit info</button>
                 </div>
                 <p className="text-sm text-gray-400 mb-6 flex items-center gap-1">
-                  <Truck className="w-3.5 h-3.5 text-green-500" /> Free shipping across the entire USA
+                  <Truck className="w-3.5 h-3.5 text-green-500" /> {countryConfig.shippingDescription}
                 </p>
 
                 <div className="space-y-4">
@@ -682,7 +679,7 @@ export default function Checkout() {
                     <select required name="state" value={formData.state} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white appearance-none cursor-pointer text-gray-700">
                       <option value="">Select state…</option>
-                      {["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"].map(s => (
+                      {countryConfig.stateList.map(s => (
                         <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
@@ -778,7 +775,7 @@ export default function Checkout() {
                     options={{
                       clientSecret,
                       appearance: stripeAppearance,
-                      locale: "en",
+                      locale: countryConfig.stripeLocale,
                     }}
                   >
                     <StripePaymentForm

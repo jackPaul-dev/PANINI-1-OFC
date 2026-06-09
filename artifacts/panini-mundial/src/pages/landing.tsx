@@ -5,73 +5,9 @@ import { ChevronRight, Star, CheckCircle, Truck, ShieldCheck, Lock, Award, Packa
 import { Header } from "@/components/Header";
 import { kits } from "@/lib/kits";
 import { pixelViewContent, pixelAddToCart } from "@/lib/pixel";
+import countryConfig from "@/lib/countryConfig";
 
-const reviews = [
-  {
-    avatar: "/assets/avatar-carlos.png",
-    name: "John Mitchell",
-    city: "New York, NY",
-    title: "Super fast delivery!",
-    text: "Ordered on Tuesday and it arrived by Thursday. The kit came perfectly packaged and my son went absolutely crazy when he opened it. Outstanding service!",
-    verified: "Verified purchase — 2 days ago",
-  },
-  {
-    avatar: "/assets/avatar-amanda.png",
-    name: "Sarah Johnson",
-    city: "Los Angeles, CA",
-    title: "Best price anywhere",
-    text: "I checked multiple sites and this had the best price by far. Plus free shipping! Already recommended it to two friends who ordered right away.",
-    verified: "Verified purchase — 3 days ago",
-  },
-  {
-    avatar: "/assets/avatar-roberto.png",
-    name: "Mike Davis",
-    city: "Chicago, IL",
-    title: "100% authentic Panini",
-    text: "I was a bit skeptical about buying online, but everything arrived factory-sealed with the official Panini logo. Same quality as the store and way cheaper.",
-    verified: "Verified purchase — 4 days ago",
-  },
-  {
-    avatar: "/assets/avatar-fernanda.png",
-    name: "Emily Rodriguez",
-    city: "Miami, FL",
-    title: "Worth every penny",
-    text: "Got the biggest kit for me and my husband to complete together. In two afternoons we had already filled more than half the album. Totally worth it.",
-    verified: "Verified purchase — 5 days ago",
-  },
-  {
-    avatar: "/assets/avatar-marcos.png",
-    name: "Chris Thompson",
-    city: "Houston, TX",
-    title: "Second order, just as great",
-    text: "This is my second order and the service is still impeccable. Well packaged, delivered on time, fair price. Will definitely be back.",
-    verified: "Verified purchase — 6 days ago",
-  },
-  {
-    avatar: "/assets/avatar-rita.png",
-    name: "Jessica Lee",
-    city: "Seattle, WA",
-    title: "Finally found this deal",
-    text: "My daughter had been asking for the album for months. Price was unbeatable and it arrived in 3 days. Absolutely recommend!",
-    verified: "Verified purchase — 1 day ago",
-  },
-  {
-    avatar: "/assets/avatar-paulo.png",
-    name: "Daniel Martinez",
-    city: "Phoenix, AZ",
-    title: "Best deal of 2026",
-    text: "Paid by card, checkout was super fast. All boxes factory sealed, exactly as described. Already looking forward to trading duplicates.",
-    verified: "Verified purchase — 8 hours ago",
-  },
-  {
-    avatar: "/assets/avatar-soraia.png",
-    name: "Amanda Wilson",
-    city: "Boston, MA",
-    title: "Perfect as a gift",
-    text: "Gave it to my brother and he was blown away. Support responded within hours when I had a question about delivery. Great experience.",
-    verified: "Verified purchase — 12 hours ago",
-  },
-];
+const reviews = countryConfig.reviews;
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -81,7 +17,7 @@ export default function Landing() {
       content_ids: ["panini-mundial-2026"],
       content_name: "Panini World Cup 2026 — Sticker Kits",
       value: kits[0]?.price ?? 29.99,
-      currency: "USD",
+      currency: countryConfig.currency,
     });
   }, []);
 
@@ -91,7 +27,7 @@ export default function Landing() {
       content_ids: [kitId],
       content_name: kit?.name ?? "Panini Kit",
       value: kit?.price ?? 0,
-      currency: "USD",
+      currency: countryConfig.currency,
     });
     setLocation(`/checkout?kit=${kitId}`);
   };
@@ -163,7 +99,7 @@ export default function Landing() {
             transition={{ delay: 0.25 }}
             className="text-base text-gray-600 max-w-sm mx-auto mb-2 leading-relaxed"
           >
-            The biggest soccer event in history is here!
+            {countryConfig.heroTagline}
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -180,7 +116,7 @@ export default function Landing() {
             transition={{ delay: 0.3 }}
             className="text-[#c8102e] font-black text-sm mb-7"
           >
-            Only 5,000 units available for the USA
+            {countryConfig.unitsAvailable}
           </motion.p>
 
           <motion.div
@@ -470,7 +406,7 @@ export default function Landing() {
               </div>
               <div>
                 <h4 className="font-bold text-gray-900 text-sm mb-1">Tracked Delivery</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">Shipped with tracking number. Delivered in 2–4 business days across the USA.</p>
+                <p className="text-xs text-gray-500 leading-relaxed">Shipped with tracking number. Delivered in {countryConfig.deliveryTime}.</p>
               </div>
             </div>
           </div>

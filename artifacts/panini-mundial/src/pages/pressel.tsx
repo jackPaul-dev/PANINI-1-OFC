@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Star, Package, ShieldCheck, Truck } from "lucide-react";
 import { pixelViewContent } from "@/lib/pixel";
+import countryConfig from "@/lib/countryConfig";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -31,7 +32,7 @@ export default function Pressel() {
       content_ids: ["panini-mundial-2026-presell"],
       content_name: "Panini World Cup 2026 — Presell",
       value: 39.99,
-      currency: "USD",
+      currency: countryConfig.currency,
     });
 
     const interval = setInterval(() => {
@@ -151,7 +152,7 @@ export default function Pressel() {
           <div className="flex gap-0.5">
             {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />)}
           </div>
-          <p className="text-sm text-gray-500">+2,847 American families have already ordered</p>
+          <p className="text-sm text-gray-500">{countryConfig.socialProof}</p>
         </div>
 
         {done && (

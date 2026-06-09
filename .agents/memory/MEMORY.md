@@ -1,2 +1,3 @@
 - [Panini Mundial architecture](panini-mundial-arch.md) — USA at root `/`, Italy at `/italy/*`, 7 countries as ComingSoon placeholders.
 - [Stripe & email gotchas](panini-stripe-email.md) — Stripe API version pin, Resend double-cast, DB channel_binding, Heroku env vars.
+- [Country config template](panini-country-config.md) — two countryConfig.ts files are the single source of truth for all country-specific values; edit only those to clone for a new country.
