@@ -29,3 +29,9 @@ id = "ENu4uxdVRnhvAYcjV1xzS"
 uri = "file://panini-mundial-2026.zip"
 type = "unspecified"
 title = "Panini Mundial 2026 — Projeto Completo + Guia de Deploy"
+
+[[outputs]]
+id = "D7c5PTjECsfo7XKZvZYPp"
+uri = "file://panini-src-only.zip"
+type = "unspecified"
+title = "Panini Mundial 2026 — Código-Fonte + Guia de Deploy"
