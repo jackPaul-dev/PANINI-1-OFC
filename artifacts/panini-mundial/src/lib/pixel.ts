@@ -34,78 +34,48 @@ function ttq(event: string, params?: Record<string, unknown>) {
 }
 
 export function pixelPageView() {
-  fbq("track", "PageView");
+  // pixels not configured
 }
 
-export function pixelViewContent(params: {
+export function pixelViewContent(_params: {
   content_ids: string[];
   content_name: string;
   value: number;
   currency: string;
 }) {
-  fbq("track", "ViewContent", { ...params, content_type: "product" });
-  ttq("ViewContent", {
-    content_type: "product",
-    content_id: params.content_ids[0],
-    content_name: params.content_name,
-    value: params.value,
-    currency: params.currency,
-  });
+  // pixels not configured
 }
 
-export function pixelAddToCart(params: {
+export function pixelAddToCart(_params: {
   content_ids: string[];
   content_name: string;
   value: number;
   currency: string;
 }) {
-  fbq("track", "AddToCart", { ...params, content_type: "product" });
-  ttq("AddToCart", {
-    content_type: "product",
-    content_id: params.content_ids[0],
-    content_name: params.content_name,
-    value: params.value,
-    currency: params.currency,
-  });
+  // pixels not configured
 }
 
-export function pixelInitiateCheckout(params: {
+export function pixelInitiateCheckout(_params: {
   content_ids: string[];
   value: number;
   currency: string;
   num_items: number;
 }) {
-  fbq("track", "InitiateCheckout", { ...params, content_type: "product" });
-  ttq("InitiateCheckout", {
-    content_type: "product",
-    content_id: params.content_ids[0],
-    value: params.value,
-    currency: params.currency,
-    quantity: params.num_items,
-  });
+  // pixels not configured
 }
 
 export function pixelPurchase(
-  params: {
+  _params: {
     content_ids: string[];
     value: number;
     currency: string;
     num_items: number;
   },
-  eventID?: string
+  _eventID?: string
 ) {
-  fbq(
-    "track",
-    "Purchase",
-    { ...params, content_type: "product" },
-    eventID ? { eventID } : undefined
-  );
-  ttq("CompletePayment", {
-    content_type: "product",
-    content_id: params.content_ids[0],
-    value: params.value,
-    currency: params.currency,
-    quantity: params.num_items,
-    order_id: eventID,
-  });
+  // pixels not configured
 }
+
+// suppress unused warning — helpers kept for when pixels are re-added
+void fbq;
+void ttq;
