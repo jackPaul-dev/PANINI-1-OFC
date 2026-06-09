@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "QqG02OWlxsJY6ci493HEV"
@@ -12,3 +11,9 @@ id = "YgDN1fWTBUBsBAfsfRQ6T"
 uri = "file://artifacts/panini-mundial/src/assets/kit.png"
 type = "image"
 title = "Kit with album and packs"
+
+[[outputs]]
+id = "p0rfdYFl_FmuJUdxTPD0h"
+uri = "file://panini-mundial-base.zip"
+type = "unspecified"
+title = "Panini Mundial — Código Base Completo"
