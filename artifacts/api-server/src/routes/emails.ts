@@ -173,7 +173,7 @@ router.post("/emails/trigger", async (req, res) => {
 
     sendEmailSequence(order).catch(console.error);
 
-    res.json({ orderId: order.orderId, emailsScheduled: EMAIL_DAYS.length, message: "Sequenza email avviata" });
+    res.json({ orderId: order.orderId, emailsScheduled: EMAIL_DAYS.length, message: "Email sequence started" });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: msg });
