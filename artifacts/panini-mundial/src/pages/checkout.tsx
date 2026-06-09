@@ -242,12 +242,6 @@ export default function Checkout() {
   const [intentError, setIntentError] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState<string>(countryConfig.countryCode);
 
-  useEffect(() => {
-    fetch("https://api.country.is/")
-      .then(r => r.json())
-      .then(data => { if (data?.country) setCountryCode(data.country); })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
