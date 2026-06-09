@@ -13,6 +13,8 @@ declare global {
   }
 }
 
+const FB_PIXEL_ID = "1545212470581501";
+
 function fbq(
   action: "track" | "trackCustom" | "init",
   event: string,
@@ -34,48 +36,95 @@ function ttq(event: string, params?: Record<string, unknown>) {
 }
 
 export function pixelPageView() {
-  // pixels not configured
+  fbq("init", FB_PIXEL_ID);
+  fbq("track", "PageView");
 }
 
-export function pixelViewContent(_params: {
+export function pixelViewContent(params: {
   content_ids: string[];
   content_name: string;
   value: number;
   currency: string;
 }) {
-  // pixels not configured
+  fbq("track", "ViewContent", {
+    content_ids: params.content_ids,
+    content_name: params.content_name,
+    value: params.value,
+    currency: params.currency,
+    content_type: "product",
+  });
+  ttq("ViewContent", {
+    content_id: params.content_ids[0],
+    content_name: params.content_name,
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
-export function pixelAddToCart(_params: {
+export function pixelAddToCart(params: {
   content_ids: string[];
   content_name: string;
   value: number;
   currency: string;
 }) {
-  // pixels not configured
+  fbq("track", "AddToCart", {
+    content_ids: params.content_ids,
+    content_name: params.content_name,
+    value: params.value,
+    currency: params.currency,
+    content_type: "product",
+  });
+  ttq("AddToCart", {
+    content_id: params.content_ids[0],
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
-export function pixelInitiateCheckout(_params: {
+export function pixelInitiateCheckout(params: {
   content_ids: string[];
   value: number;
   currency: string;
   num_items: number;
 }) {
-  // pixels not configured
+  fbq("track", "InitiateCheckout", {
+    content_ids: params.content_ids,
+    value: params.value,
+    currency: params.currency,
+    num_items: params.num_items,
+    content_type: "product",
+  });
+  ttq("InitiateCheckout", {
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
 export function pixelPurchase(
-  _params: {
+  params: {
     content_ids: string[];
     value: number;
     currency: string;
     num_items: number;
   },
-  _eventID?: string
+  eventID?: string
 ) {
-  // pixels not configured
+  fbq(
+    "track",
+    "Purchase",
+    {
+      content_ids: params.content_ids,
+      value: params.value,
+      currency: params.currency,
+      num_items: params.num_items,
+      content_type: "product",
+    },
+    eventID ? { eventID } : undefined
+  );
+  ttq("CompletePayment", {
+    value: params.value,
+    currency: params.currency,
+  });
 }
 
-// suppress unused warning — helpers kept for when pixels are re-added
-void fbq;
 void ttq;
