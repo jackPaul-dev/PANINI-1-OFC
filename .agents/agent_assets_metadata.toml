@@ -17,3 +17,9 @@ id = "p0rfdYFl_FmuJUdxTPD0h"
 uri = "file://panini-mundial-base.zip"
 type = "unspecified"
 title = "Panini Mundial — Código Base Completo"
+
+[[outputs]]
+id = "sXJ5AxdlmFuKbfKFYU7VN"
+uri = "file://panini-atualizado.zip"
+type = "unspecified"
+title = "Panini Mundial — Versão Actualizada (com chave Stripe)"
