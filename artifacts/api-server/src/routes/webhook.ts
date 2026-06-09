@@ -12,7 +12,7 @@ import { addEmailRecord } from "../lib/orderStore.js";
 
 const router = Router();
 
-const FROM          = process.env.EMAIL_FROM || "Panini Italia <noreply@paniniofc-it.site>";
+const FROM          = process.env.EMAIL_FROM || "Panini Italia <noreply@panini-worldcup.online>";
 const TRACKING_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 
 const EMAIL_DAYS = [
