@@ -185,7 +185,7 @@ const countryConfig = {
       description: "Hardcover album + starter collection (≈70 stickers)",
       price      : 14.99,
       oldPrice   : 24.99,
-      img        : "/assets/kit-basico.png",
+      img        : "/assets/kit-basico.jpg",
     },
     {
       id         : "iniciante",
@@ -194,7 +194,7 @@ const countryConfig = {
       description: "Hardcover album + 1 sealed box (≈210 stickers)",
       price      : 29.99,
       oldPrice   : 44.99,
-      img        : "/assets/kit-iniciante.png",
+      img        : "/assets/kit-iniciante.jpg",
     },
     {
       id         : "campeao",
@@ -203,7 +203,7 @@ const countryConfig = {
       description: "Hardcover album + 2 sealed boxes (≈420 stickers)",
       price      : 39.99,
       oldPrice   : 64.99,
-      img        : "/assets/kit-campeao.png",
+      img        : "/assets/kit-campeao.jpg",
       badge      : { text: "BEST SELLER", colorClass: "bg-red-600 text-white" },
     },
     {
@@ -213,7 +213,7 @@ const countryConfig = {
       description: "Hardcover album + 3 sealed boxes (≈630 stickers)",
       price      : 59.99,
       oldPrice   : 89.99,
-      img        : "/assets/kit-colecionador.png",
+      img        : "/assets/kit-colecionador.jpg",
       badge      : { text: "BEST VALUE", colorClass: "bg-green-600 text-white" },
     },
     {
@@ -233,7 +233,7 @@ const countryConfig = {
       description: "Special edition hardcover album + 250 sealed sticker packs (≈1,750 stickers) · Numbered limited edition",
       price      : 129.99,
       oldPrice   : 179.99,
-      img        : "/assets/kit-estadio.png",
+      img        : "/assets/kit-estadio.jpg",
       badge      : { text: "LIMITED EDITION", colorClass: "bg-gradient-to-r from-amber-700 to-yellow-400 text-white font-bold" },
     },
   ] as Kit[],
@@ -256,7 +256,7 @@ const countryConfig = {
       desc    : "The collectors' favorite — exclusive pre-sale deal.",
       price   : 55,
       oldPrice: 125,
-      img     : "/assets/caixa2.png",
+      img     : "/assets/caixa2.jpg",
       badge   : { text: "BEST SELLER", cls: "bg-red-600 text-white" },
     },
     {
@@ -265,7 +265,7 @@ const countryConfig = {
       desc    : "Maximum discount on this promotional lot.",
       price   : 100,
       oldPrice: 625,
-      img     : "/assets/caixa3.png",
+      img     : "/assets/caixa3.jpg",
       badge   : { text: "LAST UNITS", cls: "bg-amber-400 text-gray-900" },
     },
   ] as OrderBump[],

@@ -75455,15 +75455,7 @@ var EMAIL_DAYS = [
   { day: 9, offsetHours: 216 },
   { day: 10, offsetHours: 240 },
   { day: 11, offsetHours: 264 },
-  { day: 12, offsetHours: 288 },
-  { day: 13, offsetHours: 312 },
-  { day: 14, offsetHours: 336 },
-  { day: 15, offsetHours: 360 },
-  { day: 16, offsetHours: 384 },
-  { day: 17, offsetHours: 408 },
-  { day: 18, offsetHours: 432 },
-  { day: 19, offsetHours: 456 },
-  { day: 20, offsetHours: 480 }
+  { day: 12, offsetHours: 288 }
 ];
 var BUILDERS = [
   emailDay0,
@@ -75477,17 +75469,9 @@ var BUILDERS = [
   emailDay9,
   emailDay10,
   emailDayNonConsegnato,
-  emailDayDiNuovoInRotta,
-  emailDayNonConsegnato,
-  emailDayDiNuovoInRotta,
-  emailDayNonConsegnato,
-  emailDayDiNuovoInRotta,
-  emailDayNonConsegnato,
-  emailDayDiNuovoInRotta,
-  emailDayNonConsegnato,
   emailDayDiNuovoInRotta
 ];
-var EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+var EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9];
 async function sendEmailSequence(order) {
   const resend = getResend();
   const baseData = {
@@ -75566,7 +75550,7 @@ router3.post("/emails/trigger", async (req, res) => {
       city: city ?? "",
       postalCode: postalCode ?? "",
       province: province ?? "",
-      country: country || "IT",
+      country: country || "US",
       amount,
       items: items ?? []
     });

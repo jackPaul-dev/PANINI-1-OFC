@@ -31,7 +31,7 @@ export default function Pressel() {
     pixelViewContent({
       content_ids: ["panini-mundial-2026-presell"],
       content_name: "Panini World Cup 2026 — Presell",
-      value: 39.99,
+      value: countryConfig.kits[2]?.price ?? 39.99,
       currency: countryConfig.currency,
     });
 

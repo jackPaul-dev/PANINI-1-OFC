@@ -59,28 +59,16 @@ const EMAIL_DAYS = [
   { day: 10, offsetHours: 240 },
   { day: 11, offsetHours: 264 },
   { day: 12, offsetHours: 288 },
-  { day: 13, offsetHours: 312 },
-  { day: 14, offsetHours: 336 },
-  { day: 15, offsetHours: 360 },
-  { day: 16, offsetHours: 384 },
-  { day: 17, offsetHours: 408 },
-  { day: 18, offsetHours: 432 },
-  { day: 19, offsetHours: 456 },
-  { day: 20, offsetHours: 480 },
 ];
 
 const BUILDERS = [
   emailDay0, emailDay1, emailDay2, emailDay3, emailDay5,
   emailDay6, emailDay7, emailDay8, emailDay9, emailDay10,
   emailDayNonConsegnato, emailDayDiNuovoInRotta,
-  emailDayNonConsegnato, emailDayDiNuovoInRotta,
-  emailDayNonConsegnato, emailDayDiNuovoInRotta,
-  emailDayNonConsegnato, emailDayDiNuovoInRotta,
-  emailDayNonConsegnato, emailDayDiNuovoInRotta,
 ];
 
 /* Step index matching each EMAIL_DAYS entry — controls timeline position in tracking URL */
-const EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+const EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9];
 
 async function sendEmailSequence(order: Order) {
   const resend = getResend();
@@ -166,7 +154,7 @@ router.post("/emails/trigger", async (req, res) => {
       city      : city       ?? "",
       postalCode: postalCode ?? "",
       province  : province   ?? "",
-      country   : country    || "IT",
+      country   : country    || "US",
       amount,
       items     : items ?? [],
     });

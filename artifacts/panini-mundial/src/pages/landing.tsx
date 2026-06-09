@@ -16,7 +16,7 @@ export default function Landing() {
     pixelViewContent({
       content_ids: ["panini-mundial-2026"],
       content_name: "Panini World Cup 2026 — Sticker Kits",
-      value: kits[0]?.price ?? 29.99,
+      value: kits[0]?.price ?? countryConfig.kits[0]?.price ?? 14.99,
       currency: countryConfig.currency,
     });
   }, []);
