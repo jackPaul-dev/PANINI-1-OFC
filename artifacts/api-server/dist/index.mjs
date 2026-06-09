@@ -74741,7 +74741,12 @@ function sanitizeDbUrl(url) {
 var db = null;
 var pool = null;
 if (process.env.DATABASE_URL) {
-  pool = new Pool3({ connectionString: sanitizeDbUrl(process.env.DATABASE_URL) });
+  const url = sanitizeDbUrl(process.env.DATABASE_URL);
+  const isLocal = url.includes("localhost") || url.includes("127.0.0.1") || url.includes("helium");
+  pool = new Pool3({
+    connectionString: url,
+    ...isLocal ? {} : { ssl: { rejectUnauthorized: false } }
+  });
   db = drizzle(pool, { schema: schema_exports });
 }
 

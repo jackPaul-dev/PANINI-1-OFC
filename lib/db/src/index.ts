@@ -20,8 +20,13 @@ export let db: ReturnType<typeof drizzle<typeof schema>> | null = null;
 export let pool: pg.Pool | null = null;
 
 if (process.env.DATABASE_URL) {
-  pool = new Pool({ connectionString: sanitizeDbUrl(process.env.DATABASE_URL) });
-  db   = drizzle(pool, { schema });
+  const url = sanitizeDbUrl(process.env.DATABASE_URL);
+  const isLocal = url.includes("localhost") || url.includes("127.0.0.1") || url.includes("helium");
+  pool = new Pool({
+    connectionString: url,
+    ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } }),
+  });
+  db = drizzle(pool, { schema });
 }
 
 export * from "./schema";
