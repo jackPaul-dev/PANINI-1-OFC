@@ -23,3 +23,9 @@ id = "sXJ5AxdlmFuKbfKFYU7VN"
 uri = "file://panini-atualizado.zip"
 type = "unspecified"
 title = "Panini Mundial — Versão Actualizada (com chave Stripe)"
+
+[[outputs]]
+id = "ENu4uxdVRnhvAYcjV1xzS"
+uri = "file://panini-mundial-2026.zip"
+type = "unspecified"
+title = "Panini Mundial 2026 — Projeto Completo"
