@@ -1,0 +1,64 @@
+-----> Building on the Heroku-24 stack
+-----> Using buildpack: heroku/nodejs
+-----> Node.js app detected
+       
+-----> Creating runtime environment
+       
+       NPM_CONFIG_LOGLEVEL=error
+       NODE_VERBOSE=false
+       NODE_ENV=production
+       NODE_MODULES_CACHE=true
+-----> Installing binaries
+       engines.node (package.json):   24.x
+       engines.npm (package.json):    unspecified (use default)
+       engines.pnpm (package.json):   unspecified (use default)
+       packageManager (package.json): pnpm@10.26.1
+       
+       Resolving node version 24.x...
+       Downloading and installing node 24.16.0...
+       Validating checksum
+       Using default npm version: 11.13.0
+       Downloading and installing pnpm (10.26.1)
+       Using pnpm 10.26.1
+       
+-----> Installing dependencies
+       Running 'pnpm install' with pnpm-lock.yaml
+       
+-----> Build
+       Detected both "build" and "heroku-postbuild" scripts
+       Running heroku-postbuild
+       
+       > workspace@0.0.0 heroku-postbuild /tmp/build_e9e5543b
+       > echo 'Pre-built dist files included in repo — skipping build step'
+       
+       Pre-built dist files included in repo — skipping build step
+       
+-----> Caching build
+       - pnpm cache
+       
+-----> Pruning devDependencies
+       
+       ! Pruning skipped due to presence of lifecycle scripts
+       
+       Lifecycle scripts were detected in the `package.json` file at `/tmp/build_e9e5543b`. Due to how
+       workspace pruning in pnpm operates, it will execute the following lifecycle scripts declared
+       in package.json during reinstallation of prod dependencies which can cause build failures:
+       - pnpm:devPreinstall
+       - preinstall
+       - install
+       - postinstall
+       - prepare
+       
+       Since pruning can't be done safely for your build, it will be skipped.
+       
+-----> Build succeeded!
+-----> Discovering process types
+       Procfile declares types -> web
+-----> Compressing...
+       Done: 202.9M
+-----> Launching...
+       Released v4
+       https://project1-panini-eua-cca8562cfd98.herokuapp.com/ deployed to Heroku
+This app is using the Heroku-24 stack, however a newer stack is available.
+To upgrade to Heroku-26, see:
+https://devcenter.heroku.com/articles/upgrading-to-the-latest-stack
