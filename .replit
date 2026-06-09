@@ -49,6 +49,6 @@ externalPort = 3000
 STRIPE_SECRET_KEY = "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"
 VITE_STRIPE_PUBLISHABLE_KEY = "pk_live_51TNGsbHUINuRXA3gTk7jwWgjcDUbEvWPa0R19AKXrB6Qq3Ab4ILxDu4Uv1saCSmGxqG5NuZeQKhllD3VakRhCa1s00i7zLGZKS"
 RESEND_API_KEY = "re_HtK2QYF7_LRSHb6TrJYkZBxvLAwZNGXMv"
-EMAIL_FROM = "Panini USA <noreply@paniniworldcup2026.site>"
+EMAIL_FROM = "Panini USA <noreply@paniniemail.online>"
 TRACKING_BASE_URL = "https://paniniworldcup2026.site"
 STRIPE_WEBHOOK_SECRET = "whsec_bAckRWAjEA8s1cHkGU8GGqNeldi2h1zK"
