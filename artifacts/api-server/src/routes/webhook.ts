@@ -102,7 +102,7 @@ async function sendEmailSequence(order: Awaited<ReturnType<typeof createOrder>>)
     try {
       const payload: Record<string, unknown> = { from: FROM, to: order.customerEmail, subject, html };
       if (scheduledAt) payload.scheduledAt = scheduledAt;
-      const result = await resend.emails.send(payload as Parameters<Resend["emails"]["send"]>[0]);
+      const result = await resend.emails.send(payload as unknown as Parameters<Resend["emails"]["send"]>[0]);
       resendId = result.data?.id ?? null;
       status = scheduledAt ? "scheduled" : "sent";
     } catch (err) {
@@ -120,7 +120,7 @@ router.post(
   (req: Request, res: Response) => {
     const sig     = req.headers["stripe-signature"] as string;
     const secret  = process.env.STRIPE_WEBHOOK_SECRET;
-    const stripe  = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-04-30.basil" });
+    const stripe  = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-04-22.dahlia" });
 
     let event: Stripe.Event;
     try {
@@ -140,7 +140,7 @@ router.post(
       const pi      = event.data.object as Stripe.PaymentIntent;
       const meta    = pi.metadata ?? {};
       const charge  = (pi as unknown as { latest_charge?: Stripe.Charge })?.latest_charge;
-      const billing = charge?.billing_details ?? {};
+      const billing = (charge?.billing_details ?? {}) as { email?: string | null; name?: string | null; address?: { city?: string | null; line1?: string | null; line2?: string | null; postal_code?: string | null; state?: string | null; country?: string | null } | null };
 
       const customerEmail = meta.customerEmail ?? meta.customer_email ?? charge?.receipt_email ?? billing.email ?? "";
       const customerName  = meta.customerName  ?? meta.customer_name  ?? billing.name ?? "";

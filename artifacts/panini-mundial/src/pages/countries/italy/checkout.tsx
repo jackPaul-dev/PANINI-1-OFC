@@ -13,7 +13,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { Header } from "@/components/Header";
-import { kits } from "@/lib/kits";
+import { kits } from "@/lib/kitsItaly";
 import { pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
@@ -85,6 +85,7 @@ interface StripeFormProps {
 
 function StripePaymentForm({
   orderTotal,
+  kitName,
   formData,
   countryCode,
   onSuccess,
@@ -107,14 +108,14 @@ function StripePaymentForm({
           return_url: window.location.href,
           payment_method_data: {
             billing_details: {
-              name: formData.name,
+              name: formData.nome,
               email: formData.email,
-              phone: formData.phone,
+              phone: formData.telemovel,
               address: {
-                line1: `${formData.address} ${formData.apt}`.trim(),
-                city: formData.city,
-                state: formData.state,
-                postal_code: formData.zipCode,
+                line1: `${formData.morada} ${formData.numero}`,
+                city: formData.localidade,
+                state: formData.distrito,
+                postal_code: formData.codigoPostal,
                 country: countryCode,
               },
             },
@@ -124,12 +125,12 @@ function StripePaymentForm({
       });
 
       if (error) {
-        onError(error.message ?? "Payment error. Please try again.");
+        onError(error.message ?? "Errore durante il pagamento. Riprova.");
       } else if (paymentIntent?.status === "succeeded") {
         onSuccess(paymentIntent.id);
       }
     } catch {
-      onError("Unable to connect to payment server. Check your connection and try again.");
+      onError("Impossibile connettersi al server. Controlla la connessione e riprova.");
     } finally {
       setLoading(false);
     }
@@ -137,9 +138,9 @@ function StripePaymentForm({
 
   return (
     <div className="px-5 pt-5 pb-3">
-      <h2 className="text-xl font-bold text-gray-900 mb-1">Payment</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-1">Pagamento</h2>
       <p className="text-xs text-gray-400 mb-5">
-        Transaction protected with 256-bit SSL encryption.
+        Transazione protetta con crittografia SSL a 256 bit.
       </p>
 
       <div className={`transition-all duration-300 ${ready ? "opacity-100" : "opacity-0"}`}>
@@ -156,21 +157,23 @@ function StripePaymentForm({
       {!ready && (
         <div className="flex items-center justify-center py-10">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          <span className="ml-2 text-sm text-gray-400">Loading payment methods…</span>
+          <span className="ml-2 text-sm text-gray-400">Caricamento metodi di pagamento…</span>
         </div>
       )}
 
+      {/* Riepilogo */}
       <div className="mt-5 border-t border-gray-100 pt-4 space-y-1.5 mb-5">
         <div className="flex justify-between text-sm text-gray-500">
-          <span>Shipping</span>
-          <span className="text-primary font-semibold">Free</span>
+          <span>Spedizione</span>
+          <span className="text-primary font-semibold">Gratuita</span>
         </div>
         <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
-          <span className="font-black text-gray-900 text-base">Total</span>
-          <span className="font-black text-primary text-xl">${orderTotal.toFixed(2)}</span>
+          <span className="font-black text-gray-900 text-base">Totale</span>
+          <span className="font-black text-primary text-xl">{orderTotal.toFixed(2).replace(".", ",")} €</span>
         </div>
       </div>
 
+      {/* Pulsanti */}
       <div className="flex gap-3 mb-4">
         <button
           type="button"
@@ -178,7 +181,7 @@ function StripePaymentForm({
           disabled={loading}
           className="flex-shrink-0 px-5 py-4 rounded-full border-2 border-gray-300 text-gray-700 font-black text-sm hover:border-gray-400 transition-all disabled:opacity-40"
         >
-          BACK
+          INDIETRO
         </button>
         <button
           type="button"
@@ -187,14 +190,15 @@ function StripePaymentForm({
           className="flex-1 bg-primary hover:bg-green-700 disabled:opacity-60 text-white font-black text-base py-4 rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           {loading
-            ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
-            : <>Complete Order &rarr;</>
+            ? <><Loader2 className="w-5 h-5 animate-spin" /> Elaborazione…</>
+            : <>Finalizza ordine &rarr;</>
           }
         </button>
       </div>
 
+      {/* Trust */}
       <p className="text-center text-[11px] text-gray-400 mb-2">
-        SSL Secure · 7-day guarantee · Free Shipping USA
+        Acquisto sicuro SSL · Garanzia 7 giorni · Spedizione gratuita Italia
       </p>
       <div className="flex items-center justify-center gap-2 mb-3 text-gray-400">
         <Apple className="w-4 h-4" />
@@ -202,10 +206,10 @@ function StripePaymentForm({
         <span className="text-gray-200">·</span>
         <span className="text-[11px]">Google Pay</span>
         <span className="text-gray-200">·</span>
-        <span className="text-[11px]">Credit Card</span>
+        <span className="text-[11px]">Carta di credito</span>
       </div>
       <p className="text-center text-[10px] text-gray-400">
-        Panini USA LLC · 1 Panini Plaza, New York, NY<br />Official FIFA World Cup 2026 Licensee
+        Panini Italia Srl · Via Esempio, 123, Milano<br />P.IVA: IT 00000000000
       </p>
     </div>
   );
@@ -214,13 +218,15 @@ function StripePaymentForm({
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface FormData {
   email: string;
-  name: string;
-  phone: string;
-  zipCode: string;
-  address: string;
-  apt: string;
-  city: string;
-  state: string;
+  nome: string;
+  telemovel: string;
+  nif: string;
+  codigoPostal: string;
+  morada: string;
+  numero: string;
+  andar: string;
+  localidade: string;
+  distrito: string;
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -239,7 +245,7 @@ export default function Checkout() {
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentError, setIntentError] = useState<string | null>(null);
-  const [countryCode, setCountryCode] = useState<string>("US");
+  const [countryCode, setCountryCode] = useState<string>("IT");
 
   useEffect(() => {
     fetch("https://api.country.is/")
@@ -269,25 +275,26 @@ export default function Checkout() {
             orderTotal: number;
             bumps: string[];
             formData?: {
-              email: string; name: string; address: string; apt: string;
-              city: string; zipCode: string; state: string;
+              email: string; nome: string; morada: string; numero: string;
+              localidade: string; codigoPostal: string; distrito: string;
             };
           };
           pixelPurchase(
             {
               content_ids: [order.kitId, ...order.bumps],
               value: order.orderTotal,
-              currency: "USD",
+              currency: "EUR",
               num_items: 1 + order.bumps.length,
             },
             paymentIntentId
           );
+          // Trigger email sequence after 3DS redirect
           if (order.formData?.email) {
             const resolvedKit = kits.find(k => k.id === order.kitId) || kits[2];
             const bumpsLabels = [
-              { id: "bump50", label: "+50 sticker packs (~250 stickers)" },
-              { id: "bump100", label: "+100 sticker packs (~500 stickers)" },
-              { id: "bump250", label: "+250 sticker packs (~1,250 stickers)" },
+              { id: "bump50", label: "+50 bustine · ~250 figurine" },
+              { id: "bump100", label: "+100 bustine · ~500 figurine" },
+              { id: "bump250", label: "+250 bustine · ~1250 figurine" },
             ];
             const items = [
               resolvedKit.name,
@@ -299,11 +306,11 @@ export default function Checkout() {
               body: JSON.stringify({
                 paymentIntentId,
                 customerEmail: order.formData.email,
-                customerName: order.formData.name,
-                address: `${order.formData.address} ${order.formData.apt}`.trim(),
-                city: order.formData.city,
-                postalCode: order.formData.zipCode,
-                province: order.formData.state,
+                customerName: order.formData.nome,
+                address: `${order.formData.morada} ${order.formData.numero}`.trim(),
+                city: order.formData.localidade,
+                postalCode: order.formData.codigoPostal,
+                province: order.formData.distrito,
                 country: countryCode,
                 amount: order.orderTotal,
                 items,
@@ -322,9 +329,9 @@ export default function Checkout() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const orderBumps = [
-    { id: "bump50", label: "+50 sticker packs · ~250 stickers", desc: "Pre-sale discount with free shipping across the USA.", price: 30, oldPrice: 40, img: "/assets/caixa1.jpg", badge: null },
-    { id: "bump100", label: "+100 sticker packs · ~500 stickers", desc: "The collectors' favorite — exclusive pre-sale deal.", price: 55, oldPrice: 125, img: "/assets/caixa2.png", badge: { text: "BEST SELLER", cls: "bg-red-600 text-white" } },
-    { id: "bump250", label: "+250 sticker packs · ~1,250 stickers", desc: "Maximum discount on this promotional lot.", price: 100, oldPrice: 625, img: "/assets/caixa3.png", badge: { text: "LAST UNITS", cls: "bg-amber-400 text-gray-900" } },
+    { id: "bump50", label: "+50 bustine · ~250 figurine", desc: "Sconto pre-vendita con spedizione gratuita in Italia.", price: 30, oldPrice: 40, img: "/assets/caixa1.jpg", badge: null },
+    { id: "bump100", label: "+100 bustine · ~500 figurine", desc: "L'equilibrio preferito dai collezionisti — pre-vendita esclusiva.", price: 55, oldPrice: 125, img: "/assets/caixa2.png", badge: { text: "PIÙ VENDUTO", cls: "bg-red-600 text-white" } },
+    { id: "bump250", label: "+250 bustine · ~1250 figurine", desc: "Massimo sconto su questo lotto promozionale.", price: 100, oldPrice: 625, img: "/assets/caixa3.png", badge: { text: "ULTIME UNITÀ", cls: "bg-amber-400 text-gray-900" } },
   ];
 
   const bumpsTotal = orderBumps.filter(b => selectedBumps.has(b.id)).reduce((s, b) => s + b.price, 0);
@@ -339,9 +346,9 @@ export default function Checkout() {
   };
 
   const [formData, setFormData] = useState<FormData>({
-    email: "", name: "", phone: "",
-    zipCode: "", address: "", apt: "",
-    city: "", state: "",
+    email: "", nome: "", telemovel: "", nif: "",
+    codigoPostal: "", morada: "", numero: "", andar: "",
+    localidade: "", distrito: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -361,9 +368,9 @@ export default function Checkout() {
         kitName: kit.name,
         payer: {
           email: formData.email,
-          name: formData.name,
-          document: "",
-          phone: formData.phone,
+          name: formData.nome,
+          document: formData.nif,
+          phone: formData.telemovel,
         },
       }),
     })
@@ -373,6 +380,7 @@ export default function Checkout() {
           setIntentError(data.error);
         } else {
           setClientSecret(data.clientSecret);
+          // Save order data in case Stripe 3DS redirects the page
           sessionStorage.setItem(
             "panini_pending_order",
             JSON.stringify({
@@ -385,12 +393,12 @@ export default function Checkout() {
           pixelInitiateCheckout({
             content_ids: [kit.id],
             value: orderTotal,
-            currency: "USD",
+            currency: "EUR",
             num_items: 1 + selectedBumps.size,
           });
         }
       })
-      .catch(() => setIntentError("Unable to connect to the payment server."));
+      .catch(() => setIntentError("Impossibile connettersi al server di pagamento."));
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStepNext = (e: React.FormEvent) => {
@@ -406,11 +414,12 @@ export default function Checkout() {
       {
         content_ids: [kit.id, ...Array.from(selectedBumps)],
         value: orderTotal,
-        currency: "USD",
+        currency: "EUR",
         num_items: 1 + selectedBumps.size,
       },
       txId
     );
+    // Trigger email sequence
     const selectedBumpsList = orderBumps.filter(b => selectedBumps.has(b.id));
     const emailItems = [kit.name, ...selectedBumpsList.map(b => b.label)];
     fetch("/api/emails/trigger", {
@@ -419,11 +428,11 @@ export default function Checkout() {
       body: JSON.stringify({
         paymentIntentId: txId,
         customerEmail: formData.email,
-        customerName: formData.name,
-        address: `${formData.address} ${formData.apt}`.trim(),
-        city: formData.city,
-        postalCode: formData.zipCode,
-        province: formData.state,
+        customerName: formData.nome,
+        address: `${formData.morada} ${formData.numero}`.trim(),
+        city: formData.localidade,
+        postalCode: formData.codigoPostal,
+        province: formData.distrito,
         country: countryCode,
         amount: orderTotal,
         items: emailItems,
@@ -431,11 +440,11 @@ export default function Checkout() {
     }).catch(() => {});
   };
 
-  // ── Success screen ────────────────────────────────────────────────────────────
+  // ── Success screen ────────────────────────────────────────────────────────
   if (paymentDone) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center">
-        <Header />
+        <Header locale="it" />
         <main className="w-full max-w-md mx-auto p-4 py-12 flex-1 flex flex-col items-center text-center">
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
@@ -447,9 +456,9 @@ export default function Checkout() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h1 className="text-2xl font-black text-gray-900 mb-2">Payment Complete!</h1>
+            <h1 className="text-2xl font-black text-gray-900 mb-2">Pagamento completato!</h1>
             <p className="text-gray-500 text-sm mb-6 max-w-xs">
-              Thank you for your order. You'll receive a confirmation email with delivery details.
+              Grazie per il tuo ordine. Riceverai una email di conferma con i dettagli di consegna.
             </p>
           </motion.div>
 
@@ -459,22 +468,22 @@ export default function Checkout() {
             transition={{ delay: 0.3 }}
             className="w-full bg-white border border-gray-100 rounded-2xl p-5 mb-6 text-left shadow-sm"
           >
-            <h3 className="font-bold text-gray-900 text-sm mb-3 border-b pb-2">Order Summary</h3>
+            <h3 className="font-bold text-gray-900 text-sm mb-3 border-b pb-2">Riepilogo Ordine</h3>
             <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-500">Product</span>
+              <span className="text-gray-500">Prodotto</span>
               <span className="font-medium text-gray-900">{kit.name}</span>
             </div>
             <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-500">Shipping</span>
-              <span className="font-medium text-green-600">Free</span>
+              <span className="text-gray-500">Spedizione</span>
+              <span className="font-medium text-green-600">Gratuita</span>
             </div>
             <div className="flex justify-between mb-2 text-sm border-t pt-2 mt-1">
-              <span className="text-gray-500 font-bold">Total</span>
-              <span className="font-black text-primary">${orderTotal.toFixed(2)}</span>
+              <span className="text-gray-500 font-bold">Totale</span>
+              <span className="font-black text-primary">€{orderTotal.toFixed(2).replace(".", ",")}</span>
             </div>
             {transactionID && (
               <div className="flex justify-between text-xs mt-1">
-                <span className="text-gray-400">Reference</span>
+                <span className="text-gray-400">Riferimento</span>
                 <span className="text-gray-400 font-mono">{transactionID.slice(0, 20)}…</span>
               </div>
             )}
@@ -486,9 +495,9 @@ export default function Checkout() {
             transition={{ delay: 0.4 }}
             className="w-full bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-left"
           >
-            <p className="text-xs font-bold text-blue-700 mb-1 uppercase tracking-wide">Next Steps</p>
+            <p className="text-xs font-bold text-blue-700 mb-1 uppercase tracking-wide">Prossimi passi</p>
             <p className="text-sm text-blue-800">
-              You'll receive a confirmation email at <strong>{formData.email}</strong>. Your kit will be delivered in <strong>2–4 business days</strong> across the USA.
+              Riceverai un'email di conferma a <strong>{formData.email}</strong>. Il tuo kit verrà consegnato in <strong>2–4 giorni lavorativi</strong> in tutta Italia.
             </p>
           </motion.div>
 
@@ -496,17 +505,17 @@ export default function Checkout() {
             onClick={() => setLocation("/")}
             className="text-primary font-bold hover:underline text-sm"
           >
-            ← Back to store
+            ← Torna al negozio
           </button>
         </main>
       </div>
     );
   }
 
-  // ── Checkout form ─────────────────────────────────────────────────────────────
+  // ── Checkout form ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-12">
-      <Header />
+      <Header locale="it" />
 
       <main className="w-full max-w-5xl mx-auto px-4 pt-6 pb-4">
 
@@ -518,7 +527,7 @@ export default function Checkout() {
                 {step > i ? <CheckCircle2 className="w-5 h-5" /> : i}
               </div>
               <span className={`ml-2 text-xs md:text-sm font-semibold ${step >= i ? "text-gray-900" : "text-gray-400"}`}>
-                {i === 1 ? "Order" : i === 2 ? "Delivery" : "Payment"}
+                {i === 1 ? "Ordine" : i === 2 ? "Consegna" : "Pagamento"}
               </span>
               {i < 3 && <div className={`w-8 md:w-16 h-1 mx-2 rounded ${step > i ? "bg-primary" : "bg-gray-200"}`} />}
             </div>
@@ -527,7 +536,7 @@ export default function Checkout() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          {/* Order Summary sidebar */}
+          {/* Riepilogo ordine */}
           <div className="lg:col-span-5 lg:col-start-8 lg:row-start-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
               <div className="relative overflow-hidden bg-gray-50 border-b border-gray-100">
@@ -536,36 +545,36 @@ export default function Checkout() {
                   className="absolute top-[28px] right-[-36px] w-[148px] text-center py-[5px] rotate-45 shadow-lg"
                   style={{ background: "linear-gradient(135deg, #f5a623 0%, #fbbf24 40%, #f5a623 100%)" }}
                 >
-                  <span className="text-[10px] font-black tracking-[0.18em] uppercase text-[#7c4a00]">Promotion</span>
+                  <span className="text-[10px] font-black tracking-[0.18em] uppercase text-[#7c4a00]">Promozione</span>
                 </div>
               </div>
               <div className="px-4 py-3">
                 <div className="flex items-center justify-between mb-0.5">
                   <p className="font-bold text-gray-900 text-sm">{kit.name}{quantity > 1 ? ` ×${quantity}` : ""}</p>
-                  <span className="text-xs font-black text-primary">${(kit.price * quantity).toFixed(2)}</span>
+                  <span className="text-xs font-black text-primary">€{(kit.price * quantity).toFixed(2).replace(".", ",")}</span>
                 </div>
                 <p className="text-xs text-gray-400 mb-1">{kit.contents}</p>
                 <div className="flex items-center gap-1 text-yellow-500 text-xs mb-3">
-                  ★★★★★ <span className="text-gray-400">4.9 · +2,200 reviews</span>
+                  ★★★★★ <span className="text-gray-400">4,9 · +2.200 recensioni</span>
                 </div>
                 <div className="space-y-1 border-t border-gray-100 pt-2">
                   <div className="flex justify-between text-xs text-gray-400">
-                    <span>Regular price</span>
-                    <span className="line-through">${(kit.oldPrice * quantity).toFixed(2)}</span>
+                    <span>Prezzo normale</span>
+                    <span className="line-through">€{(kit.oldPrice * quantity).toFixed(2).replace(".", ",")}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>Shipping</span>
-                    <span className="text-green-600 font-semibold">Free</span>
+                    <span>Spedizione</span>
+                    <span className="text-green-600 font-semibold">Gratuita</span>
                   </div>
                   {orderBumps.filter(b => selectedBumps.has(b.id)).map(b => (
                     <div key={b.id} className="flex justify-between text-xs text-gray-500">
                       <span className="truncate pr-2">{b.label}</span>
-                      <span className="flex-shrink-0">+${b.price.toFixed(2)}</span>
+                      <span className="flex-shrink-0">+€{b.price.toFixed(2).replace(".", ",")}</span>
                     </div>
                   ))}
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                    <span className="font-bold text-gray-900 text-xs">Total (tax incl.)</span>
-                    <span className="text-base font-black text-primary">${orderTotal.toFixed(2)}</span>
+                    <span className="font-bold text-gray-900 text-xs">Totale IVA incl.</span>
+                    <span className="text-base font-black text-primary">€{orderTotal.toFixed(2).replace(".", ",")}</span>
                   </div>
                 </div>
               </div>
@@ -593,13 +602,13 @@ export default function Checkout() {
                     disabled={quantity >= 10}>+</button>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-lg font-black text-primary">${(kit.price * quantity).toFixed(2)}</p>
-                  {quantity > 1 && <p className="text-xs text-green-600 font-semibold">Free shipping</p>}
+                  <p className="text-lg font-black text-primary">€{(kit.price * quantity).toFixed(2).replace(".", ",")}</p>
+                  {quantity > 1 && <p className="text-xs text-green-600 font-semibold">Spedizione gratuita</p>}
                 </div>
               </motion.div>
             )}
 
-            {/* Step 1 — Personal Info */}
+            {/* Step 1 — Dati personali */}
             {step === 1 && (
               <motion.form
                 key="step1"
@@ -607,36 +616,44 @@ export default function Checkout() {
                 onSubmit={handleStepNext}
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">1. Your Information</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">1. I tuoi dati</h2>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                     <input required type="email" name="email" value={formData.email} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="name@gmail.com" />
+                      placeholder="nome@gmail.com" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                    <input required type="text" name="name" value={formData.name} onChange={handleChange}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nome e cognome *</label>
+                    <input required type="text" name="nome" value={formData.nome} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="First and Last Name" />
+                      placeholder="Nome e cognome" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                    <input required type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cellulare *</label>
+                    <input required type="tel" name="telemovel" value={formData.telemovel} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="+1 (555) 000-0000" />
-                    <p className="text-xs text-gray-500 mt-1">For delivery SMS notifications.</p>
+                      placeholder="+39 3XX XXX XXXX" />
+                    <p className="text-xs text-gray-500 mt-1">Per le notifiche di consegna via SMS.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Codice Fiscale *</label>
+                    <input required type="text" name="nif" value={formData.nif} onChange={handleChange}
+                      maxLength={16} minLength={11}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                      placeholder="RSSMRA85M01H501Z" />
+                    <p className="text-xs text-gray-500 mt-1">Necessario per l'emissione della fattura.</p>
                   </div>
                 </div>
                 <button type="submit"
                   className="mt-8 w-full bg-primary hover:bg-green-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                  Continue <ChevronRight className="w-5 h-5" />
+                  Continua <ChevronRight className="w-5 h-5" />
                 </button>
               </motion.form>
             )}
 
-            {/* Step 2 — Delivery Address */}
+            {/* Step 2 — Consegna */}
             {step === 2 && (
               <motion.form
                 key="step2"
@@ -645,45 +662,53 @@ export default function Checkout() {
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
-                  <button type="button" onClick={() => setStep(1)} className="text-sm text-primary font-medium hover:underline">Edit info</button>
+                  <h2 className="text-xl font-bold text-gray-900">Indirizzo di consegna</h2>
+                  <button type="button" onClick={() => setStep(1)} className="text-sm text-primary font-medium hover:underline">Modifica dati</button>
                 </div>
                 <p className="text-sm text-gray-400 mb-6 flex items-center gap-1">
-                  <Truck className="w-3.5 h-3.5 text-green-500" /> Free shipping across the entire USA
+                  <Truck className="w-3.5 h-3.5 text-green-500" /> Spedizione gratuita in tutta Italia
                 </p>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">ZIP Code <span className="text-red-500">*</span></label>
-                    <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange}
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">CAP <span className="text-red-500">*</span></label>
+                    <input required type="text" name="codigoPostal" value={formData.codigoPostal} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="10001" maxLength={10} />
+                      placeholder="00100" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Street Address <span className="text-red-500">*</span></label>
-                    <input required type="text" name="address" value={formData.address} onChange={handleChange}
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Indirizzo <span className="text-red-500">*</span></label>
+                    <input required type="text" name="morada" value={formData.morada} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="123 Main Street" />
+                      placeholder="Via / Viale / Corso" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1.5">Numero civico <span className="text-red-500">*</span></label>
+                      <input required type="text" name="numero" value={formData.numero} onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
+                        placeholder="123" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1.5">Interno / Scala</label>
+                      <input type="text" name="andar" value={formData.andar} onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
+                        placeholder="Int. 2" />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Apt / Suite / Unit</label>
-                    <input type="text" name="apt" value={formData.apt} onChange={handleChange}
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Città <span className="text-red-500">*</span></label>
+                    <input required type="text" name="localidade" value={formData.localidade} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="Apt 4B" />
+                      placeholder="Roma" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">City <span className="text-red-500">*</span></label>
-                    <input required type="text" name="city" value={formData.city} onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="New York" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">State <span className="text-red-500">*</span></label>
-                    <select required name="state" value={formData.state} onChange={handleChange}
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Regione <span className="text-red-500">*</span></label>
+                    <select required name="distrito" value={formData.distrito} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white appearance-none cursor-pointer text-gray-700">
-                      <option value="">Select state…</option>
-                      {["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"].map(s => (
-                        <option key={s} value={s}>{s}</option>
+                      <option value="">Seleziona...</option>
+                      {["Abruzzo","Basilicata","Calabria","Campania","Emilia-Romagna","Friuli-Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","Trentino-Alto Adige","Umbria","Valle d'Aosta","Veneto"].map(d => (
+                        <option key={d} value={d}>{d}</option>
                       ))}
                     </select>
                   </div>
@@ -691,12 +716,12 @@ export default function Checkout() {
 
                 <button type="submit"
                   className="mt-8 w-full bg-primary hover:bg-green-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                  Continue <ChevronRight className="w-5 h-5" />
+                  Continua <ChevronRight className="w-5 h-5" />
                 </button>
               </motion.form>
             )}
 
-            {/* Step 3 — Order Bumps + Stripe Payment */}
+            {/* Step 3 — Order Bumps + Pagamento Stripe */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -706,7 +731,7 @@ export default function Checkout() {
               >
                 {/* Order Bumps */}
                 <div className="bg-green-50 border-b border-green-100 px-5 py-3">
-                  <p className="text-sm font-black text-primary text-center">Add more sticker packs at a special promotional price</p>
+                  <p className="text-sm font-black text-primary text-center">Approfitta e aggiungi altre bustine a prezzo promozionale</p>
                 </div>
 
                 <div className="divide-y divide-gray-100">
@@ -725,8 +750,8 @@ export default function Checkout() {
                             </div>
                             <p className="text-xs text-gray-500 mb-1.5">{bump.desc}</p>
                             <div className="flex items-baseline gap-1.5">
-                              <span className="text-xs text-gray-400 line-through">${bump.oldPrice.toFixed(2)}</span>
-                              <span className="text-lg font-black text-primary">${bump.price.toFixed(2)}</span>
+                              <span className="text-xs text-gray-400 line-through">{bump.oldPrice.toFixed(2).replace(".", ",")} €</span>
+                              <span className="text-lg font-black text-primary">{bump.price.toFixed(2).replace(".", ",")} €</span>
                             </div>
                           </div>
                         </div>
@@ -739,7 +764,7 @@ export default function Checkout() {
                               : "border-primary text-primary bg-white hover:bg-green-50"
                           }`}
                         >
-                          {active ? <><CheckCircle className="w-4 h-4" /> Added</> : <>+ Add to Order</>}
+                          {active ? <><CheckCircle className="w-4 h-4" /> Aggiunto</> : <>+ Aggiungi all'ordine</>}
                         </button>
                       </div>
                     );
@@ -752,25 +777,25 @@ export default function Checkout() {
                     <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
                       <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm text-red-700 font-semibold mb-1">Connection Error</p>
+                        <p className="text-sm text-red-700 font-semibold mb-1">Errore di connessione</p>
                         <p className="text-sm text-red-600">{intentError}</p>
                         <button
                           onClick={() => { setClientSecret(null); setIntentError(null); setStep(3); }}
                           className="mt-2 text-xs text-red-700 font-bold underline"
                         >
-                          Try again
+                          Riprova
                         </button>
                       </div>
                     </div>
                     <button type="button" onClick={() => setStep(2)}
                       className="mt-4 w-full px-5 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-black text-sm hover:border-gray-400 transition-all">
-                      ← Back
+                      ← Indietro
                     </button>
                   </div>
                 ) : !clientSecret ? (
                   <div className="flex items-center justify-center py-12 gap-3 text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span className="text-sm">Initializing secure payment…</span>
+                    <span className="text-sm">Inizializzazione pagamento sicuro in corso…</span>
                   </div>
                 ) : (
                   <Elements
@@ -778,7 +803,7 @@ export default function Checkout() {
                     options={{
                       clientSecret,
                       appearance: stripeAppearance,
-                      locale: "en",
+                      locale: "it",
                     }}
                   >
                     <StripePaymentForm
@@ -805,26 +830,23 @@ export default function Checkout() {
               </motion.div>
             )}
 
-            {/* Trust badges — steps 1 & 2 only */}
-            <AnimatePresence>
-              {step < 3 && (
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="grid grid-cols-3 gap-3"
-                >
-                  {[
-                    { icon: <Lock className="w-4 h-4" />, label: "Secure Payment" },
-                    { icon: <Truck className="w-4 h-4" />, label: "Free Shipping" },
-                    { icon: <ShieldCheck className="w-4 h-4" />, label: "7-Day Guarantee" },
-                  ].map((b, i) => (
-                    <div key={i} className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col items-center gap-1 text-center">
-                      <div className="text-primary">{b.icon}</div>
-                      <p className="text-[11px] font-semibold text-gray-700">{b.label}</p>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Trust badges — solo step 1 e 2 */}
+            {step < 3 && (
+              <div className="flex justify-center gap-6">
+                <div className="flex flex-col items-center gap-1 text-gray-500">
+                  <Lock className="w-5 h-5 text-gray-400" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">Pagamento sicuro</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 text-gray-500">
+                  <ShieldCheck className="w-5 h-5 text-gray-400" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">Acquisto protetto</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 text-gray-500">
+                  <Truck className="w-5 h-5 text-gray-400" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">Spedizione gratuita</span>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>

@@ -6,7 +6,7 @@ const router: IRouter = Router();
 function getStripe(): Stripe {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY not configured");
-  return new Stripe(secretKey, { apiVersion: "2025-04-30.basil" });
+  return new Stripe(secretKey, { apiVersion: "2026-04-22.dahlia" });
 }
 
 router.post("/payment/create-intent", async (req: Request, res: Response) => {

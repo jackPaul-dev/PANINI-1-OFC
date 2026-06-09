@@ -1,0 +1,2 @@
+- [Panini Mundial architecture](panini-mundial-arch.md) — USA at root `/`, Italy at `/italy/*`, 7 countries as ComingSoon placeholders.
+- [Stripe & email gotchas](panini-stripe-email.md) — Stripe API version pin, Resend double-cast, DB channel_binding, Heroku env vars.

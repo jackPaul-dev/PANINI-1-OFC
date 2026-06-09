@@ -116,7 +116,7 @@ async function sendEmailSequence(order: Order) {
     try {
       const payload: Record<string, unknown> = { from: FROM, to: order.customerEmail, subject, html };
       if (scheduledAt) payload.scheduledAt = scheduledAt;
-      const result = await resend.emails.send(payload as Parameters<Resend["emails"]["send"]>[0]);
+      const result = await resend.emails.send(payload as unknown as Parameters<Resend["emails"]["send"]>[0]);
       resendId = result.data?.id ?? null;
       status   = scheduledAt ? "scheduled" : "sent";
     } catch (err: unknown) {

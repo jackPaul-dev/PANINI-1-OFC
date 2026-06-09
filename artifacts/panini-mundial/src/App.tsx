@@ -10,6 +10,10 @@ import Pressel from "@/pages/pressel";
 import Seguimiento from "@/pages/seguimiento";
 import EmailPanel from "@/pages/emailpanel";
 import ComingSoon from "@/pages/ComingSoon";
+import ItalyLanding from "@/pages/countries/italy/landing";
+import ItalyPresell from "@/pages/countries/italy/presell";
+import ItalyCheckout from "@/pages/countries/italy/checkout";
+import ItalySeguimiento from "@/pages/countries/italy/tracking";
 import { pixelPageView } from "@/lib/pixel";
 
 const queryClient = new QueryClient();
@@ -41,13 +45,22 @@ function Router() {
       <ScrollToTop />
       <PixelPageTracker />
       <Switch>
-        {/* ── ITALY (active) ── */}
+        {/* ── USA (root — active) ── */}
         <Route path="/" component={Landing} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/presell" component={Pressel} />
         <Route path="/pressel" component={Pressel} />
         <Route path="/seguimiento" component={Seguimiento} />
+        <Route path="/tracking" component={Seguimiento} />
         <Route path="/email" component={EmailPanel} />
+
+        {/* ── ITALY ── */}
+        <Route path="/italy" component={ItalyLanding} />
+        <Route path="/italy/presell" component={ItalyPresell} />
+        <Route path="/italy/pressel" component={ItalyPresell} />
+        <Route path="/italy/checkout" component={ItalyCheckout} />
+        <Route path="/italy/seguimiento" component={ItalySeguimiento} />
+        <Route path="/italy/tracking" component={ItalySeguimiento} />
 
         {/* ── SPAIN ── */}
         <Route path="/spain">
@@ -57,11 +70,6 @@ function Router() {
         {/* ── FRANCE ── */}
         <Route path="/france">
           <ComingSoon country="France" flag="🇫🇷" language="Français" currency="EUR" />
-        </Route>
-
-        {/* ── USA ── */}
-        <Route path="/usa">
-          <ComingSoon country="USA" flag="🇺🇸" language="English" currency="USD" />
         </Route>
 
         {/* ── BRAZIL ── */}

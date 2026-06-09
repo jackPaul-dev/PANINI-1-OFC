@@ -1,7 +1,33 @@
 import { useState, useEffect } from "react";
 import { ShieldCheck, Truck, Lock, Package } from "lucide-react";
 
-export function Header() {
+const LABELS = {
+  en: {
+    offerExpires: "⏱ Offer expires in",
+    buying: (n: number) => `${n} buying right now`,
+    sold: (n: number) => `${n} sold today`,
+    secure: "100% Secure Site",
+    protected: "Protected Purchase",
+    shipping: "Free Shipping USA",
+    original: "Original Product",
+  },
+  it: {
+    offerExpires: "⏱ Offerta scade tra",
+    buying: (n: number) => `${n} stanno acquistando ora`,
+    sold: (n: number) => `${n} venduti oggi`,
+    secure: "Ambiente 100% sicuro",
+    protected: "Acquisto protetto",
+    shipping: "Spedizione gratuita Italia",
+    original: "Prodotto originale",
+  },
+};
+
+interface HeaderProps {
+  locale?: "en" | "it";
+}
+
+export function Header({ locale = "en" }: HeaderProps) {
+  const t = LABELS[locale];
   const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [buying, setBuying] = useState(() => Math.floor(Math.random() * 60) + 80);
   const [sold, setSold] = useState(() => Math.floor(Math.random() * 400) + 400);
@@ -40,7 +66,7 @@ export function Header() {
 
         <div className="flex flex-col items-end gap-0.5">
           <span className="text-white/60 text-[10px] font-semibold uppercase tracking-widest leading-none">
-            ⏱ Offerta scade tra
+            {t.offerExpires}
           </span>
           <div className="flex items-center gap-1">
             {(() => {
@@ -71,21 +97,21 @@ export function Header() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-400"></span>
           </span>
-          {buying} stanno acquistando ora
+          {t.buying(buying)}
         </span>
         <span className="text-white/40">|</span>
         <span className="flex items-center gap-1.5">
           <Package className="w-3.5 h-3.5 text-green-400" />
-          <span className="text-green-300 font-bold">{sold} venduti oggi</span>
+          <span className="text-green-300 font-bold">{t.sold(sold)}</span>
         </span>
       </div>
 
       {/* Trust Badges Row */}
       <div className="w-full py-2 px-4 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[11px] text-gray-500 bg-white border-b border-gray-100">
-        <span className="flex items-center gap-1 font-medium"><Lock className="w-3 h-3 text-green-600" /> Ambiente 100% sicuro</span>
-        <span className="flex items-center gap-1 font-medium"><ShieldCheck className="w-3 h-3 text-green-600" /> Acquisto protetto</span>
-        <span className="flex items-center gap-1 font-medium"><Truck className="w-3 h-3 text-green-600" /> Spedizione gratuita Italia</span>
-        <span className="flex items-center gap-1 font-medium"><ShieldCheck className="w-3 h-3 text-green-600" /> Prodotto originale</span>
+        <span className="flex items-center gap-1 font-medium"><Lock className="w-3 h-3 text-green-600" /> {t.secure}</span>
+        <span className="flex items-center gap-1 font-medium"><ShieldCheck className="w-3 h-3 text-green-600" /> {t.protected}</span>
+        <span className="flex items-center gap-1 font-medium"><Truck className="w-3 h-3 text-green-600" /> {t.shipping}</span>
+        <span className="flex items-center gap-1 font-medium"><ShieldCheck className="w-3 h-3 text-green-600" /> {t.original}</span>
       </div>
     </header>
   );
