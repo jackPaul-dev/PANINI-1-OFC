@@ -62791,6 +62791,27 @@ router2.post("/payment/create-intent", async (req, res) => {
     res.status(500).json({ error: message });
   }
 });
+router2.post("/payment/update-intent", async (req, res) => {
+  try {
+    const stripe = getStripe();
+    const { paymentIntentId, amount } = req.body;
+    if (!paymentIntentId || !amount) {
+      res.status(400).json({ error: "Missing paymentIntentId or amount" });
+      return;
+    }
+    const amountCents = Math.round(amount * 100);
+    if (amountCents < 50) {
+      res.status(400).json({ error: "Minimum amount is $0.50" });
+      return;
+    }
+    await stripe.paymentIntents.update(paymentIntentId, { amount: amountCents });
+    res.json({ ok: true });
+  } catch (err) {
+    req.log.error({ err }, "payment/update-intent error");
+    const message = err instanceof stripe_esm_node_default.errors.StripeError ? err.message : "Internal server error";
+    res.status(500).json({ error: message });
+  }
+});
 var payment_default = router2;
 
 // src/routes/emails.ts

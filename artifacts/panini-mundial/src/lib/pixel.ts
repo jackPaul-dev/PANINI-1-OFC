@@ -36,7 +36,6 @@ function ttq(event: string, params?: Record<string, unknown>) {
 }
 
 export function pixelPageView() {
-  fbq("init", FB_PIXEL_ID);
   fbq("track", "PageView");
 }
 

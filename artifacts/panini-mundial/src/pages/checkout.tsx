@@ -267,6 +267,7 @@ export default function Checkout() {
   const [transactionID, setTransactionID] = useState<string | null>(null);
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [intentError, setIntentError] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState<string>(countryConfig.countryCode);
 
@@ -392,6 +393,7 @@ export default function Checkout() {
           setIntentError(data.error);
         } else {
           setClientSecret(data.clientSecret);
+          setPaymentIntentId(data.transactionID);
           sessionStorage.setItem(
             "panini_pending_order",
             JSON.stringify({
@@ -411,6 +413,19 @@ export default function Checkout() {
       })
       .catch(() => setIntentError("Unable to connect to the payment server."));
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync PI amount when order bumps change on step 3
+  useEffect(() => {
+    if (step !== 3 || !paymentIntentId) return;
+    const timer = setTimeout(() => {
+      fetch("/api/payment/update-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentIntentId, amount: orderTotal }),
+      }).catch(() => {});
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [orderTotal, paymentIntentId, step]);
 
   const handleStepNext = (e: React.FormEvent) => {
     e.preventDefault();
