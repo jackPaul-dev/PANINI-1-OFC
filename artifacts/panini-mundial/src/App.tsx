@@ -10,6 +10,9 @@ import Pressel from "@/pages/pressel";
 import Seguimiento from "@/pages/seguimiento";
 import EmailPanel from "@/pages/emailpanel";
 import ComingSoon from "@/pages/ComingSoon";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfUse from "@/pages/TermsOfUse";
+import ReturnPolicy from "@/pages/ReturnPolicy";
 import ItalyLanding from "@/pages/countries/italy/landing";
 import ItalyPresell from "@/pages/countries/italy/presell";
 import ItalyCheckout from "@/pages/countries/italy/checkout";
@@ -53,6 +56,9 @@ function Router() {
         <Route path="/seguimiento" component={Seguimiento} />
         <Route path="/tracking" component={Seguimiento} />
         <Route path="/email" component={EmailPanel} />
+        <Route path="/privacy" component={PrivacyPolicy} />
+        <Route path="/terms" component={TermsOfUse} />
+        <Route path="/returns" component={ReturnPolicy} />
 
         {/* ── ITALY ── */}
         <Route path="/italy" component={ItalyLanding} />

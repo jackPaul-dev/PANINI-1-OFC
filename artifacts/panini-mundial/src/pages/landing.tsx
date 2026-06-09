@@ -574,10 +574,10 @@ export default function Landing() {
             <div>
               <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Company</p>
               <ul className="space-y-3 text-sm text-white/80">
-                <li><a href="#" className="hover:text-white transition-colors">About us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Use</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Return Policy</a></li>
+                <li><a href="mailto:support@paniniworldcup2026.site" className="hover:text-white transition-colors">Contact us</a></li>
+                <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="hover:text-white transition-colors">Terms of Use</a></li>
+                <li><a href="/returns" className="hover:text-white transition-colors">Return Policy</a></li>
               </ul>
             </div>
             <div>
