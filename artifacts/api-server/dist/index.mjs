@@ -35751,18 +35751,18 @@ var require_sha256 = __commonJS({
     (function(root, factory) {
       var exports2 = {};
       factory(exports2);
-      var sha256 = exports2["default"];
+      var sha2562 = exports2["default"];
       for (var k in exports2) {
-        sha256[k] = exports2[k];
+        sha2562[k] = exports2[k];
       }
       if (typeof module === "object" && typeof module.exports === "object") {
-        module.exports = sha256;
+        module.exports = sha2562;
       } else if (typeof define === "function" && define.amd) {
         define(function() {
-          return sha256;
+          return sha2562;
         });
       } else {
-        root.sha256 = sha256;
+        root.sha256 = sha2562;
       }
     })(exports, function(exports2) {
       "use strict";
@@ -36177,7 +36177,7 @@ var require_dist2 = __commonJS({
     exports.Webhook = exports.WebhookVerificationError = void 0;
     var timing_safe_equal_1 = require_timing_safe_equal();
     var base64 = require_base64();
-    var sha256 = require_sha256();
+    var sha2562 = require_sha256();
     var WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60;
     var ExtendableError = class _ExtendableError extends Error {
       constructor(message) {
@@ -36253,7 +36253,7 @@ var require_dist2 = __commonJS({
         const encoder = new TextEncoder();
         const timestampNumber = Math.floor(timestamp2.getTime() / 1e3);
         const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
-        const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+        const expectedSignature = base64.encode(sha2562.hmac(this.key, toSign));
         return `v1,${expectedSignature}`;
       }
       verifyTimestamp(timestampHeader) {
@@ -37735,7 +37735,7 @@ var require_utils_legacy = __commonJS({
       const outer = md5(Buffer.concat([Buffer.from(inner), salt]));
       return "md5" + outer;
     }
-    function sha256(text2) {
+    function sha2562(text2) {
       return nodeCrypto.createHash("sha256").update(text2).digest();
     }
     function hashByName(hashName, text2) {
@@ -37752,7 +37752,7 @@ var require_utils_legacy = __commonJS({
       postgresMd5PasswordHash,
       randomBytes: nodeCrypto.randomBytes,
       deriveKey,
-      sha256,
+      sha256: sha2562,
       hashByName,
       hmacSha256,
       md5
@@ -37768,7 +37768,7 @@ var require_utils_webcrypto = __commonJS({
       postgresMd5PasswordHash,
       randomBytes,
       deriveKey,
-      sha256,
+      sha256: sha2562,
       hashByName,
       hmacSha256,
       md5
@@ -37793,7 +37793,7 @@ var require_utils_webcrypto = __commonJS({
       const outer = await md5(Buffer.concat([Buffer.from(inner), salt]));
       return "md5" + outer;
     }
-    async function sha256(text2) {
+    async function sha2562(text2) {
       return await subtleCrypto.digest("SHA-256", text2);
     }
     async function hashByName(hashName, text2) {
@@ -75674,6 +75674,63 @@ var emails_default = router3;
 
 // src/routes/webhook.ts
 var import_express4 = __toESM(require_express2(), 1);
+
+// src/lib/metaCapi.ts
+import { createHash as createHash2 } from "crypto";
+var PIXEL_ID = "1545212470581501";
+var ACCESS_TOKEN = process.env.META_PIXEL_ACCESS_TOKEN ?? "";
+function sha256(value) {
+  return createHash2("sha256").update(value.trim().toLowerCase()).digest("hex");
+}
+async function capiPurchase(params) {
+  if (!ACCESS_TOKEN) return;
+  const nameParts = (params.name ?? "").trim().split(/\s+/);
+  const firstName = nameParts[0] ?? "";
+  const lastName = nameParts.slice(1).join(" ");
+  const payload = {
+    data: [
+      {
+        event_name: "Purchase",
+        event_time: Math.floor(Date.now() / 1e3),
+        event_id: params.eventId,
+        action_source: "website",
+        event_source_url: params.sourceUrl ?? "https://paniniworldcup2026.site/checkout",
+        user_data: {
+          em: [sha256(params.email)],
+          ...firstName && { fn: [sha256(firstName)] },
+          ...lastName && { ln: [sha256(lastName)] },
+          ...params.clientIp && { client_ip_address: params.clientIp },
+          ...params.userAgent && { client_user_agent: params.userAgent }
+        },
+        custom_data: {
+          currency: params.currency.toUpperCase(),
+          value: params.amount,
+          content_ids: params.contentIds,
+          content_type: "product",
+          num_items: params.contentIds.length
+        }
+      }
+    ]
+  };
+  try {
+    const res = await fetch(
+      `https://graph.facebook.com/v19.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }
+    );
+    if (!res.ok) {
+      const text2 = await res.text();
+      console.warn("Meta CAPI error:", text2);
+    }
+  } catch (err) {
+    console.warn("Meta CAPI request failed:", err);
+  }
+}
+
+// src/routes/webhook.ts
 var router4 = (0, import_express4.Router)();
 var FROM2 = process.env.EMAIL_FROM || "Panini USA <noreply@paniniworldcup2026.site>";
 var TRACKING_BASE2 = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
@@ -75832,7 +75889,20 @@ router4.post(
           country: billing.address?.country ?? "US",
           amount,
           items
-        }).then((order) => sendEmailSequence2(order));
+        }).then((order) => {
+          capiPurchase({
+            eventId: pi.id,
+            email: customerEmail,
+            name: customerName,
+            amount,
+            currency: pi.currency ?? "usd",
+            contentIds: items,
+            clientIp: (req.headers["x-forwarded-for"] ?? req.socket.remoteAddress ?? "").split(",")[0].trim(),
+            userAgent: req.headers["user-agent"] ?? "",
+            sourceUrl: `https://paniniworldcup2026.site/checkout`
+          });
+          return sendEmailSequence2(order);
+        });
       }).catch((err) => console.error("Webhook processing error:", err));
     }
     res.json({ received: true });

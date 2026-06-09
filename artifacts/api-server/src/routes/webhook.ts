@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import { createOrder, getOrderByPaymentIntent } from "../lib/orderStore.js";
+import { capiPurchase } from "../lib/metaCapi.js";
 import {
   emailDay0, emailDay1, emailDay2, emailDay3, emailDay5,
   emailDay6, emailDay7, emailDay8, emailDay9, emailDay10,
@@ -166,7 +167,20 @@ router.post(
           province: billing.address?.state ?? "",
           country: billing.address?.country ?? "US",
           amount, items,
-        }).then(order => sendEmailSequence(order));
+        }).then(order => {
+          capiPurchase({
+            eventId: pi.id,
+            email: customerEmail,
+            name: customerName,
+            amount,
+            currency: pi.currency ?? "usd",
+            contentIds: items,
+            clientIp: (req.headers["x-forwarded-for"] as string ?? req.socket.remoteAddress ?? "").split(",")[0].trim(),
+            userAgent: req.headers["user-agent"] ?? "",
+            sourceUrl: `https://paniniworldcup2026.site/checkout`,
+          });
+          return sendEmailSequence(order);
+        });
       }).catch(err => console.error("Webhook processing error:", err));
     }
 
