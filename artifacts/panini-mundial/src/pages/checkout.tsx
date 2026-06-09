@@ -97,6 +97,15 @@ function StripePaymentForm({
   const stripe = useStripe();
   const elements = useElements();
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Timeout: se não carregar em 18s, mostra erro + retry
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!ready) setLoadError("Payment methods took too long to load. Check your connection and try again.");
+    }, 18000);
+    return () => clearTimeout(timer);
+  }, [ready]);
 
   const handleSubmit = useCallback(async () => {
     if (!stripe || !elements) return;
@@ -143,22 +152,41 @@ function StripePaymentForm({
         Transaction protected with 256-bit SSL encryption.
       </p>
 
-      <div className={`transition-all duration-300 ${ready ? "opacity-100" : "opacity-0"}`}>
-        <PaymentElement
-          onReady={() => setReady(true)}
-          options={{
-            wallets: { applePay: "auto", googlePay: "auto" },
-            layout: { type: "tabs", defaultCollapsed: false },
-            fields: { billingDetails: "never" },
-          }}
-        />
-      </div>
-
-      {!ready && (
-        <div className="flex items-center justify-center py-10">
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          <span className="ml-2 text-sm text-gray-400">Loading payment methods…</span>
+      {loadError ? (
+        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm text-red-700 font-semibold mb-1">Could not load payment methods</p>
+            <p className="text-sm text-red-600 mb-2">{loadError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-xs text-red-700 font-bold underline"
+            >
+              Reload page to try again
+            </button>
+          </div>
         </div>
+      ) : (
+        <>
+          <div className={`transition-all duration-300 ${ready ? "opacity-100" : "opacity-0 h-0 overflow-hidden"}`}>
+            <PaymentElement
+              onReady={() => setReady(true)}
+              onLoadError={(e) => setLoadError(e.error?.message ?? "Failed to load payment form. Please reload and try again.")}
+              options={{
+                wallets: { applePay: "auto", googlePay: "auto" },
+                layout: { type: "tabs", defaultCollapsed: false },
+                fields: { billingDetails: "never" },
+              }}
+            />
+          </div>
+
+          {!ready && (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <span className="ml-2 text-sm text-gray-400">Loading payment methods…</span>
+            </div>
+          )}
+        </>
       )}
 
       <div className="mt-5 border-t border-gray-100 pt-4 space-y-1.5 mb-5">
