@@ -9,6 +9,7 @@ import Checkout from "@/pages/checkout";
 import Pressel from "@/pages/pressel";
 import Seguimiento from "@/pages/seguimiento";
 import EmailPanel from "@/pages/emailpanel";
+import ComingSoon from "@/pages/ComingSoon";
 import { pixelPageView } from "@/lib/pixel";
 
 const queryClient = new QueryClient();
@@ -40,12 +41,49 @@ function Router() {
       <ScrollToTop />
       <PixelPageTracker />
       <Switch>
+        {/* ── ITALY (active) ── */}
         <Route path="/" component={Landing} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/presell" component={Pressel} />
         <Route path="/pressel" component={Pressel} />
         <Route path="/seguimiento" component={Seguimiento} />
         <Route path="/email" component={EmailPanel} />
+
+        {/* ── SPAIN ── */}
+        <Route path="/spain">
+          <ComingSoon country="España" flag="🇪🇸" language="Español" currency="EUR" />
+        </Route>
+
+        {/* ── FRANCE ── */}
+        <Route path="/france">
+          <ComingSoon country="France" flag="🇫🇷" language="Français" currency="EUR" />
+        </Route>
+
+        {/* ── USA ── */}
+        <Route path="/usa">
+          <ComingSoon country="USA" flag="🇺🇸" language="English" currency="USD" />
+        </Route>
+
+        {/* ── BRAZIL ── */}
+        <Route path="/brazil">
+          <ComingSoon country="Brasil" flag="🇧🇷" language="Português" currency="BRL" />
+        </Route>
+
+        {/* ── MEXICO ── */}
+        <Route path="/mexico">
+          <ComingSoon country="México" flag="🇲🇽" language="Español" currency="MXN" />
+        </Route>
+
+        {/* ── GERMANY ── */}
+        <Route path="/germany">
+          <ComingSoon country="Deutschland" flag="🇩🇪" language="Deutsch" currency="EUR" />
+        </Route>
+
+        {/* ── PORTUGAL ── */}
+        <Route path="/portugal">
+          <ComingSoon country="Portugal" flag="🇵🇹" language="Português" currency="EUR" />
+        </Route>
+
         <Route component={NotFound} />
       </Switch>
     </>
