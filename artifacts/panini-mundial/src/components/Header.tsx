@@ -20,10 +20,19 @@ const LABELS = {
     shipping: "Spedizione gratuita Italia",
     original: "Prodotto originale",
   },
+  fr: {
+    offerExpires: "⏱ Offre expire dans",
+    buying: (n: number) => `${n} achètent en ce moment`,
+    sold: (n: number) => `${n} vendus aujourd'hui`,
+    secure: "Site 100 % sécurisé",
+    protected: "Achat protégé",
+    shipping: "Livraison gratuite France",
+    original: "Produit officiel",
+  },
 };
 
 interface HeaderProps {
-  locale?: "en" | "it";
+  locale?: "en" | "it" | "fr";
 }
 
 export function Header({ locale = "en" }: HeaderProps) {

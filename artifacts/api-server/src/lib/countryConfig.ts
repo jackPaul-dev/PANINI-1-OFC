@@ -13,32 +13,30 @@
 export const countryConfig = {
 
   // ── Identidade ───────────────────────────────────────────────────────────────
-  country       : "United States",
-  countryCode   : "US",
-  locale        : "en-US",   // usado em toLocaleDateString e formatações de data
-  currency      : "USD",
-  currencySymbol: "$",
+  country       : "France",
+  countryCode   : "FR",
+  locale        : "fr-FR",   // usado em toLocaleDateString e formatações de data
+  currency      : "EUR",
+  currencySymbol: "€",
 
   // ── Empresa / Rodapé dos e-mails ─────────────────────────────────────────────
-  // Ao clonar: ajuste para a entidade legal do país-alvo.
-  companyName        : "Panini USA LLC",
-  emailSupportLabel  : "Panini USA LLC · Customer Support",
-  emailShippingLine  : "Free returns within 30 days · Free shipping across the USA",
-  emailCopyrightLine : "Official FIFA World Cup 2026 Licensee",  // prepended with © {year} {companyName}
+  companyName        : "Panini France SAS",
+  emailSupportLabel  : "Panini France SAS · Service client",
+  emailShippingLine  : "Retours gratuits sous 30 jours · Livraison gratuite partout en France",
+  emailCopyrightLine : "Licencié officiel FIFA World Cup 2026",  // prepended with © {year} {companyName}
 
-  // ── Steps do rastreamento de entrega ─────────────────────────────────────────
-  // Ao clonar: traduza os labels e subtítulos para o idioma do país-alvo.
+  // ── Steps du suivi de livraison ───────────────────────────────────────────────
   trackingSteps: [
-    { label: "Order Confirmed",        sub: "Order successfully processed"    },
-    { label: "Order Shipped",          sub: "Departed from warehouse"         },
-    { label: "Distribution Center",   sub: "Arrived at logistics hub"        },
-    { label: "Out for Delivery",       sub: "Courier is in your area"         },
-    { label: "First Delivery Attempt", sub: "Minor delay in progress"        },
-    { label: "Locating Package",       sub: "Signal being recovered"          },
-    { label: "Customs Review",         sub: "Standard inspection in progress" },
-    { label: "Address Verification",  sub: "Awaiting delivery confirmation"  },
-    { label: "Order Relaunched",       sub: "New delivery route assigned"     },
-    { label: "Delivery Imminent",      sub: "Courier arriving shortly"        },
+    { label: "Commande confirmée",       sub: "Commande traitée avec succès"           },
+    { label: "Commande expédiée",        sub: "Départ de l'entrepôt"                   },
+    { label: "Centre de distribution",  sub: "Arrivée au hub logistique"              },
+    { label: "En cours de livraison",   sub: "Le livreur est dans votre secteur"      },
+    { label: "Première tentative",      sub: "Léger retard en cours"                  },
+    { label: "Localisation du colis",   sub: "Récupération du signal en cours"        },
+    { label: "Contrôle douanier",       sub: "Inspection standard en cours"           },
+    { label: "Vérification d'adresse",  sub: "En attente de confirmation de livraison"},
+    { label: "Commande relancée",       sub: "Nouvelle route de livraison assignée"   },
+    { label: "Livraison imminente",     sub: "Le livreur arrive bientôt"              },
   ] as { label: string; sub: string }[],
 
 };

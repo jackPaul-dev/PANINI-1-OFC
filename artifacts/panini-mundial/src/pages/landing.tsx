@@ -566,22 +566,22 @@ export default function Landing() {
               <img src="/assets/logo-panini-oficial.png" alt="Panini" className="h-6 w-auto object-contain" />
             </div>
             <p className="text-white/70 text-sm leading-relaxed max-w-sm">
-              The official World Cup 2026 collection. Free shipping across the entire USA.
+              La collection officielle Coupe du Monde 2026. Livraison gratuite partout en France.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-8 mb-10">
             <div>
-              <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Company</p>
+              <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Entreprise</p>
               <ul className="space-y-3 text-sm text-white/80">
-                <li><a href="mailto:support@paniniworldcup2026.site" className="hover:text-white transition-colors">Contact us</a></li>
-                <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Terms of Use</a></li>
-                <li><a href="/returns" className="hover:text-white transition-colors">Return Policy</a></li>
+                <li><a href="mailto:support@panini-france.fr" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/privacy" className="hover:text-white transition-colors">Politique de confidentialité</a></li>
+                <li><a href="/terms" className="hover:text-white transition-colors">CGU</a></li>
+                <li><a href="/returns" className="hover:text-white transition-colors">Politique de retour</a></li>
               </ul>
             </div>
             <div>
-              <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Secure Payment</p>
+              <p className="text-[#f5a623] font-black text-xs uppercase tracking-widest mb-4">Paiement sécurisé</p>
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span className="bg-white text-gray-900 text-xs font-black px-2.5 py-1 rounded">VISA</span>
                 <span className="bg-white text-gray-900 text-xs font-black px-2.5 py-1 rounded">MASTERCARD</span>
@@ -589,14 +589,14 @@ export default function Landing() {
                 <span className="bg-white text-gray-800 text-xs font-black px-2.5 py-1 rounded">G Pay</span>
               </div>
               <p className="text-white/60 text-xs flex items-center gap-1.5">
-                <Lock className="w-3 h-3" /> 100% secure site · SSL · Stripe
+                <Lock className="w-3 h-3" /> Site 100 % sécurisé · SSL · Stripe
               </p>
             </div>
           </div>
         </div>
 
         <div className="border-t border-white/10 py-4 text-center text-white/40 text-xs">
-          © 2026 Panini USA LLC — All rights reserved. Limited promotional offer.
+          © 2026 Panini France SAS — Tous droits réservés. Offre promotionnelle limitée.
         </div>
       </footer>
     </div>

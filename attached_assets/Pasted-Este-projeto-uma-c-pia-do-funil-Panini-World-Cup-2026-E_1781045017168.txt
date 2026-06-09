@@ -1,0 +1,102 @@
+Este projeto é uma cópia do funil Panini World Cup 2026 (EUA/USD) e deve ser adaptado 
+para a FRANÇA (EUR, Français). O projeto EUA no repositório GitHub permanece intacto 
+no branch `main`. Toda a estrutura França vai num branch separado chamado `france`.
+
+## O que precisa ser feito (em ordem):
+
+### 1. BRANCH GITHUB
+Cria o branch `france` a partir do `main` e configura o remote para usar o mesmo 
+repositório GitHub do projeto original:
+  Remote: https://github.com/jackPaul-dev/PANINI-1-EUA.git
+  Branch novo: france
+  Branch EUA (NÃO TOCAR): main
+
+### 2. COUNTRYCONFIG FRONTEND
+Edita `artifacts/panini-mundial/src/lib/countryConfig.ts` para França:
+  - country: "FR"
+  - currency: "EUR", currencySymbol: "€"
+  - locale: "fr-FR"
+  - taxField: "tva" (TVA — número de TVA intracommunautaire, opcional para B2C)
+  - floorField: null (sem campo de andar)
+  - shippingLabel: "Code Postal" / "Ville" / "Département"
+  - provinces: lista dos 13 départements/régions principais da France
+  - deliveryTime: "3–5 jours ouvrés partout en France"
+  - unitsAvailable: "Seulement 5 000 exemplaires disponibles pour la France"
+  - socialProof: copy em francês
+  - reviews: 5 reviews em francês (nomes franceses, texto em francês)
+  - Kits em EUR (preços equivalentes aos do EUA): €12,99 / €24,99 / €34,99 / €49,99 / €109,99
+  - orderBumps em EUR
+  - Todos os textos de copy em francês
+
+### 3. COUNTRYCONFIG BACKEND
+Edita `artifacts/api-server/src/lib/countryConfig.ts` para França:
+  - locale: "fr-FR"
+  - company: "Panini France SAS"
+  - emailFooter em francês
+  - trackingSteps: todos os labels em francês (ex: "Commande confirmée", "En préparation", etc.)
+
+### 4. EMAIL TEMPLATES
+Edita `artifacts/api-server/src/lib/emailTemplates.ts`:
+  - Todos os 12 templates (emailDay0 até emailDayDiNuovoInRotta) traduzidos para francês
+  - Moeda: EUR, símbolo €
+  - Tom: profissional, francês
+  - Manter a mesma estrutura HTML — só traduzir os textos
+
+### 5. PÁGINAS LEGAIS
+Traduz para francês os arquivos:
+  - `artifacts/panini-mundial/src/pages/PrivacyPolicy.tsx`
+  - `artifacts/panini-mundial/src/pages/TermsOfUse.tsx`
+  - `artifacts/panini-mundial/src/pages/ReturnPolicy.tsx`
+  - Header: `artifacts/panini-mundial/src/components/Header.tsx` — adicionar locale "fr" com copy em francês
+  - Landing footer: links "Contact", "Politique de confidentialité", "CGU", "Politique de retour"
+
+### 6. INDEX.HTML
+Atualiza `artifacts/panini-mundial/index.html`:
+  - og:locale: fr_FR
+  - og:url: https://[DOMÍNIO_FRANCÊS]/
+  - title e description em francês
+  - Meta Pixel: substituir pelo novo Pixel ID francês (pedir ao usuário)
+
+### 7. BUILD FRONTEND
+Executa o build com as variáveis da França:
+  cd artifacts/panini-mundial && \
+  VITE_STRIPE_PUBLISHABLE_KEY="[pk_live_CHAVE_STRIPE]" \
+  BASE_PATH=/ pnpm run build
+
+### 8. BUILD API
+  pnpm --filter @workspace/api-server run build
+
+### 9. PUSH PARA GITHUB (branch france)
+  git push https://jackPaul-dev:[GITHUB_TOKEN]@github.com/jackPaul-dev/PANINI-1-EUA.git france
+
+### 10. HEROKU — configurações necessárias
+No Heroku app da França, configurar as seguintes env vars:
+  STRIPE_SECRET_KEY=sk_live_... (mesma do EUA)
+  STRIPE_WEBHOOK_SECRET=whsec_... (NOVO — criar webhook no Stripe Dashboard apontando para https://[DOMÍNIO]/api/payment/webhook)
+  RESEND_API_KEY=re_... (mesma do EUA ou nova)
+  EMAIL_FROM=no-reply@[DOMÍNIO_FRANCÊS]
+  DATABASE_URL=postgres://...?sslmode=require&channel_binding=disable (novo banco Heroku)
+  TRACKING_BASE_URL=https://[DOMÍNIO_FRANCÊS]
+  META_PIXEL_ACCESS_TOKEN=... (novo token do Pixel francês)
+  NODE_ENV=production
+
+  Procfile do Heroku:
+  web: node --enable-source-maps artifacts/api-server/dist/index.mjs
+
+  Build pack: heroku/nodejs
+  Branch: france
+
+### 11. BANCO DE DADOS
+Após o primeiro deploy no Heroku, rodar as migrations:
+  pnpm --filter @workspace/db run push
+  (ou aplicar o schema via DATABASE_URL do Heroku França)
+
+### 12. DOMÍNIO
+Após configurar o domínio no Heroku:
+  - Apontar DNS para o Heroku (CNAME)
+  - Registrar domínio no Stripe para Apple Pay (opcional)
+
+---
+IMPORTANTE: O branch `main` (EUA) NÃO deve ser alterado em nenhum momento.
+Todas as mudanças vão EXCLUSIVAMENTE no branch `france`.
+O repositório GitHub é compartilhado entre os dois países.

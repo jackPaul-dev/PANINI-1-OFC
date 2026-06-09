@@ -6,77 +6,77 @@ export default function ReturnPolicy() {
   const [, setLocation] = useLocation();
   return (
     <div className="min-h-screen bg-[#f5f5f7]">
-      <Header locale="en" />
+      <Header locale="fr" />
       <div className="max-w-3xl mx-auto px-6 py-12">
         <button onClick={() => setLocation("/")} className="flex items-center gap-2 text-sm text-[#6b0f1a] font-semibold mb-8 hover:underline">
-          <ArrowLeft className="w-4 h-4" /> Back to store
+          <ArrowLeft className="w-4 h-4" /> Retour à la boutique
         </button>
-        <h1 className="text-3xl font-black text-gray-900 mb-2">Return & Refund Policy</h1>
-        <p className="text-sm text-gray-500 mb-8">Last updated: June 1, 2026</p>
+        <h1 className="text-3xl font-black text-gray-900 mb-2">Politique de retour et de remboursement</h1>
+        <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 1er juin 2026</p>
 
         <div className="prose prose-sm max-w-none text-gray-700 space-y-6">
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Our Policy</h2>
-            <p>We want you to be completely satisfied with your purchase. If you are not satisfied for any reason, we're here to help.</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Notre engagement</h2>
+            <p>Votre satisfaction est notre priorité. Si vous n'êtes pas entièrement satisfait de votre achat, nous sommes là pour vous aider.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Returns</h2>
-            <p>You have <strong>30 calendar days</strong> from the date of delivery to initiate a return. To be eligible for a return:</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Retours</h2>
+            <p>Vous disposez de <strong>30 jours calendaires</strong> à compter de la date de livraison pour initier un retour. Pour être éligible au retour :</p>
             <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li>The item must be unused and in the same condition as received</li>
-              <li>The item must be in its original packaging</li>
-              <li>You must provide proof of purchase (order confirmation email)</li>
+              <li>L'article doit être inutilisé et dans le même état que celui reçu</li>
+              <li>L'article doit être dans son emballage d'origine</li>
+              <li>Vous devez fournir une preuve d'achat (e-mail de confirmation de commande)</li>
             </ul>
-            <p className="mt-3">Items that cannot be returned:</p>
+            <p className="mt-3">Articles non retournables :</p>
             <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li>Opened sticker packs (once opened, stickers cannot be returned for hygienic reasons)</li>
-              <li>Items purchased during clearance or final sale promotions</li>
+              <li>Pochettes de stickers ouvertes (une fois ouvertes, elles ne peuvent pas être retournées pour des raisons d'hygiène)</li>
+              <li>Articles achetés lors de promotions de déstockage ou de vente finale</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Refunds</h2>
-            <p>Once we receive and inspect your returned item, we will notify you of the approval or rejection of your refund. If approved, your refund will be processed to your original payment method within <strong>5–10 business days</strong>.</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Remboursements</h2>
+            <p>Une fois votre article retourné reçu et inspecté, nous vous informerons de l'approbation ou du rejet de votre remboursement. Si approuvé, votre remboursement sera effectué sur votre moyen de paiement d'origine sous <strong>5 à 10 jours ouvrés</strong>.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Damaged or Defective Items</h2>
-            <p>If you receive a damaged or defective item, please contact us within <strong>7 days of delivery</strong> with your order number and a photo of the damage. We will arrange a replacement or full refund at no additional cost to you.</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Articles endommagés ou défectueux</h2>
+            <p>Si vous recevez un article endommagé ou défectueux, veuillez nous contacter dans les <strong>7 jours suivant la livraison</strong> avec votre numéro de commande et une photo du dommage. Nous organiserons un remplacement ou un remboursement intégral sans frais supplémentaires.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Exchanges</h2>
-            <p>We replace items only if they are defective or damaged. If you need to exchange an item for the same product, contact us at <a href="mailto:support@paniniworldcup2026.site" className="text-[#6b0f1a] underline">support@paniniworldcup2026.site</a>.</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Échanges</h2>
+            <p>Nous remplaçons les articles uniquement s'ils sont défectueux ou endommagés. Pour échanger un article, contactez-nous à <a href="mailto:support@panini-france.fr" className="text-[#6b0f1a] underline">support@panini-france.fr</a>.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Return Shipping</h2>
-            <p>You are responsible for return shipping costs unless the return is due to our error (wrong item sent, defective product). We recommend using a trackable shipping service for returns.</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Frais de retour</h2>
+            <p>Les frais de retour sont à votre charge, sauf si le retour est dû à notre erreur (mauvais article envoyé, produit défectueux). Nous recommandons d'utiliser un service d'expédition avec suivi pour les retours.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">How to Start a Return</h2>
-            <p>To initiate a return, please email us at <a href="mailto:support@paniniworldcup2026.site" className="text-[#6b0f1a] underline">support@paniniworldcup2026.site</a> with:</p>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Comment initier un retour</h2>
+            <p>Pour initier un retour, envoyez-nous un e-mail à <a href="mailto:support@panini-france.fr" className="text-[#6b0f1a] underline">support@panini-france.fr</a> en indiquant :</p>
             <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li>Your order number</li>
-              <li>The item(s) you wish to return</li>
-              <li>The reason for the return</li>
+              <li>Votre numéro de commande</li>
+              <li>Le(s) article(s) que vous souhaitez retourner</li>
+              <li>La raison du retour</li>
             </ul>
-            <p className="mt-3">We will respond within 1–2 business days with return instructions.</p>
+            <p className="mt-3">Nous vous répondrons sous 1–2 jours ouvrés avec les instructions de retour.</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-black text-gray-900 mb-2">Contact Us</h2>
+            <h2 className="text-lg font-black text-gray-900 mb-2">Nous contacter</h2>
             <p>
-            <strong>Panini USA LLC</strong><br />
-            Email: <a href="mailto:support@paniniworldcup2026.site" className="text-[#6b0f1a] underline">support@paniniworldcup2026.site</a>
+            <strong>Panini France SAS</strong><br />
+            E-mail : <a href="mailto:support@panini-france.fr" className="text-[#6b0f1a] underline">support@panini-france.fr</a>
             </p>
           </section>
         </div>
       </div>
       <footer className="bg-[#6b0f1a] text-white/40 text-xs text-center py-4 mt-12">
-        © 2026 Panini USA LLC — All rights reserved.
+        © 2026 Panini France SAS — Tous droits réservés.
       </footer>
     </div>
   );
