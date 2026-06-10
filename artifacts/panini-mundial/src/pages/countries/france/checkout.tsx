@@ -72,6 +72,7 @@ function StripePaymentForm({ orderTotal, formData, onSuccess, onError, onBack, l
   const elements = useElements();
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,6 +83,7 @@ function StripePaymentForm({ orderTotal, formData, onSuccess, onError, onBack, l
 
   const handleSubmit = useCallback(async () => {
     if (!stripe || !elements) return;
+    setPaymentError(null);
     setLoading(true);
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
@@ -108,11 +110,13 @@ function StripePaymentForm({ orderTotal, formData, onSuccess, onError, onBack, l
       });
 
       if (error) {
+        setPaymentError(error.message ?? "Erreur lors du paiement. Veuillez réessayer.");
         onError(error.message ?? "Erreur lors du paiement. Veuillez réessayer.");
       } else if (paymentIntent?.status === "succeeded") {
         onSuccess(paymentIntent.id);
       }
     } catch {
+      setPaymentError("Impossible de se connecter au serveur de paiement. Vérifiez votre connexion.");
       onError("Impossible de se connecter au serveur de paiement. Vérifiez votre connexion.");
     } finally {
       setLoading(false);
@@ -167,6 +171,13 @@ function StripePaymentForm({ orderTotal, formData, onSuccess, onError, onBack, l
           <span className="font-black text-[#002395] text-xl">{orderTotal.toFixed(2).replace(".", ",")} {currencySymbol}</span>
         </div>
       </div>
+
+      {paymentError && (
+        <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-xl p-3 mb-4">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <span className="text-sm font-medium">{paymentError}</span>
+        </div>
+      )}
 
       <div className="flex gap-3 mb-4">
         <button type="button" onClick={onBack} disabled={loading}
