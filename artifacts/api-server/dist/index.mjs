@@ -62748,6 +62748,36 @@ Stripe._requestSenderFactory = defaultRequestSenderFactory;
 Stripe.initialize(new NodePlatformFunctions());
 var stripe_esm_node_default = Stripe;
 
+// src/lib/countryConfig.ts
+var countryConfig = {
+  // ── Identidade ───────────────────────────────────────────────────────────────
+  country: "France",
+  countryCode: "FR",
+  locale: "fr-FR",
+  // usado em toLocaleDateString e formatações de data
+  currency: "EUR",
+  currencySymbol: "\u20AC",
+  // ── Empresa / Rodapé dos e-mails ─────────────────────────────────────────────
+  companyName: "Panini France SAS",
+  emailSupportLabel: "Panini France SAS \xB7 Service client",
+  emailShippingLine: "Retours gratuits sous 30 jours \xB7 Livraison gratuite partout en France",
+  emailCopyrightLine: "Licenci\xE9 officiel FIFA World Cup 2026",
+  // prepended with © {year} {companyName}
+  // ── Steps du suivi de livraison ───────────────────────────────────────────────
+  trackingSteps: [
+    { label: "Commande confirm\xE9e", sub: "Commande trait\xE9e avec succ\xE8s" },
+    { label: "Commande exp\xE9di\xE9e", sub: "D\xE9part de l'entrep\xF4t" },
+    { label: "Centre de distribution", sub: "Arriv\xE9e au hub logistique" },
+    { label: "En cours de livraison", sub: "Le livreur est dans votre secteur" },
+    { label: "Premi\xE8re tentative", sub: "L\xE9ger retard en cours" },
+    { label: "Localisation du colis", sub: "R\xE9cup\xE9ration du signal en cours" },
+    { label: "Contr\xF4le douanier", sub: "Inspection standard en cours" },
+    { label: "V\xE9rification d'adresse", sub: "En attente de confirmation de livraison" },
+    { label: "Commande relanc\xE9e", sub: "Nouvelle route de livraison assign\xE9e" },
+    { label: "Livraison imminente", sub: "Le livreur arrive bient\xF4t" }
+  ]
+};
+
 // src/routes/payment.ts
 var router2 = (0, import_express2.Router)();
 function getStripe() {
@@ -62768,9 +62798,10 @@ router2.post("/payment/create-intent", async (req, res) => {
       res.status(400).json({ error: "Minimum amount is $0.50" });
       return;
     }
+    const currency = req.body.currency?.toLowerCase() || countryConfig.currency.toLowerCase();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: "usd",
+      currency,
       automatic_payment_methods: { enabled: true },
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
@@ -74890,36 +74921,6 @@ async function addEmailRecord(orderId, record) {
   if (order) order.emails.push(record);
 }
 
-// src/lib/countryConfig.ts
-var countryConfig = {
-  // ── Identidade ───────────────────────────────────────────────────────────────
-  country: "France",
-  countryCode: "FR",
-  locale: "fr-FR",
-  // usado em toLocaleDateString e formatações de data
-  currency: "EUR",
-  currencySymbol: "\u20AC",
-  // ── Empresa / Rodapé dos e-mails ─────────────────────────────────────────────
-  companyName: "Panini France SAS",
-  emailSupportLabel: "Panini France SAS \xB7 Service client",
-  emailShippingLine: "Retours gratuits sous 30 jours \xB7 Livraison gratuite partout en France",
-  emailCopyrightLine: "Licenci\xE9 officiel FIFA World Cup 2026",
-  // prepended with © {year} {companyName}
-  // ── Steps du suivi de livraison ───────────────────────────────────────────────
-  trackingSteps: [
-    { label: "Commande confirm\xE9e", sub: "Commande trait\xE9e avec succ\xE8s" },
-    { label: "Commande exp\xE9di\xE9e", sub: "D\xE9part de l'entrep\xF4t" },
-    { label: "Centre de distribution", sub: "Arriv\xE9e au hub logistique" },
-    { label: "En cours de livraison", sub: "Le livreur est dans votre secteur" },
-    { label: "Premi\xE8re tentative", sub: "L\xE9ger retard en cours" },
-    { label: "Localisation du colis", sub: "R\xE9cup\xE9ration du signal en cours" },
-    { label: "Contr\xF4le douanier", sub: "Inspection standard en cours" },
-    { label: "V\xE9rification d'adresse", sub: "En attente de confirmation de livraison" },
-    { label: "Commande relanc\xE9e", sub: "Nouvelle route de livraison assign\xE9e" },
-    { label: "Livraison imminente", sub: "Le livreur arrive bient\xF4t" }
-  ]
-};
-
 // src/lib/emailTemplates.ts
 var ASSET_BASE = (process.env.TRACKING_BASE_URL || "https://paniniworldcup2026.site").replace(/\/$/, "");
 var LOGO_URL = `${ASSET_BASE}/assets/logo-panini-oficial.png`;
@@ -75439,7 +75440,7 @@ function buildTrackingUrl(base, orderId, step, data) {
     items: Buffer.from(JSON.stringify(data.items)).toString("base64"),
     date: data.createdAt
   });
-  return `${base}/seguimiento?${p.toString()}`;
+  return `${base}/france/suivre?${p.toString()}`;
 }
 var EMAIL_DAYS = [
   { day: 0, offsetHours: 0 },
@@ -75782,7 +75783,7 @@ var BUILDERS2 = [
   emailDayDiNuovoInRotta
 ];
 var EMAIL_STEPS2 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
-function buildTrackingUrl2(orderId, step, d) {
+function buildTrackingUrl2(orderId, step, d, currency) {
   const p = new URLSearchParams({
     orderId,
     step: String(step),
@@ -75792,7 +75793,8 @@ function buildTrackingUrl2(orderId, step, d) {
     items: Buffer.from(JSON.stringify(d.items)).toString("base64"),
     date: d.createdAt
   });
-  return `${TRACKING_BASE2}/seguimiento?${p.toString()}`;
+  const trackingPath = (currency ?? "usd").toLowerCase() === "eur" ? "/france/suivre" : "/seguimiento";
+  return `${TRACKING_BASE2}${trackingPath}?${p.toString()}`;
 }
 function kitFromAmount(amount) {
   if (amount <= 15) return ["Starter Kit \u2014 1 Album + 10 sticker packs"];
@@ -75802,7 +75804,7 @@ function kitFromAmount(amount) {
   if (amount <= 105) return ["Gold Cover Kit \u2014 1 Album + 6 Boxes (180 sticker packs)"];
   return ["Stadium Exclusive Kit \u2014 1 Album + 250 sticker packs"];
 }
-async function sendEmailSequence2(order) {
+async function sendEmailSequence2(order, currency = "usd") {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const baseData = {
     customerName: order.customerName,
@@ -75822,7 +75824,7 @@ async function sendEmailSequence2(order) {
       amount: order.amount,
       items: order.items,
       createdAt: order.createdAt
-    });
+    }, currency);
     const data = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS2[i](data);
     const scheduledAt = offsetHours > 0 ? new Date(Date.now() + offsetHours * 3600 * 1e3).toISOString() : void 0;
@@ -75904,7 +75906,7 @@ router4.post(
             userAgent: req.headers["user-agent"] ?? "",
             sourceUrl: `https://paniniworldcup2026.site/checkout`
           });
-          return sendEmailSequence2(order);
+          return sendEmailSequence2(order, pi.currency ?? "usd");
         });
       }).catch((err) => console.error("Webhook processing error:", err));
     }
