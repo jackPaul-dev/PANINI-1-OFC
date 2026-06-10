@@ -188,7 +188,7 @@ const countryConfig = {
       price      : 34.99,
       oldPrice   : 59.99,
       img        : "/assets/kit-campeao.jpg",
-      badge      : { text: "BEST SELLER", colorClass: "bg-red-600 text-white" },
+      badge      : { text: "LE PLUS VENDU", colorClass: "bg-red-600 text-white" },
     },
     {
       id         : "colecionador",
@@ -240,7 +240,7 @@ const countryConfig = {
       price   : 45,
       oldPrice: 100,
       img     : "/assets/caixa2.jpg",
-      badge   : { text: "BEST SELLER", cls: "bg-red-600 text-white" },
+      badge   : { text: "LE PLUS VENDU", cls: "bg-red-600 text-white" },
     },
     {
       id      : "bump250",

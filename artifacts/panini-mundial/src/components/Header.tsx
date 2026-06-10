@@ -10,6 +10,8 @@ const LABELS = {
     protected: "Protected Purchase",
     shipping: "Free Shipping USA",
     original: "Original Product",
+    topBarBg: "#6b0f1a",
+    proofBarBg: "#3d0710",
   },
   it: {
     offerExpires: "⏱ Offerta scade tra",
@@ -19,6 +21,8 @@ const LABELS = {
     protected: "Acquisto protetto",
     shipping: "Spedizione gratuita Italia",
     original: "Prodotto originale",
+    topBarBg: "#6b0f1a",
+    proofBarBg: "#3d0710",
   },
   fr: {
     offerExpires: "⏱ Offre expire dans",
@@ -28,6 +32,8 @@ const LABELS = {
     protected: "Achat protégé",
     shipping: "Livraison gratuite France",
     original: "Produit officiel",
+    topBarBg: "#002395",
+    proofBarBg: "#001a70",
   },
 };
 
@@ -64,7 +70,7 @@ export function Header({ locale = "en" }: HeaderProps) {
   return (
     <header className="w-full flex flex-col items-center sticky top-0 z-50 shadow-md">
       {/* Main top bar */}
-      <div className="w-full bg-[#6b0f1a] text-white py-2.5 px-4 flex items-center justify-between gap-4">
+      <div className="w-full text-white py-2.5 px-4 flex items-center justify-between gap-4" style={{ background: t.topBarBg }}>
         <a href="/" className="flex-shrink-0 bg-white rounded-md px-2 py-1">
           <img
             src="/assets/logo-panini-oficial.png"
@@ -100,7 +106,7 @@ export function Header({ locale = "en" }: HeaderProps) {
       </div>
 
       {/* Social Proof Bar */}
-      <div className="w-full bg-[#3d0710] text-white/90 py-1.5 px-4 flex justify-center gap-6 text-xs font-medium border-b border-white/10">
+      <div className="w-full text-white/90 py-1.5 px-4 flex justify-center gap-6 text-xs font-medium border-b border-white/10" style={{ background: t.proofBarBg }}>
         <span className="flex items-center gap-1.5 text-orange-300 font-bold">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
