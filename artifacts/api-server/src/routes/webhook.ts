@@ -53,7 +53,8 @@ const EMAIL_STEPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 
 function buildTrackingUrl(
   orderId: string, step: number,
-  d: { name: string; city: string; amount: number; items: string[]; createdAt: string }
+  d: { name: string; city: string; amount: number; items: string[]; createdAt: string },
+  currency?: string
 ): string {
   const p = new URLSearchParams({
     orderId, step: String(step),
@@ -61,7 +62,11 @@ function buildTrackingUrl(
     items: Buffer.from(JSON.stringify(d.items)).toString("base64"),
     date: d.createdAt,
   });
-  return `${TRACKING_BASE}/seguimiento?${p.toString()}`;
+  /* Route tracking page by currency: EUR → France, default → USA */
+  const trackingPath = (currency ?? "usd").toLowerCase() === "eur"
+    ? "/france/suivre"
+    : "/seguimiento";
+  return `${TRACKING_BASE}${trackingPath}?${p.toString()}`;
 }
 
 function kitFromAmount(amount: number): string[] {
@@ -73,7 +78,7 @@ function kitFromAmount(amount: number): string[] {
   return ["Stadium Exclusive Kit — 1 Album + 250 sticker packs"];
 }
 
-async function sendEmailSequence(order: Awaited<ReturnType<typeof createOrder>>) {
+async function sendEmailSequence(order: Awaited<ReturnType<typeof createOrder>>, currency = "usd") {
   const resend = new Resend(process.env.RESEND_API_KEY!);
   const baseData = {
     customerName : order.customerName,
@@ -91,7 +96,7 @@ async function sendEmailSequence(order: Awaited<ReturnType<typeof createOrder>>)
     const trackingUrl = buildTrackingUrl(order.orderId, step, {
       name: order.customerName, city: order.city,
       amount: order.amount, items: order.items, createdAt: order.createdAt,
-    });
+    }, currency);
     const data: EmailData = { ...baseData, trackingUrl };
     const { subject, html } = BUILDERS[i](data);
     const scheduledAt = offsetHours > 0
@@ -168,6 +173,10 @@ router.post(
           country: billing.address?.country ?? "US",
           amount, items,
         }).then(order => {
+          const isEur = (pi.currency ?? "usd").toLowerCase() === "eur";
+          const capiSourceUrl = isEur
+            ? `${TRACKING_BASE}/france/checkout`
+            : `https://paniniworldcup2026.site/checkout`;
           capiPurchase({
             eventId: pi.id,
             email: customerEmail,
@@ -177,9 +186,9 @@ router.post(
             contentIds: items,
             clientIp: (req.headers["x-forwarded-for"] as string ?? req.socket.remoteAddress ?? "").split(",")[0].trim(),
             userAgent: req.headers["user-agent"] ?? "",
-            sourceUrl: `https://paniniworldcup2026.site/checkout`,
+            sourceUrl: capiSourceUrl,
           });
-          return sendEmailSequence(order);
+          return sendEmailSequence(order, pi.currency ?? "usd");
         });
       }).catch(err => console.error("Webhook processing error:", err));
     }

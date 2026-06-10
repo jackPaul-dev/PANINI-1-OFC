@@ -75549,7 +75549,7 @@ router3.post("/emails/trigger", async (req, res) => {
       city: city ?? "",
       postalCode: postalCode ?? "",
       province: province ?? "",
-      country: country || "US",
+      country: country || "FR",
       amount,
       items: items ?? []
     });
@@ -75895,6 +75895,8 @@ router4.post(
           amount,
           items
         }).then((order) => {
+          const isEur = (pi.currency ?? "usd").toLowerCase() === "eur";
+          const capiSourceUrl = isEur ? `${TRACKING_BASE2}/france/checkout` : `https://paniniworldcup2026.site/checkout`;
           capiPurchase({
             eventId: pi.id,
             email: customerEmail,
@@ -75904,7 +75906,7 @@ router4.post(
             contentIds: items,
             clientIp: (req.headers["x-forwarded-for"] ?? req.socket.remoteAddress ?? "").split(",")[0].trim(),
             userAgent: req.headers["user-agent"] ?? "",
-            sourceUrl: `https://paniniworldcup2026.site/checkout`
+            sourceUrl: capiSourceUrl
           });
           return sendEmailSequence2(order, pi.currency ?? "usd");
         });

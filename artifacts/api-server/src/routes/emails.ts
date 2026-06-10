@@ -43,7 +43,7 @@ function buildTrackingUrl(
     items   : Buffer.from(JSON.stringify(data.items)).toString("base64"),
     date    : data.createdAt,
   });
-  return `${base}/seguimiento?${p.toString()}`;
+  return `${base}/france/suivre?${p.toString()}`;
 }
 
 const EMAIL_DAYS = [
@@ -154,7 +154,7 @@ router.post("/emails/trigger", async (req, res) => {
       city      : city       ?? "",
       postalCode: postalCode ?? "",
       province  : province   ?? "",
-      country   : country    || "US",
+      country   : country    || "FR",
       amount,
       items     : items ?? [],
     });
