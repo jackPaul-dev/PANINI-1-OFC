@@ -147,22 +147,22 @@ function StripePaymentForm({
 
   return (
     <div className="px-5 pt-5 pb-3">
-      <h2 className="text-xl font-bold text-gray-900 mb-1">Payment</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-1">Paiement</h2>
       <p className="text-xs text-gray-400 mb-5">
-        Transaction protected with 256-bit SSL encryption.
+        Transaction protégée par chiffrement SSL 256 bits.
       </p>
 
       {loadError ? (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm text-red-700 font-semibold mb-1">Could not load payment methods</p>
+            <p className="text-sm text-red-700 font-semibold mb-1">Impossible de charger les méthodes de paiement</p>
             <p className="text-sm text-red-600 mb-2">{loadError}</p>
             <button
               onClick={() => window.location.reload()}
               className="text-xs text-red-700 font-bold underline"
             >
-              Reload page to try again
+              Recharger la page pour réessayer
             </button>
           </div>
         </div>
@@ -183,7 +183,7 @@ function StripePaymentForm({
           {!ready && (
             <div className="flex items-center justify-center py-10">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              <span className="ml-2 text-sm text-gray-400">Loading payment methods…</span>
+              <span className="ml-2 text-sm text-gray-400">Chargement des méthodes de paiement…</span>
             </div>
           )}
         </>
@@ -191,12 +191,12 @@ function StripePaymentForm({
 
       <div className="mt-5 border-t border-gray-100 pt-4 space-y-1.5 mb-5">
         <div className="flex justify-between text-sm text-gray-500">
-          <span>Shipping</span>
-          <span className="text-primary font-semibold">Free</span>
+          <span>Livraison</span>
+          <span className="text-primary font-semibold">Gratuite</span>
         </div>
         <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
           <span className="font-black text-gray-900 text-base">Total</span>
-          <span className="font-black text-primary text-xl">${orderTotal.toFixed(2)}</span>
+          <span className="font-black text-primary text-xl">€{orderTotal.toFixed(2)}</span>
         </div>
       </div>
 
@@ -207,7 +207,7 @@ function StripePaymentForm({
           disabled={loading}
           className="flex-shrink-0 px-5 py-4 rounded-full border-2 border-gray-300 text-gray-700 font-black text-sm hover:border-gray-400 transition-all disabled:opacity-40"
         >
-          BACK
+          RETOUR
         </button>
         <button
           type="button"
@@ -216,8 +216,8 @@ function StripePaymentForm({
           className="flex-1 bg-primary hover:bg-green-700 disabled:opacity-60 text-white font-black text-base py-4 rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           {loading
-            ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
-            : <>Complete Order &rarr;</>
+            ? <><Loader2 className="w-5 h-5 animate-spin" /> Traitement…</>
+            : <>Finaliser la commande &rarr;</>
           }
         </button>
       </div>
@@ -231,10 +231,10 @@ function StripePaymentForm({
         <span className="text-gray-200">·</span>
         <span className="text-[11px]">Google Pay</span>
         <span className="text-gray-200">·</span>
-        <span className="text-[11px]">Credit Card</span>
+        <span className="text-[11px]">Carte bancaire</span>
       </div>
       <p className="text-center text-[10px] text-gray-400">
-        {countryConfig.companyInfo}<br />Official FIFA World Cup 2026 Licensee
+        {countryConfig.companyInfo}<br />Licencié Officiel FIFA Coupe du Monde 2026
       </p>
     </div>
   );
@@ -481,9 +481,9 @@ export default function Checkout() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h1 className="text-2xl font-black text-gray-900 mb-2">Payment Complete!</h1>
+            <h1 className="text-2xl font-black text-gray-900 mb-2">Commande Confirmée !</h1>
             <p className="text-gray-500 text-sm mb-6 max-w-xs">
-              Thank you for your order. You'll receive a confirmation email with delivery details.
+              Merci pour votre commande. Vous recevrez un e-mail de confirmation avec les détails de livraison.
             </p>
           </motion.div>
 
@@ -493,22 +493,22 @@ export default function Checkout() {
             transition={{ delay: 0.3 }}
             className="w-full bg-white border border-gray-100 rounded-2xl p-5 mb-6 text-left shadow-sm"
           >
-            <h3 className="font-bold text-gray-900 text-sm mb-3 border-b pb-2">Order Summary</h3>
+            <h3 className="font-bold text-gray-900 text-sm mb-3 border-b pb-2">Récapitulatif</h3>
             <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-500">Product</span>
+              <span className="text-gray-500">Produit</span>
               <span className="font-medium text-gray-900">{kit.name}</span>
             </div>
             <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-500">Shipping</span>
-              <span className="font-medium text-green-600">Free</span>
+              <span className="text-gray-500">Livraison</span>
+              <span className="font-medium text-green-600">Gratuite</span>
             </div>
             <div className="flex justify-between mb-2 text-sm border-t pt-2 mt-1">
               <span className="text-gray-500 font-bold">Total</span>
-              <span className="font-black text-primary">${orderTotal.toFixed(2)}</span>
+              <span className="font-black text-primary">€{orderTotal.toFixed(2)}</span>
             </div>
             {transactionID && (
               <div className="flex justify-between text-xs mt-1">
-                <span className="text-gray-400">Reference</span>
+                <span className="text-gray-400">Référence</span>
                 <span className="text-gray-400 font-mono">{transactionID.slice(0, 20)}…</span>
               </div>
             )}
@@ -520,9 +520,9 @@ export default function Checkout() {
             transition={{ delay: 0.4 }}
             className="w-full bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-left"
           >
-            <p className="text-xs font-bold text-blue-700 mb-1 uppercase tracking-wide">Next Steps</p>
+            <p className="text-xs font-bold text-blue-700 mb-1 uppercase tracking-wide">Prochaines Étapes</p>
             <p className="text-sm text-blue-800">
-              You'll receive a confirmation email at <strong>{formData.email}</strong>. {countryConfig.confirmationNote}
+              Vous recevrez un e-mail de confirmation à <strong>{formData.email}</strong>. {countryConfig.confirmationNote}
             </p>
           </motion.div>
 
@@ -530,7 +530,7 @@ export default function Checkout() {
             onClick={() => setLocation("/")}
             className="text-primary font-bold hover:underline text-sm"
           >
-            ← Back to store
+            ← Retour à la boutique
           </button>
         </main>
       </div>
@@ -552,7 +552,7 @@ export default function Checkout() {
                 {step > i ? <CheckCircle2 className="w-5 h-5" /> : i}
               </div>
               <span className={`ml-2 text-xs md:text-sm font-semibold ${step >= i ? "text-gray-900" : "text-gray-400"}`}>
-                {i === 1 ? "Order" : i === 2 ? "Delivery" : "Payment"}
+                {i === 1 ? "Commande" : i === 2 ? "Livraison" : "Paiement"}
               </span>
               {i < 3 && <div className={`w-8 md:w-16 h-1 mx-2 rounded ${step > i ? "bg-primary" : "bg-gray-200"}`} />}
             </div>
@@ -576,30 +576,30 @@ export default function Checkout() {
               <div className="px-4 py-3">
                 <div className="flex items-center justify-between mb-0.5">
                   <p className="font-bold text-gray-900 text-sm">{kit.name}{quantity > 1 ? ` ×${quantity}` : ""}</p>
-                  <span className="text-xs font-black text-primary">${(kit.price * quantity).toFixed(2)}</span>
+                  <span className="text-xs font-black text-primary">€{(kit.price * quantity).toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-gray-400 mb-1">{kit.contents}</p>
                 <div className="flex items-center gap-1 text-yellow-500 text-xs mb-3">
-                  ★★★★★ <span className="text-gray-400">4.9 · +2,200 reviews</span>
+                  ★★★★★ <span className="text-gray-400">4.9 · +2 200 avis</span>
                 </div>
                 <div className="space-y-1 border-t border-gray-100 pt-2">
                   <div className="flex justify-between text-xs text-gray-400">
-                    <span>Regular price</span>
-                    <span className="line-through">${(kit.oldPrice * quantity).toFixed(2)}</span>
+                    <span>Prix habituel</span>
+                    <span className="line-through">€{(kit.oldPrice * quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>Shipping</span>
-                    <span className="text-green-600 font-semibold">Free</span>
+                    <span>Livraison</span>
+                    <span className="text-green-600 font-semibold">Gratuite</span>
                   </div>
                   {orderBumps.filter(b => selectedBumps.has(b.id)).map(b => (
                     <div key={b.id} className="flex justify-between text-xs text-gray-500">
                       <span className="truncate pr-2">{b.label}</span>
-                      <span className="flex-shrink-0">+${b.price.toFixed(2)}</span>
+                      <span className="flex-shrink-0">+€{b.price.toFixed(2)}</span>
                     </div>
                   ))}
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                    <span className="font-bold text-gray-900 text-xs">Total (tax incl.)</span>
-                    <span className="text-base font-black text-primary">${orderTotal.toFixed(2)}</span>
+                    <span className="font-bold text-gray-900 text-xs">Total (TTC)</span>
+                    <span className="text-base font-black text-primary">€{orderTotal.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -627,8 +627,8 @@ export default function Checkout() {
                     disabled={quantity >= 10}>+</button>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-lg font-black text-primary">${(kit.price * quantity).toFixed(2)}</p>
-                  {quantity > 1 && <p className="text-xs text-green-600 font-semibold">Free shipping</p>}
+                  <p className="text-lg font-black text-primary">€{(kit.price * quantity).toFixed(2)}</p>
+                  {quantity > 1 && <p className="text-xs text-green-600 font-semibold">Livraison gratuite</p>}
                 </div>
               </motion.div>
             )}
@@ -641,31 +641,31 @@ export default function Checkout() {
                 onSubmit={handleStepNext}
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">1. Your Information</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">1. Vos Informations</h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">E-mail *</label>
                     <input required type="email" name="email" value={formData.email} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="name@gmail.com" />
+                      placeholder="nom@gmail.com" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
                     <input required type="text" name="name" value={formData.name} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                      placeholder="First and Last Name" />
+                      placeholder="Prénom et Nom" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
                     <input required type="tel" name="phone" value={formData.phone} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                       placeholder={countryConfig.phonePlaceholder} />
-                    <p className="text-xs text-gray-500 mt-1">For delivery SMS notifications.</p>
+                    <p className="text-xs text-gray-500 mt-1">Pour les SMS de suivi de livraison.</p>
                   </div>
                 </div>
                 <button type="submit"
                   className="mt-8 w-full bg-primary hover:bg-green-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                  Continue <ChevronRight className="w-5 h-5" />
+                  Continuer <ChevronRight className="w-5 h-5" />
                 </button>
               </motion.form>
             )}
@@ -679,8 +679,8 @@ export default function Checkout() {
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
-                  <button type="button" onClick={() => setStep(1)} className="text-sm text-primary font-medium hover:underline">Edit info</button>
+                  <h2 className="text-xl font-bold text-gray-900">Adresse de livraison</h2>
+                  <button type="button" onClick={() => setStep(1)} className="text-sm text-primary font-medium hover:underline">Modifier</button>
                 </div>
                 <p className="text-sm text-gray-400 mb-6 flex items-center gap-1">
                   <Truck className="w-3.5 h-3.5 text-green-500" /> {countryConfig.shippingDescription}
@@ -688,34 +688,34 @@ export default function Checkout() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">ZIP Code <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Code Postal <span className="text-red-500">*</span></label>
                     <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="10001" maxLength={10} />
+                      placeholder="75001" maxLength={10} />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Street Address <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Adresse <span className="text-red-500">*</span></label>
                     <input required type="text" name="address" value={formData.address} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="123 Main Street" />
+                      placeholder="10 Rue de la Paix" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Apt / Suite / Unit</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">{countryConfig.aptLabel}</label>
                     <input type="text" name="apt" value={formData.apt} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="Apt 4B" />
+                      placeholder="Appt 4B" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">City <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">Ville <span className="text-red-500">*</span></label>
                     <input required type="text" name="city" value={formData.city} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="New York" />
+                      placeholder="Paris" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">State <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1.5">{countryConfig.stateLabel} <span className="text-red-500">*</span></label>
                     <select required name="state" value={formData.state} onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-gray-50 focus:bg-white appearance-none cursor-pointer text-gray-700">
-                      <option value="">Select state…</option>
+                      <option value="">Sélectionnez une région…</option>
                       {countryConfig.stateList.map(s => (
                         <option key={s} value={s}>{s}</option>
                       ))}
@@ -725,7 +725,7 @@ export default function Checkout() {
 
                 <button type="submit"
                   className="mt-8 w-full bg-primary hover:bg-green-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                  Continue <ChevronRight className="w-5 h-5" />
+                  Continuer <ChevronRight className="w-5 h-5" />
                 </button>
               </motion.form>
             )}
@@ -740,7 +740,7 @@ export default function Checkout() {
               >
                 {/* Order Bumps */}
                 <div className="bg-green-50 border-b border-green-100 px-5 py-3">
-                  <p className="text-sm font-black text-primary text-center">Add more sticker packs at a special promotional price</p>
+                  <p className="text-sm font-black text-primary text-center">Ajoutez des pochettes supplémentaires à un prix promotionnel exclusif</p>
                 </div>
 
                 <div className="divide-y divide-gray-100">
@@ -759,8 +759,8 @@ export default function Checkout() {
                             </div>
                             <p className="text-xs text-gray-500 mb-1.5">{bump.desc}</p>
                             <div className="flex items-baseline gap-1.5">
-                              <span className="text-xs text-gray-400 line-through">${bump.oldPrice.toFixed(2)}</span>
-                              <span className="text-lg font-black text-primary">${bump.price.toFixed(2)}</span>
+                              <span className="text-xs text-gray-400 line-through">€{bump.oldPrice.toFixed(2)}</span>
+                              <span className="text-lg font-black text-primary">€{bump.price.toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
@@ -773,7 +773,7 @@ export default function Checkout() {
                               : "border-primary text-primary bg-white hover:bg-green-50"
                           }`}
                         >
-                          {active ? <><CheckCircle className="w-4 h-4" /> Added</> : <>+ Add to Order</>}
+                          {active ? <><CheckCircle className="w-4 h-4" /> Ajouté</> : <>+ Ajouter</>}
                         </button>
                       </div>
                     );
@@ -786,25 +786,25 @@ export default function Checkout() {
                     <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
                       <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm text-red-700 font-semibold mb-1">Connection Error</p>
+                        <p className="text-sm text-red-700 font-semibold mb-1">Erreur de connexion</p>
                         <p className="text-sm text-red-600">{intentError}</p>
                         <button
                           onClick={() => { setClientSecret(null); setIntentError(null); setStep(3); }}
                           className="mt-2 text-xs text-red-700 font-bold underline"
                         >
-                          Try again
+                          Réessayer
                         </button>
                       </div>
                     </div>
                     <button type="button" onClick={() => setStep(2)}
                       className="mt-4 w-full px-5 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-black text-sm hover:border-gray-400 transition-all">
-                      ← Back
+                      ← Retour
                     </button>
                   </div>
                 ) : !clientSecret ? (
                   <div className="flex items-center justify-center py-12 gap-3 text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span className="text-sm">Initializing secure payment…</span>
+                    <span className="text-sm">Initialisation du paiement sécurisé…</span>
                   </div>
                 ) : (
                   <Elements
@@ -847,9 +847,9 @@ export default function Checkout() {
                   className="grid grid-cols-3 gap-3"
                 >
                   {[
-                    { icon: <Lock className="w-4 h-4" />, label: "Secure Payment" },
-                    { icon: <Truck className="w-4 h-4" />, label: "Free Shipping" },
-                    { icon: <ShieldCheck className="w-4 h-4" />, label: "7-Day Guarantee" },
+                    { icon: <Lock className="w-4 h-4" />, label: "Paiement Sécurisé" },
+                    { icon: <Truck className="w-4 h-4" />, label: "Livraison Gratuite" },
+                    { icon: <ShieldCheck className="w-4 h-4" />, label: "Garantie 7 Jours" },
                   ].map((b, i) => (
                     <div key={i} className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col items-center gap-1 text-center">
                       <div className="text-primary">{b.icon}</div>

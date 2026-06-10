@@ -6,16 +6,16 @@ import countryConfig from "@/lib/countryConfig";
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const STEPS = [
-  { label: "Verifying real user…",           delay: 0    },
-  { label: "Validating exclusive access…",   delay: 1400 },
-  { label: "Preparing discounts & products…", delay: 2700 },
+  { label: "Vérification utilisateur…",           delay: 0    },
+  { label: "Validation de l'accès exclusif…",     delay: 1400 },
+  { label: "Préparation des offres et produits…", delay: 2700 },
 ];
 
 const STATUS_MESSAGES = [
-  "Verifying profile…",
-  "Processing access…",
-  "Loading offers…",
-  "Access confirmed!",
+  "Vérification du profil…",
+  "Traitement de l'accès…",
+  "Chargement des offres…",
+  "Accès confirmé !",
 ];
 
 function goToStore() {
@@ -64,7 +64,7 @@ export default function Pressel() {
       <div style={{ background: "#5c1212" }} className="py-3 flex items-center justify-center">
         <div className="flex items-center gap-2 border border-white/30 rounded-full px-4 py-1.5">
           <span className="text-white text-sm">🔒</span>
-          <span className="text-white text-sm font-semibold">Exclusive Access Area</span>
+          <span className="text-white text-sm font-semibold">Zone d'Accès Exclusif</span>
         </div>
       </div>
 
@@ -72,12 +72,12 @@ export default function Pressel() {
       <div style={{ background: "#3a0c0c" }} className="py-2 flex items-center justify-center gap-6">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse inline-block" />
-          <span className="text-white/80 text-xs font-medium">Validation in progress</span>
+          <span className="text-white/80 text-xs font-medium">Validation en cours</span>
         </div>
         <span className="text-white/30 text-xs">|</span>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
-          <span className="text-white/80 text-xs font-medium">Limited stock</span>
+          <span className="text-white/80 text-xs font-medium">Stock limité</span>
         </div>
       </div>
 
@@ -92,12 +92,12 @@ export default function Pressel() {
 
         <div className="text-center">
           <h1 className="text-2xl font-black text-gray-900 leading-tight mb-2">
-            {done ? "✅ Access Confirmed!" : "Verify your\nexclusive access"}
+            {done ? "✅ Accès Confirmé !" : "Vérifiez votre accès exclusif"}
           </h1>
           <p className="text-sm text-gray-500">
             {done
-              ? "Your access to the exclusive offer has been confirmed"
-              : "Please wait while we verify your profile"}
+              ? "Votre accès à l'offre exclusive a bien été confirmé"
+              : "Veuillez patienter pendant que nous vérifions votre profil"}
           </p>
         </div>
 
@@ -163,11 +163,11 @@ export default function Pressel() {
               style={{ background: "#16a34a", boxShadow: "0 8px 24px rgba(22,163,74,0.35)" }}
             >
               <Package className="w-5 h-5" />
-              Choose Your Kit →
+              Choisir Mon Kit →
             </button>
             <div className="flex items-center justify-center gap-5 text-xs text-gray-400">
-              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Secure payment</span>
-              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> Free shipping</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Paiement sécurisé</span>
+              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> Livraison gratuite</span>
             </div>
           </div>
         )}
