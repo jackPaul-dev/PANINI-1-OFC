@@ -17,6 +17,10 @@ import ItalyLanding from "@/pages/countries/italy/landing";
 import ItalyPresell from "@/pages/countries/italy/presell";
 import ItalyCheckout from "@/pages/countries/italy/checkout";
 import ItalySeguimiento from "@/pages/countries/italy/tracking";
+import FranceLanding from "@/pages/countries/france/landing";
+import FrancePresell from "@/pages/countries/france/presell";
+import FranceCheckout from "@/pages/countries/france/checkout";
+import FranceSuivre from "@/pages/countries/france/suivre";
 import { pixelPageView } from "@/lib/pixel";
 
 const queryClient = new QueryClient();
@@ -48,8 +52,8 @@ function Router() {
       <ScrollToTop />
       <PixelPageTracker />
       <Switch>
-        {/* ── USA (root — active) ── */}
-        <Route path="/" component={Landing} />
+        {/* ── France — root do domínio paniniworldcup-fr.site ── */}
+        <Route path="/" component={FranceLanding} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/presell" component={Pressel} />
         <Route path="/pressel" component={Pressel} />
@@ -74,9 +78,13 @@ function Router() {
         </Route>
 
         {/* ── FRANCE ── */}
-        <Route path="/france">
-          <ComingSoon country="France" flag="🇫🇷" language="Français" currency="EUR" />
-        </Route>
+        <Route path="/france" component={FranceLanding} />
+        <Route path="/france/presell" component={FrancePresell} />
+        <Route path="/france/pressel" component={FrancePresell} />
+        <Route path="/france/checkout" component={FranceCheckout} />
+        <Route path="/france/suivre" component={FranceSuivre} />
+        <Route path="/france/tracking" component={FranceSuivre} />
+        <Route path="/suivre" component={FranceSuivre} />
 
         {/* ── BRAZIL ── */}
         <Route path="/brazil">
