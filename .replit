@@ -1,4 +1,4 @@
-modules = ["nodejs-24", "python-3.11"]
+modules = ["nodejs-24", "python-3.11", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -52,3 +52,6 @@ RESEND_API_KEY = "re_HtK2QYF7_LRSHb6TrJYkZBxvLAwZNGXMv"
 EMAIL_FROM = "Panini USA <noreply@paniniemail.online>"
 TRACKING_BASE_URL = "https://paniniworldcup2026.site"
 STRIPE_WEBHOOK_SECRET = "whsec_bAckRWAjEA8s1cHkGU8GGqNeldi2h1zK"
+
+[nix]
+channel = "stable-25_05"
