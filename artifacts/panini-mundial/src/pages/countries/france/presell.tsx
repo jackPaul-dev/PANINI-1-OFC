@@ -1,38 +1,37 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { Star, Package, ShieldCheck, Truck } from "lucide-react";
 import { pixelViewContent } from "@/lib/pixel";
-import countryConfig from "@/lib/countryConfig";
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+import countryConfig from "@/lib/countryConfigFrance";
 
 const STEPS = [
-  { label: "Verifying real user…",           delay: 0    },
-  { label: "Validating exclusive access…",   delay: 1400 },
-  { label: "Preparing discounts & products…", delay: 2700 },
+  { label: "Vérification utilisateur réel…",           delay: 0    },
+  { label: "Validation de l'accès exclusif…",          delay: 1400 },
+  { label: "Préparation des offres et produits…",      delay: 2700 },
 ];
 
 const STATUS_MESSAGES = [
-  "Verifying profile…",
-  "Processing access…",
-  "Loading offers…",
-  "Access confirmed!",
+  "Vérification du profil…",
+  "Accès en cours de traitement…",
+  "Chargement des offres…",
+  "Accès confirmé !",
 ];
 
-function goToStore() {
-  window.location.href = BASE + "/?ref=presell";
-}
-
-export default function Pressel() {
+export default function FrancePresell() {
+  const [, setLocation] = useLocation();
   const [stepIdx, setStepIdx]   = useState(-1);
   const [done, setDone]         = useState(false);
   const [progress, setProgress] = useState(0);
 
+  /* Preserve the kit param so presell → checkout carries it forward */
+  const kitParam = new URLSearchParams(window.location.search).get("kit") ?? "campeao";
+
   useEffect(() => {
     pixelViewContent({
       content_ids: ["panini-mundial-2026-presell"],
-      content_name: "Panini World Cup 2026 — Presell",
-      value: countryConfig.kits[2]?.price ?? 39.99,
-      currency: countryConfig.currency,
+      content_name: "Panini Coupe du Monde 2026 — Pré-vente",
+      value: countryConfig.kits[2]?.price ?? 34.99,
+      currency: "EUR",
     });
 
     const interval = setInterval(() => {
@@ -61,47 +60,50 @@ export default function Pressel() {
     <div className="min-h-screen flex flex-col" style={{ background: "#f5f5f5" }}>
 
       {/* Top bar */}
-      <div style={{ background: "#5c1212" }} className="py-3 flex items-center justify-center">
+      <div style={{ background: "#002395" }} className="py-3 flex items-center justify-center">
         <div className="flex items-center gap-2 border border-white/30 rounded-full px-4 py-1.5">
           <span className="text-white text-sm">🔒</span>
-          <span className="text-white text-sm font-semibold">Exclusive Access Area</span>
+          <span className="text-white text-sm font-semibold">Zone d'Accès Réservé</span>
         </div>
       </div>
 
       {/* Status bar */}
-      <div style={{ background: "#3a0c0c" }} className="py-2 flex items-center justify-center gap-6">
+      <div style={{ background: "#001a70" }} className="py-2 flex items-center justify-center gap-6">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse inline-block" />
-          <span className="text-white/80 text-xs font-medium">Validation in progress</span>
+          <span className="text-white/80 text-xs font-medium">Validation en cours</span>
         </div>
         <span className="text-white/30 text-xs">|</span>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
-          <span className="text-white/80 text-xs font-medium">Limited stock</span>
+          <span className="text-white/80 text-xs font-medium">Stock limité</span>
         </div>
       </div>
 
+      {/* Main content */}
       <main className="flex-1 flex flex-col items-center justify-start px-4 py-10 gap-6">
 
         <div
           className="px-4 py-1.5 rounded-full text-white text-xs font-black tracking-widest uppercase"
-          style={{ background: "#5c1212" }}
+          style={{ background: "#002395" }}
         >
           FIFA WORLD CUP 2026
         </div>
 
         <div className="text-center">
           <h1 className="text-2xl font-black text-gray-900 leading-tight mb-2">
-            {done ? "✅ Access Confirmed!" : "Verify your\nexclusive access"}
+            {done ? "✅ Accès Confirmé !" : "Vérifiez votre\naccès exclusif"}
           </h1>
           <p className="text-sm text-gray-500">
             {done
-              ? "Your access to the exclusive offer has been confirmed"
-              : "Please wait while we verify your profile"}
+              ? "Votre accès à l'offre exclusive a été confirmé"
+              : "Veuillez patienter pendant que nous vérifions votre profil"}
           </p>
         </div>
 
+        {/* Verification card */}
         <div className="w-full max-w-sm bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
           <div className="px-5 pt-5 pb-4 space-y-3">
             {STEPS.map((s, i) => {
               const isActive   = i === stepIdx && !done;
@@ -114,18 +116,19 @@ export default function Pressel() {
                     ${isActive ? "bg-gray-50 border border-gray-200" : "bg-transparent"}`}
                 >
                   <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center border-2 transition-all
-                    ${isComplete ? "border-green-500 bg-green-500" : isActive ? "border-[#5c1212] bg-white" : "border-gray-200 bg-white"}`}>
+                    ${isComplete ? "border-green-500 bg-green-500" : isActive ? "border-[#002395] bg-white" : "border-gray-200 bg-white"}`}>
                     {isComplete ? (
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     ) : isActive ? (
-                      <svg className="w-3 h-3 text-[#5c1212] animate-spin" fill="none" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-[#002395] animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                       </svg>
                     ) : null}
                   </div>
+
                   <span className={`text-sm transition-all ${isComplete ? "text-gray-900 font-semibold" : isActive ? "text-gray-900 font-semibold" : "text-gray-300"}`}>
                     {s.label}
                   </span>
@@ -134,20 +137,22 @@ export default function Pressel() {
             })}
           </div>
 
+          {/* Progress bar */}
           <div className="px-5 pb-5">
             <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-2">
               <div
                 className="h-full rounded-full transition-all duration-300"
-                style={{ width: `${progress}%`, background: "#5c1212" }}
+                style={{ width: `${progress}%`, background: "#002395" }}
               />
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-gray-400">{statusMsg}</span>
-              <span className="font-bold" style={{ color: "#5c1212" }}>{Math.round(progress)}%</span>
+              <span className="font-bold" style={{ color: "#002395" }}>{Math.round(progress)}%</span>
             </div>
           </div>
         </div>
 
+        {/* Social proof */}
         <div className="flex flex-col items-center gap-1">
           <div className="flex gap-0.5">
             {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />)}
@@ -155,19 +160,20 @@ export default function Pressel() {
           <p className="text-sm text-gray-500">{countryConfig.socialProof}</p>
         </div>
 
+        {/* CTA — visible only after done */}
         {done && (
           <div className="w-full max-w-sm space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <button
-              onClick={goToStore}
+              onClick={() => setLocation(`/france/checkout?kit=${kitParam}`)}
               className="w-full text-white font-black text-lg py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
               style={{ background: "#16a34a", boxShadow: "0 8px 24px rgba(22,163,74,0.35)" }}
             >
               <Package className="w-5 h-5" />
-              Choose Your Kit →
+              Accéder au checkout →
             </button>
             <div className="flex items-center justify-center gap-5 text-xs text-gray-400">
-              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Secure payment</span>
-              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> Free shipping</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Paiement sécurisé</span>
+              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> Livraison gratuite</span>
             </div>
           </div>
         )}
