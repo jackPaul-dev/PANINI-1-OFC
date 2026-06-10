@@ -12,8 +12,9 @@ function getStripe(): Stripe {
 router.post("/payment/create-intent", async (req: Request, res: Response) => {
   try {
     const stripe = getStripe();
-    const { amount, payer, kitName } = req.body as {
+    const { amount, currency, payer, kitName } = req.body as {
       amount: number;
+      currency?: string;
       payer: { email: string; name: string; document: string; phone: string };
       kitName?: string;
     };
@@ -25,15 +26,17 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
 
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is $0.50" });
+      res.status(400).json({ error: "Minimum amount is 0.50" });
       return;
     }
 
+    const resolvedCurrency = (currency ?? "eur").toLowerCase();
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: "usd",
+      currency: resolvedCurrency,
       automatic_payment_methods: { enabled: true },
-      description: kitName ? `Panini FIFA WC26 Kit — ${kitName}` : "Panini FIFA World Cup 2026 Kit",
+      description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
         customer_email: payer.email,
         customer_name: payer.name,
@@ -71,7 +74,7 @@ router.post("/payment/update-intent", async (req: Request, res: Response) => {
 
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is $0.50" });
+      res.status(400).json({ error: "Minimum amount is 0.50" });
       return;
     }
 
