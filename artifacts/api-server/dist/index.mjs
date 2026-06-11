@@ -27929,7 +27929,7 @@ var require_pino = __commonJS({
     function pinoBundlerAbsolutePath(p) {
       try {
         const path2 = __require("path");
-        const outputDir = "/tmp/panini-france-rebuild/artifacts/api-server/dist";
+        const outputDir = "/home/runner/workspace/artifacts/api-server/dist";
         return path2.resolve(outputDir, p.replace(/^\.\//, ""));
       } catch (e) {
         const f = new Function("p", "return new URL(p, import.meta.url).pathname");
@@ -62758,20 +62758,19 @@ function getStripe() {
 router2.post("/payment/create-intent", async (req, res) => {
   try {
     const stripe = getStripe();
-    const { amount, currency, payer, kitName, utmParams } = req.body;
+    const { amount, payer, kitName } = req.body;
     if (!amount || !payer?.email) {
       res.status(400).json({ error: "Missing required fields: amount, payer" });
       return;
     }
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is 0.50" });
+      res.status(400).json({ error: "Minimum amount is $0.50" });
       return;
     }
-    const resolvedCurrency = (currency ?? "eur").toLowerCase();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: resolvedCurrency,
+      currency: "usd",
       automatic_payment_methods: { enabled: true },
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
@@ -62779,20 +62778,7 @@ router2.post("/payment/create-intent", async (req, res) => {
         customer_name: payer.name,
         customer_phone: payer.phone,
         customer_document: payer.document,
-        kit: kitName ?? "",
-        ...utmParams ? {
-          utm_source: utmParams.utm_source ?? "",
-          utm_medium: utmParams.utm_medium ?? "",
-          utm_campaign: utmParams.utm_campaign ?? "",
-          utm_content: utmParams.utm_content ?? "",
-          utm_term: utmParams.utm_term ?? "",
-          fbclid: utmParams.fbclid ?? "",
-          ttclid: utmParams.ttclid ?? "",
-          gclid: utmParams.gclid ?? "",
-          utmify_lead_id: utmParams.utmify_lead_id ?? "",
-          xcod: utmParams.xcod ?? "",
-          sck: utmParams.sck ?? ""
-        } : {}
+        kit: kitName ?? ""
       }
     });
     res.json({
@@ -62815,7 +62801,7 @@ router2.post("/payment/update-intent", async (req, res) => {
     }
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is 0.50" });
+      res.status(400).json({ error: "Minimum amount is $0.50" });
       return;
     }
     await stripe.paymentIntents.update(paymentIntentId, { amount: amountCents });
@@ -75924,14 +75910,6 @@ router4.post(
           return sendEmailSequence2(order, pi.currency ?? "usd");
         });
       }).catch((err) => console.error("Webhook processing error:", err));
-    }
-    const UTMIFY_URL = "https://api.utmify.com.br/webhooks/stripe-sale?id=6a29d3b299ad8eeff8cd368c";
-    if (event.type === "payment_intent.succeeded") {
-      fetch(UTMIFY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(event)
-      }).catch((err) => console.error("UTMify forward error:", err));
     }
     res.json({ received: true });
   }
