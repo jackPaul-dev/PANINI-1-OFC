@@ -62788,7 +62788,8 @@ router2.post("/payment/create-intent", async (req, res) => {
           utm_term: utmParams.utm_term ?? "",
           fbclid: utmParams.fbclid ?? "",
           ttclid: utmParams.ttclid ?? "",
-          gclid: utmParams.gclid ?? ""
+          gclid: utmParams.gclid ?? "",
+          utmify_lead_id: utmParams.utmify_lead_id ?? ""
         } : {}
       }
     });
