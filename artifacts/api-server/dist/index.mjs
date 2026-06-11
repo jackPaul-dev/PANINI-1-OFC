@@ -62789,7 +62789,9 @@ router2.post("/payment/create-intent", async (req, res) => {
           fbclid: utmParams.fbclid ?? "",
           ttclid: utmParams.ttclid ?? "",
           gclid: utmParams.gclid ?? "",
-          utmify_lead_id: utmParams.utmify_lead_id ?? ""
+          utmify_lead_id: utmParams.utmify_lead_id ?? "",
+          xcod: utmParams.xcod ?? "",
+          sck: utmParams.sck ?? ""
         } : {}
       }
     });
@@ -75922,6 +75924,14 @@ router4.post(
           return sendEmailSequence2(order, pi.currency ?? "usd");
         });
       }).catch((err) => console.error("Webhook processing error:", err));
+    }
+    const UTMIFY_URL = "https://api.utmify.com.br/webhooks/stripe-sale?id=6a29d3b299ad8eeff8cd368c";
+    if (event.type === "payment_intent.succeeded") {
+      fetch(UTMIFY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(event)
+      }).catch((err) => console.error("UTMify forward error:", err));
     }
     res.json({ received: true });
   }
