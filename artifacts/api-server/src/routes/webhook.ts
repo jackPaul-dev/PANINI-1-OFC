@@ -193,6 +193,16 @@ router.post(
       }).catch(err => console.error("Webhook processing error:", err));
     }
 
+    // ── Forward para UTMify direto (bypass entrega Stripe→UTMify que estava falhando) ──
+    const UTMIFY_URL = "https://api.utmify.com.br/webhooks/stripe-sale?id=6a29d3b299ad8eeff8cd368c";
+    if (event.type === "payment_intent.succeeded") {
+      fetch(UTMIFY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(event),
+      }).catch((err: unknown) => console.error("UTMify forward error:", err));
+    }
+
     res.json({ received: true });
   }
 );
