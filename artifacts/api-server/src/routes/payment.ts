@@ -73,7 +73,7 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
        * Apple Pay / Google Pay are unaffected — they have their own auth.
        */
       payment_method_options: {
-        card: { request_three_d_secure: "automatic" },
+        card: { request_three_d_secure: "any" },
       },
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
