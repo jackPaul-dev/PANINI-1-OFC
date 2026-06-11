@@ -53,6 +53,7 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
           fbclid:       utmParams.fbclid       ?? "",
           ttclid:       utmParams.ttclid       ?? "",
           gclid:        utmParams.gclid        ?? "",
+          utmify_lead_id: utmParams.utmify_lead_id ?? "",
         } : {}),
       },
     });
