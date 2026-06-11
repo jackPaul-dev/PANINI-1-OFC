@@ -295,7 +295,7 @@ export default function FranceCheckout() {
     setIntentError(null);
 
     // Capturar UTMs — sessionStorage (capturado inline no load da página) > URL params > window.utmParams
-    const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "ttclid", "gclid", "src"];
+    const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "ttclid", "gclid", "src", "xcod", "sck"];
     const utmParams: Record<string, string> = {};
     // 1. sessionStorage — capturado pelo script inline síncrono no index.html (mais confiável)
     utmKeys.forEach(k => { const v = sessionStorage.getItem("panini_utm_" + k); if (v) utmParams[k] = v; });
