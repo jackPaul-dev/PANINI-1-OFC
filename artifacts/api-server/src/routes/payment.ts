@@ -9,6 +9,26 @@ function getStripe(): Stripe {
   return new Stripe(secretKey, { apiVersion: "2026-04-22.dahlia" });
 }
 
+/* ── UTMify xcod/sck computation ──────────────────────────────────────────
+ * UTMify uses xcod as the PRIMARY attribution key. The frontend computes it
+ * via window.utmParams (set by UTMify's async script) but that races with
+ * the PI creation. We compute it server-side from available UTM params using
+ * UTMify's own formula: fields joined by the Hotmart separator.
+ */
+const UTMIFY_SEP = "hQwK21wXxR";
+
+function computeXcod(p: Record<string, string>): string {
+  const src      = p.utm_source   ?? "";
+  const campaign = p.utm_campaign ?? "";
+  const medium   = p.utm_medium   ?? "";
+  const content  = p.utm_content  ?? "";
+  const term     = p.utm_term     ?? "";
+  if (!src && !campaign && !medium) return "";
+  const parts = [src, campaign, medium, content, term];
+  const xcod  = parts.join(UTMIFY_SEP);
+  return xcod.length > 255 ? xcod.slice(0, 255) : xcod;
+}
+
 router.post("/payment/create-intent", async (req: Request, res: Response) => {
   try {
     const stripe = getStripe();
@@ -33,6 +53,15 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
 
     const resolvedCurrency = (currency ?? "eur").toLowerCase();
 
+    // Compute xcod/sck server-side if frontend did not provide them
+    // (UTMify script is async and may not have run before PI creation)
+    let xcod = utmParams?.xcod ?? "";
+    let sck  = utmParams?.sck  ?? "";
+    if ((!xcod || !sck) && utmParams) {
+      const computed = computeXcod(utmParams);
+      if (computed) { xcod = computed; sck = computed; }
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
       currency: resolvedCurrency,
@@ -40,22 +69,22 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
         customer_email: payer.email,
-        customer_name: payer.name,
+        customer_name:  payer.name,
         customer_phone: payer.phone,
         customer_document: payer.document,
         kit: kitName ?? "",
         ...(utmParams ? {
-          utm_source:   utmParams.utm_source   ?? "",
-          utm_medium:   utmParams.utm_medium   ?? "",
-          utm_campaign: utmParams.utm_campaign ?? "",
-          utm_content:  utmParams.utm_content  ?? "",
-          utm_term:     utmParams.utm_term     ?? "",
-          fbclid:       utmParams.fbclid       ?? "",
-          ttclid:       utmParams.ttclid       ?? "",
-          gclid:        utmParams.gclid        ?? "",
+          utm_source:     utmParams.utm_source   ?? "",
+          utm_medium:     utmParams.utm_medium   ?? "",
+          utm_campaign:   utmParams.utm_campaign ?? "",
+          utm_content:    utmParams.utm_content  ?? "",
+          utm_term:       utmParams.utm_term     ?? "",
+          fbclid:         utmParams.fbclid       ?? "",
+          ttclid:         utmParams.ttclid       ?? "",
+          gclid:          utmParams.gclid        ?? "",
           utmify_lead_id: utmParams.utmify_lead_id ?? "",
-          xcod:           utmParams.xcod           ?? "",
-          sck:            utmParams.sck            ?? "",
+          xcod,
+          sck,
         } : {}),
       },
     });
