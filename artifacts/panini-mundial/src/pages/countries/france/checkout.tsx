@@ -294,15 +294,15 @@ export default function FranceCheckout() {
     if (step !== 3 || clientSecret) return;
     setIntentError(null);
 
-    // Capturar UTMs do UTMify (window.utmParams), localStorage e URL
+    // Capturar UTMs — sessionStorage (capturado inline no load da página) > URL params > window.utmParams
     const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "ttclid", "gclid", "src"];
     const utmParams: Record<string, string> = {};
-    // 1. URL params (mais frescos)
+    // 1. sessionStorage — capturado pelo script inline síncrono no index.html (mais confiável)
+    utmKeys.forEach(k => { const v = sessionStorage.getItem("panini_utm_" + k); if (v) utmParams[k] = v; });
+    // 2. URL params do checkout (passados pela landing page)
     const urlP = new URLSearchParams(window.location.search);
-    utmKeys.forEach(k => { const v = urlP.get(k); if (v) utmParams[k] = v; });
-    // 2. localStorage (persistido pelo UTMify entre páginas)
-    utmKeys.forEach(k => { if (!utmParams[k]) { const v = localStorage.getItem(k); if (v) utmParams[k] = v; } });
-    // 3. window.utmParams definido pelo UTMify
+    utmKeys.forEach(k => { if (!utmParams[k]) { const v = urlP.get(k); if (v) utmParams[k] = v; } });
+    // 3. window.utmParams definido pelo UTMify (se carregou antes do step 3)
     if (typeof window !== "undefined" && (window as unknown as Record<string, unknown>).utmParams) {
       const wp = (window as unknown as Record<string, URLSearchParams>).utmParams;
       utmKeys.forEach(k => { if (!utmParams[k]) { const v = wp.get(k); if (v) utmParams[k] = v; } });
