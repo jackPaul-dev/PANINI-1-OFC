@@ -75870,6 +75870,7 @@ async function notifyUtmify(order, pi, meta) {
     }
   }
   const totalCents = pi.amount;
+  const currency = (pi.currency ?? "eur").toUpperCase();
   const nowIso = (/* @__PURE__ */ new Date()).toISOString();
   const createdIso = new Date(pi.created * 1e3).toISOString();
   const payload = {
@@ -75893,7 +75894,9 @@ async function notifyUtmify(order, pi, meta) {
     commission: {
       totalPriceInCents: totalCents,
       gatewayFeeInCents: 0,
-      userCommissionInCents: totalCents
+      userCommissionInCents: totalCents,
+      currency
+      // "EUR" — sem isso UTMify assume BRL e converte errado
     },
     trackingParameters: {
       utm_source: meta.utm_source || null,
