@@ -12,11 +12,12 @@ function getStripe(): Stripe {
 router.post("/payment/create-intent", async (req: Request, res: Response) => {
   try {
     const stripe = getStripe();
-    const { amount, currency, payer, kitName } = req.body as {
+    const { amount, currency, payer, kitName, utmParams } = req.body as {
       amount: number;
       currency?: string;
       payer: { email: string; name: string; document: string; phone: string };
       kitName?: string;
+      utmParams?: Record<string, string>;
     };
 
     if (!amount || !payer?.email) {
@@ -43,6 +44,16 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
         customer_phone: payer.phone,
         customer_document: payer.document,
         kit: kitName ?? "",
+        ...(utmParams ? {
+          utm_source:   utmParams.utm_source   ?? "",
+          utm_medium:   utmParams.utm_medium   ?? "",
+          utm_campaign: utmParams.utm_campaign ?? "",
+          utm_content:  utmParams.utm_content  ?? "",
+          utm_term:     utmParams.utm_term     ?? "",
+          fbclid:       utmParams.fbclid       ?? "",
+          ttclid:       utmParams.ttclid       ?? "",
+          gclid:        utmParams.gclid        ?? "",
+        } : {}),
       },
     });
 
