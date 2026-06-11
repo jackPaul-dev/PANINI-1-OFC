@@ -114,9 +114,10 @@ async function notifyUtmify(
     }
   }
 
-  const totalCents = pi.amount; // Stripe já armazena em centavos
-  const nowIso     = new Date().toISOString();
-  const createdIso = new Date(pi.created * 1000).toISOString();
+  const totalCents  = pi.amount; // Stripe já armazena em centavos
+  const currency    = (pi.currency ?? "eur").toUpperCase(); // ex: "EUR"
+  const nowIso      = new Date().toISOString();
+  const createdIso  = new Date(pi.created * 1000).toISOString();
 
   const payload = {
     orderId:       order.orderId,
@@ -137,9 +138,10 @@ async function notifyUtmify(
       zipCode:  order.postalCode || null,
     },
     commission: {
-      totalPriceInCents:    totalCents,
-      gatewayFeeInCents:    0,
+      totalPriceInCents:     totalCents,
+      gatewayFeeInCents:     0,
       userCommissionInCents: totalCents,
+      currency,               // "EUR" — sem isso UTMify assume BRL e converte errado
     },
     trackingParameters: {
       utm_source:   meta.utm_source   || null,
