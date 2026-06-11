@@ -27929,7 +27929,7 @@ var require_pino = __commonJS({
     function pinoBundlerAbsolutePath(p) {
       try {
         const path2 = __require("path");
-        const outputDir = "/tmp/panini-france-api/artifacts/api-server/dist";
+        const outputDir = "/tmp/panini-france-rebuild/artifacts/api-server/dist";
         return path2.resolve(outputDir, p.replace(/^\.\//, ""));
       } catch (e) {
         const f = new Function("p", "return new URL(p, import.meta.url).pathname");
@@ -62758,7 +62758,7 @@ function getStripe() {
 router2.post("/payment/create-intent", async (req, res) => {
   try {
     const stripe = getStripe();
-    const { amount, currency, payer, kitName } = req.body;
+    const { amount, currency, payer, kitName, utmParams } = req.body;
     if (!amount || !payer?.email) {
       res.status(400).json({ error: "Missing required fields: amount, payer" });
       return;
@@ -62779,7 +62779,17 @@ router2.post("/payment/create-intent", async (req, res) => {
         customer_name: payer.name,
         customer_phone: payer.phone,
         customer_document: payer.document,
-        kit: kitName ?? ""
+        kit: kitName ?? "",
+        ...utmParams ? {
+          utm_source: utmParams.utm_source ?? "",
+          utm_medium: utmParams.utm_medium ?? "",
+          utm_campaign: utmParams.utm_campaign ?? "",
+          utm_content: utmParams.utm_content ?? "",
+          utm_term: utmParams.utm_term ?? "",
+          fbclid: utmParams.fbclid ?? "",
+          ttclid: utmParams.ttclid ?? "",
+          gclid: utmParams.gclid ?? ""
+        } : {}
       }
     });
     res.json({
