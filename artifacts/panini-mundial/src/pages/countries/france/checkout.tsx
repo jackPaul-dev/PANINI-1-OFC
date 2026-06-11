@@ -307,6 +307,11 @@ export default function FranceCheckout() {
       const wp = (window as unknown as Record<string, URLSearchParams>).utmParams;
       utmKeys.forEach(k => { if (!utmParams[k]) { const v = wp.get(k); if (v) utmParams[k] = v; } });
     }
+    // 4. UTMify lead ID — para o UTMify associar a conversão ao anúncio exato no dashboard
+    try {
+      const raw = localStorage.getItem("lead") || localStorage.getItem("lead-google") || localStorage.getItem("lead-tiktok") || localStorage.getItem("lead-taboola");
+      if (raw) { const parsed = JSON.parse(raw); if (parsed?._id) utmParams["utmify_lead_id"] = parsed._id; }
+    } catch { /* silently ignore */ }
 
     fetch("/api/payment/create-intent", {
       method: "POST",
