@@ -62755,22 +62755,44 @@ function getStripe() {
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY not configured");
   return new stripe_esm_node_default(secretKey, { apiVersion: "2026-04-22.dahlia" });
 }
+var UTMIFY_SEP = "hQwK21wXxR";
+function computeXcod(p) {
+  const src = p.utm_source ?? "";
+  const campaign = p.utm_campaign ?? "";
+  const medium = p.utm_medium ?? "";
+  const content = p.utm_content ?? "";
+  const term = p.utm_term ?? "";
+  if (!src && !campaign && !medium) return "";
+  const parts = [src, campaign, medium, content, term];
+  const xcod = parts.join(UTMIFY_SEP);
+  return xcod.length > 255 ? xcod.slice(0, 255) : xcod;
+}
 router2.post("/payment/create-intent", async (req, res) => {
   try {
     const stripe = getStripe();
-    const { amount, payer, kitName } = req.body;
+    const { amount, currency, payer, kitName, utmParams } = req.body;
     if (!amount || !payer?.email) {
       res.status(400).json({ error: "Missing required fields: amount, payer" });
       return;
     }
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is $0.50" });
+      res.status(400).json({ error: "Minimum amount is 0.50" });
       return;
+    }
+    const resolvedCurrency = (currency ?? "eur").toLowerCase();
+    let xcod = utmParams?.xcod ?? "";
+    let sck = utmParams?.sck ?? "";
+    if ((!xcod || !sck) && utmParams) {
+      const computed = computeXcod(utmParams);
+      if (computed) {
+        xcod = computed;
+        sck = computed;
+      }
     }
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: "usd",
+      currency: resolvedCurrency,
       automatic_payment_methods: { enabled: true },
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
@@ -62778,7 +62800,20 @@ router2.post("/payment/create-intent", async (req, res) => {
         customer_name: payer.name,
         customer_phone: payer.phone,
         customer_document: payer.document,
-        kit: kitName ?? ""
+        kit: kitName ?? "",
+        ...utmParams ? {
+          utm_source: utmParams.utm_source ?? "",
+          utm_medium: utmParams.utm_medium ?? "",
+          utm_campaign: utmParams.utm_campaign ?? "",
+          utm_content: utmParams.utm_content ?? "",
+          utm_term: utmParams.utm_term ?? "",
+          fbclid: utmParams.fbclid ?? "",
+          ttclid: utmParams.ttclid ?? "",
+          gclid: utmParams.gclid ?? "",
+          utmify_lead_id: utmParams.utmify_lead_id ?? "",
+          xcod,
+          sck
+        } : {}
       }
     });
     res.json({
@@ -62801,7 +62836,7 @@ router2.post("/payment/update-intent", async (req, res) => {
     }
     const amountCents = Math.round(amount * 100);
     if (amountCents < 50) {
-      res.status(400).json({ error: "Minimum amount is $0.50" });
+      res.status(400).json({ error: "Minimum amount is 0.50" });
       return;
     }
     await stripe.paymentIntents.update(paymentIntentId, { amount: amountCents });
@@ -75803,6 +75838,92 @@ function kitFromAmount(amount) {
   if (amount <= 105) return ["Gold Cover Kit \u2014 1 Album + 6 Boxes (180 sticker packs)"];
   return ["Stadium Exclusive Kit \u2014 1 Album + 250 sticker packs"];
 }
+async function notifyUtmify(order, pi, meta) {
+  const apiToken = process.env.UTMIFY_API_TOKEN;
+  if (!apiToken) {
+    console.error("UTMify: UTMIFY_API_TOKEN n\xE3o configurado \u2014 skip");
+    return;
+  }
+  const kitRaw = meta.kit || order.items[0] || "kit";
+  const kitSlug = kitRaw.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const kitName = kitRaw;
+  const SEP = "hQwK21wXxR";
+  let xcod = meta.xcod || meta.sck || "";
+  if (!xcod) {
+    const src = meta.utm_source ?? "";
+    const cmp = meta.utm_campaign ?? "";
+    const med = meta.utm_medium ?? "";
+    const cnt = meta.utm_content ?? "";
+    const trm = meta.utm_term ?? "";
+    if (src || cmp || med) {
+      const raw = [src, cmp, med, cnt, trm].join(SEP);
+      xcod = raw.length > 255 ? raw.slice(0, 255) : raw;
+    }
+  }
+  const totalCents = pi.amount;
+  const nowIso = (/* @__PURE__ */ new Date()).toISOString();
+  const createdIso = new Date(pi.created * 1e3).toISOString();
+  const payload = {
+    orderId: order.orderId,
+    platform: "other",
+    paymentMethod: "credit_card",
+    status: "paid",
+    createdAt: createdIso,
+    approvedDate: nowIso,
+    refundedAt: null,
+    customer: {
+      name: order.customerName || null,
+      email: order.customerEmail || null,
+      phone: meta.customer_phone || null,
+      document: meta.customer_document || null,
+      country: order.country || "FR",
+      city: order.city || null,
+      state: order.province || null,
+      zipCode: order.postalCode || null
+    },
+    commission: {
+      totalPriceInCents: totalCents,
+      gatewayFeeInCents: 0,
+      userCommissionInCents: totalCents
+    },
+    trackingParameters: {
+      utm_source: meta.utm_source || null,
+      utm_campaign: meta.utm_campaign || null,
+      utm_medium: meta.utm_medium || null,
+      utm_content: meta.utm_content || null,
+      utm_term: meta.utm_term || null,
+      src: meta.utm_source || null,
+      sck: xcod || null,
+      xcod: xcod || null
+    },
+    products: [{
+      id: kitSlug,
+      name: kitName,
+      planId: kitSlug,
+      planName: kitName,
+      quantity: 1,
+      priceInCents: totalCents
+    }]
+  };
+  try {
+    const resp = await fetch("https://api.utmify.com.br/api-credentials/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Api-Token": apiToken
+      },
+      body: JSON.stringify(payload)
+    });
+    const body = await resp.json();
+    if (body.OK) {
+      console.log(`UTMify: pedido ${order.orderId} registrado com sucesso`);
+    } else {
+      console.error("UTMify API erro:", JSON.stringify(body));
+    }
+  } catch (err) {
+    console.error("UTMify API fetch error:", err);
+  }
+}
 async function sendEmailSequence2(order, currency = "usd") {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const baseData = {
@@ -75844,7 +75965,6 @@ async function sendEmailSequence2(order, currency = "usd") {
 }
 router4.post(
   "/webhooks/stripe",
-  // raw body needed for Stripe signature verification
   (req, res) => {
     const sig = req.headers["stripe-signature"];
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -75881,7 +76001,9 @@ router4.post(
         return;
       }
       getOrderByPaymentIntent(pi.id).then((existing) => {
-        if (existing) return;
+        if (existing) {
+          return notifyUtmify(existing, pi, meta);
+        }
         return createOrder({
           paymentIntentId: pi.id,
           customerEmail,
@@ -75890,7 +76012,7 @@ router4.post(
           city,
           postalCode: billing.address?.postal_code ?? "",
           province: billing.address?.state ?? "",
-          country: billing.address?.country ?? "US",
+          country: billing.address?.country ?? "FR",
           amount,
           items
         }).then((order) => {
@@ -75907,6 +76029,7 @@ router4.post(
             userAgent: req.headers["user-agent"] ?? "",
             sourceUrl: capiSourceUrl
           });
+          notifyUtmify(order, pi, meta);
           return sendEmailSequence2(order, pi.currency ?? "usd");
         });
       }).catch((err) => console.error("Webhook processing error:", err));
