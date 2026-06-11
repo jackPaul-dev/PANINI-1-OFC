@@ -294,6 +294,20 @@ export default function FranceCheckout() {
     if (step !== 3 || clientSecret) return;
     setIntentError(null);
 
+    // Capturar UTMs do UTMify (window.utmParams), localStorage e URL
+    const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "ttclid", "gclid", "src"];
+    const utmParams: Record<string, string> = {};
+    // 1. URL params (mais frescos)
+    const urlP = new URLSearchParams(window.location.search);
+    utmKeys.forEach(k => { const v = urlP.get(k); if (v) utmParams[k] = v; });
+    // 2. localStorage (persistido pelo UTMify entre páginas)
+    utmKeys.forEach(k => { if (!utmParams[k]) { const v = localStorage.getItem(k); if (v) utmParams[k] = v; } });
+    // 3. window.utmParams definido pelo UTMify
+    if (typeof window !== "undefined" && (window as unknown as Record<string, unknown>).utmParams) {
+      const wp = (window as unknown as Record<string, URLSearchParams>).utmParams;
+      utmKeys.forEach(k => { if (!utmParams[k]) { const v = wp.get(k); if (v) utmParams[k] = v; } });
+    }
+
     fetch("/api/payment/create-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -302,6 +316,7 @@ export default function FranceCheckout() {
         currency: "eur",
         kitName: kit.name,
         payer: { email: formData.email, name: formData.name, document: "", phone: formData.phone },
+        utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
       }),
     })
       .then(r => r.json())
