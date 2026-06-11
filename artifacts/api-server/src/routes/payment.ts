@@ -66,6 +66,15 @@ router.post("/payment/create-intent", async (req: Request, res: Response) => {
       amount: amountCents,
       currency: resolvedCurrency,
       automatic_payment_methods: { enabled: true },
+      /* ── SCA / PSD2 (Europe) ──────────────────────────────────────────
+       * French / EU cards require Strong Customer Authentication (3DS2).
+       * Without it, Stripe Radar blocks with outcome.reason=highest_risk_level.
+       * "any" forces 3DS for every card payment; after successful auth the
+       * liability shifts to the issuer and Radar lets the charge through.
+       */
+      payment_method_options: {
+        card: { request_three_d_secure: "any" },
+      },
       description: kitName ? `Panini FIFA WC26 Kit \u2014 ${kitName}` : "Panini FIFA World Cup 2026 Kit",
       metadata: {
         customer_email: payer.email,
