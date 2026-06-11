@@ -30,6 +30,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- UTM Capture — inline síncrono, roda ANTES de qualquer framework -->
+    <script>
+      (function() {
+        try {
+          var keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','ttclid','gclid','src'];
+          var params = new URLSearchParams(window.location.search);
+          var found = false;
+          keys.forEach(function(k) {
+            var v = params.get(k);
+            if (v) { sessionStorage.setItem('panini_utm_' + k, v); found = true; }
+          });
+          // Fallback por referrer — detecta Facebook/Instagram mesmo sem UTM na URL
+          if (!sessionStorage.getItem('panini_utm_utm_source') && document.referrer) {
+            var ref = document.referrer.toLowerCase();
+            if (ref.indexOf('facebook.com') > -1 || ref.indexOf('instagram.com') > -1 || ref.indexOf('fb.com') > -1 || ref.indexOf('l.facebook.com') > -1) {
+              sessionStorage.setItem('panini_utm_utm_source', 'facebook');
+              sessionStorage.setItem('panini_utm_utm_medium', 'paid_social');
+            }
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <!-- End UTM Capture -->
+
     <!-- Meta Pixel -->
     <script>
       !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -52,12 +76,12 @@
     </script>
     <!-- End Microsoft Clarity -->
 
-    <!-- UTMify — captura e persiste UTMs no localStorage entre páginas -->
+    <!-- UTMify — persiste UTMs entre páginas via localStorage (chave: lead) -->
     <script async src="https://cdn.utmify.com.br/scripts/utms/latest.js"
       data-utmify-prevent-subids></script>
     <!-- End UTMify -->
-    <script type="module" crossorigin src="/assets/index-DYVbxXoS.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D2Op-BoZ.css">
+    <script type="module" crossorigin src="/assets/index-B9IIulx7.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C9J001c-.css">
   </head>
   <body>
     <noscript><img height="1" width="1" style="display:none"
