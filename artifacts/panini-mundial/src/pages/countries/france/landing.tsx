@@ -28,8 +28,12 @@ export default function FranceLanding() {
       value: kit?.price ?? 0,
       currency: "EUR",
     });
-    // Landing → presell → checkout (sequential funnel flow)
-    setLocation(`/france/presell?kit=${kitId}`);
+    // Landing → checkout direto (presell em standby)
+    const params = new URLSearchParams(window.location.search);
+    const utmKeys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','ttclid','gclid'];
+    const checkoutParams = new URLSearchParams({ kit: kitId });
+    utmKeys.forEach(k => { const v = params.get(k); if (v) checkoutParams.set(k, v); });
+    setLocation(`/france/checkout?${checkoutParams.toString()}`);
   };
 
   const stagger = {
